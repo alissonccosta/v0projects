@@ -1,2 +1,5 @@
 # v0projects
-Validação de Projetos
+
+Este repositório contém o projeto **VerumOverview**, plataforma para gerenciamento de produtos digitais.
+
+A estrutura principal está dentro da pasta `verumoverview` com front-end em React e back-end em Node.js/Express utilizando TypeScript.
