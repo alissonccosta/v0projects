@@ -14,11 +14,11 @@ export default class AccessRequestController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { usuario_id, status } = req.body as AccessRequest;
+    const { email, status } = req.body as AccessRequest;
     try {
       const result = await db.query(
-        'INSERT INTO solicitacoes_acesso(usuario_id, status) VALUES($1,$2) RETURNING *',
-        [usuario_id, status]
+        'INSERT INTO solicitacoes_acesso(email, status) VALUES($1,$2) RETURNING *',
+        [email, status]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {

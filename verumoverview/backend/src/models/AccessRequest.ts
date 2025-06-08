@@ -1,6 +1,6 @@
 export interface AccessRequest {
   id?: number;
-  usuario_id: number;
+  email: string;
   status?: string;
   criado_em?: string;
 }
