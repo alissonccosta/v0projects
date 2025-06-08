@@ -4,6 +4,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { logAction } from '../services/logger';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,38 +31,42 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-primary dark:bg-dark-background">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-6 rounded shadow space-y-2 w-full max-w-sm">
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => {
-            setEmail(e.target.value);
-            if (erro) setErro('');
-          }}
-          error={erro || undefined}
-        />
-        <Input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={e => {
-            setSenha(e.target.value);
-            if (erro) setErro('');
-          }}
-          error={erro || undefined}
-        />
-        <Button type="submit" className="w-full">
-          Entrar
-        </Button>
-        {erro && <p className="text-red-500 mt-2">{erro}</p>}
-        <p className="mt-2 text-center">
-          <Link to="/solicitar-acesso" className="text-secondary hover:underline">
-            Solicitar acesso
-          </Link>
-        </p>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-primary dark:bg-dark-background p-4">
+      <div className="w-full max-w-sm">
+        <Card title="VerumOverview">
+          <form onSubmit={handleSubmit} className="space-y-2">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => {
+                setEmail(e.target.value);
+                if (erro) setErro('');
+              }}
+              error={erro || undefined}
+            />
+            <Input
+              type="password"
+              placeholder="Senha"
+              value={senha}
+              onChange={e => {
+                setSenha(e.target.value);
+                if (erro) setErro('');
+              }}
+              error={erro || undefined}
+            />
+            <Button type="submit" className="w-full">
+              Entrar
+            </Button>
+            {erro && <p className="text-red-500 mt-2">{erro}</p>}
+            <p className="mt-2 text-center">
+              <Link to="/solicitar-acesso" className="text-secondary hover:underline">
+                Solicitar acesso
+              </Link>
+            </p>
+          </form>
+        </Card>
+      </div>
     </div>
   );
 }
