@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import db from '../services/db';
 import { Activity } from '../models/Activity';
+import { toMinutes } from '../utils/time';
 
 export default class ActivityController {
   static async list(req: Request, res: Response): Promise<void> {
@@ -30,6 +31,12 @@ export default class ActivityController {
 
   static async create(req: Request, res: Response): Promise<void> {
     const fields = req.body as Activity;
+    if (typeof fields.horas_estimadas === 'string') {
+      fields.horas_estimadas = toMinutes(fields.horas_estimadas);
+    }
+    if (typeof fields.horas_gastas === 'string') {
+      fields.horas_gastas = toMinutes(fields.horas_gastas);
+    }
     try {
       const result = await db.query(
         `INSERT INTO atividades(
@@ -65,6 +72,12 @@ export default class ActivityController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Activity;
+    if (typeof fields.horas_estimadas === 'string') {
+      fields.horas_estimadas = toMinutes(fields.horas_estimadas);
+    }
+    if (typeof fields.horas_gastas === 'string') {
+      fields.horas_gastas = toMinutes(fields.horas_gastas);
+    }
     const keys = Object.keys(fields);
     const values = Object.values(fields);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
