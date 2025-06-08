@@ -11,8 +11,10 @@ import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import InputDate from '../components/ui/InputDate';
 import TimeInput from '../components/ui/TimeInput';
 import Badge from '../components/ui/Badge';
+import Modal from '../components/modules/Modal';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 import TimeDiffIndicator from '../components/modules/TimeDiffIndicator';
 import { minutesToTime } from '../utils/time';
@@ -68,7 +70,7 @@ const emptyActivity: Activity = {
   data_limite: '',
   horas_estimadas: 0,
   horas_gastas: 0,
-  prioridade: 'Media',
+  prioridade: 'Média',
   responsavel: undefined
 };
 
@@ -304,21 +306,22 @@ export default function Atividades() {
         )}
       </div>
 
-      {editing && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
+      <Modal isOpen={!!editing} title={editing?.id_atividade ? 'Editar Atividade' : 'Nova Atividade'} onClose={() => setEditing(null)}>
+        {editing && (
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div>
             <label className="block">Título</label>
-          <Input
-            type="text"
-            className="p-1"
-            value={editing.titulo}
-            onChange={e => {
-              setEditing({ ...editing, titulo: e.target.value });
-              if (errors.titulo) setErrors({ ...errors, titulo: '' });
-            }}
-            required
-            error={errors.titulo}
-          />
+            <Input
+              type="text"
+              className="p-1"
+              value={editing.titulo}
+              onChange={e => {
+                setEditing({ ...editing, titulo: e.target.value });
+                if (errors.titulo) setErrors({ ...errors, titulo: '' });
+              }}
+              required
+              error={errors.titulo}
+            />
             {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
@@ -356,20 +359,18 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Data Meta</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_meta || ''}
-                onChange={e => setEditing({ ...editing, data_meta: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_meta: value })}
               />
             </div>
             <div className="flex-1">
               <label className="block">Data Limite</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_limite || ''}
-                onChange={e => setEditing({ ...editing, data_limite: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_limite: value })}
               />
             </div>
           </div>
@@ -395,8 +396,10 @@ export default function Atividades() {
             <label className="block">Prioridade</label>
             <select className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.prioridade}
               onChange={e => setEditing({ ...editing, prioridade: e.target.value })}>
+              <option>Emergencial</option>
+              <option>Muito Alta</option>
               <option>Alta</option>
-              <option>Media</option>
+              <option>Média</option>
               <option>Baixa</option>
             </select>
           </div>

@@ -15,6 +15,7 @@ import Badge from '../components/ui/Badge';
 import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import InputDate from '../components/ui/InputDate';
 import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
 
@@ -230,6 +231,7 @@ export default function Projetos() {
             rowsPerPage={10}
           />
         )}
+      </div>
       <div className="md:grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2 space-y-4">
           <div>
@@ -261,17 +263,15 @@ export default function Projetos() {
               value={filters.codigo}
               onChange={e => setFilters({ ...filters, codigo: e.target.value })}
             />
-            <Input
-              type="date"
+            <InputDate
               className="p-1"
               value={filters.inicio}
-              onChange={e => setFilters({ ...filters, inicio: e.target.value })}
+              onChange={value => setFilters({ ...filters, inicio: value })}
             />
-            <Input
-              type="date"
+            <InputDate
               className="p-1"
               value={filters.fim}
-              onChange={e => setFilters({ ...filters, fim: e.target.value })}
+              onChange={value => setFilters({ ...filters, fim: value })}
             />
           </div>
           {loading ? (
@@ -382,20 +382,18 @@ export default function Projetos() {
             </div>
             <div>
               <label className="block">Início Previsto</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_inicio_prevista || ''}
-                onChange={e => setEditing({ ...editing, data_inicio_prevista: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_inicio_prevista: value })}
               />
             </div>
             <div>
               <label className="block">Fim Previsto</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_fim_prevista || ''}
-                onChange={e => setEditing({ ...editing, data_fim_prevista: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_fim_prevista: value })}
               />
             </div>
             <div>
