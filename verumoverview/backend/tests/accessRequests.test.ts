@@ -20,31 +20,30 @@ beforeAll(async () => {
 afterEach(() => mockedQuery.mockReset());
 describe('AccessRequest routes', () => {
   it('lists requests', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, usuario_id: 1, status: 'pendente' }] });
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, email: 'user1@example.com', status: 'pendente' }] });
     const res = await request(app)
-      .get('/api/solicitacoes-acesso')
+      .get('/auth/solicitacoes')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([{ id: 1, usuario_id: 1, status: 'pendente' }]);
+    expect(res.body).toEqual([{ id: 1, email: 'user1@example.com', status: 'pendente' }]);
   });
 
   it('creates request', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, usuario_id: 2, status: 'pendente' }] });
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, email: 'user2@example.com', status: 'pendente' }] });
     const res = await request(app)
-      .post('/api/solicitacoes-acesso')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ usuario_id: 2, status: 'pendente' });
+      .post('/auth/solicitar')
+      .send({ email: 'user2@example.com', status: 'pendente' });
     expect(res.status).toBe(201);
-    expect(res.body).toEqual({ id: 2, usuario_id: 2, status: 'pendente' });
+    expect(res.body).toEqual({ id: 2, email: 'user2@example.com', status: 'pendente' });
   });
 
   it('updates request', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, usuario_id: 2, status: 'aprovado' }] });
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, email: 'user2@example.com', status: 'aprovado' }] });
     const res = await request(app)
-      .put('/api/solicitacoes-acesso/2')
+      .put('/auth/solicitacoes/2')
       .set('Authorization', `Bearer ${token}`)
       .send({ status: 'aprovado' });
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ id: 2, usuario_id: 2, status: 'aprovado' });
+    expect(res.body).toEqual({ id: 2, email: 'user2@example.com', status: 'aprovado' });
   });
 });

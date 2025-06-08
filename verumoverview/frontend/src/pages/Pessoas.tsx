@@ -112,18 +112,18 @@ export default function Pessoas() {
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
-          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-            <thead>
+          <Table>
+            <THead>
               <tr>
-                <th className="p-2 text-left">Nome</th>
-                <th className="p-2 text-left">Email</th>
-                <th className="p-2 text-left">Cargo</th>
-                <th className="p-2 text-left">Time</th>
-                <th className="p-2 text-left">Status</th>
-                <th className="p-2 text-left">Engajamento</th>
-                <th className="p-2 text-left">Ações</th>
+                <Th>Nome</Th>
+                <Th>Email</Th>
+                <Th>Cargo</Th>
+                <Th>Time</Th>
+                <Th>Status</Th>
+                <Th>Engajamento</Th>
+                <Th>Ações</Th>
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {filtered.map(p => (
                 <tr key={p.id_pessoa} className="border-t">
@@ -131,7 +131,9 @@ export default function Pessoas() {
                   <td className="p-2">{p.email}</td>
                   <td className="p-2">{p.cargo_funcao}</td>
                   <td className="p-2">{p.time}</td>
-                  <td className="p-2">{p.status}</td>
+                  <td className="p-2">
+                    <Badge variant="status" value={p.status || ''} />
+                  </td>
                   <td className="p-2">{p.engajamento}</td>
                   <td className="p-2 space-x-2">
                     <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
@@ -140,39 +142,8 @@ export default function Pessoas() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         )}
-        <Table>
-          <THead>
-            <tr>
-              <Th>Nome</Th>
-              <Th>Email</Th>
-              <Th>Cargo</Th>
-              <Th>Time</Th>
-              <Th>Status</Th>
-              <Th>Engajamento</Th>
-              <Th>Ações</Th>
-            </tr>
-          </THead>
-          <tbody>
-            {filtered.map(p => (
-              <tr key={p.id_pessoa} className="border-t">
-                <td className="p-2">{p.nome_completo}</td>
-                <td className="p-2">{p.email}</td>
-                <td className="p-2">{p.cargo_funcao}</td>
-                <td className="p-2">{p.time}</td>
-                <td className="p-2">
-                  <Badge variant="status" value={p.status || ''} />
-                </td>
-                <td className="p-2">{p.engajamento}</td>
-                <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
-                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(p.id_pessoa)}>Excluir</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </div>
 
       {editing && (

@@ -24,6 +24,11 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton from '../components/ui/Skeleton';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import {
+  fetchMetrics,
+  fetchRecentActivities,
+  fetchAlerts
+} from '../services/dashboard';
 
 interface MetricData {
   totalProjects: number;
@@ -53,24 +58,6 @@ const avatarUrls = [
   'https://i.pravatar.cc/40?img=5'
 ];
 
-const activities: ActivityRow[] = [
-  { project: 'Sistema Phoenix', person: 'Ana Silva', status: 'Concluída', date: '2024-04-28' },
-  { project: 'Portal Orion', person: 'Bruno Oliveira', status: 'Em Andamento', date: '2024-04-28' },
-  { project: 'Plataforma Atlas', person: 'Carla Souza', status: 'Concluída', date: '2024-04-27' },
-  { project: 'Iniciativa Apolo', person: 'Diego Lima', status: 'Em Risco', date: '2024-04-26' },
-  { project: 'Projeto Vega', person: 'Eduarda Martins', status: 'Concluída', date: '2024-04-26' },
-  { project: 'Suite Hermes', person: 'Fábio Gonçalves', status: 'Em Andamento', date: '2024-04-25' },
-  { project: 'Dashboard Helius', person: 'Gabriela Alves', status: 'Concluída', date: '2024-04-24' },
-  { project: 'API Cronos', person: 'Henrique Costa', status: 'Concluída', date: '2024-04-24' },
-  { project: 'App Pegasus', person: 'Isabela Ribeiro', status: 'Em Risco', date: '2024-04-23' },
-  { project: 'Sistema Phoenix', person: 'João Pereira', status: 'Concluída', date: '2024-04-22' }
-];
-
-const notifications: Notification[] = [
-  { text: 'Prazo do Projeto Vega termina em 3 dias', priority: 'high' },
-  { text: 'Reunião geral agendada para sexta-feira', priority: 'medium' },
-  { text: 'Atualização de segurança disponível', priority: 'low' }
-];
 
 const lineData = Array.from({ length: 30 }, (_, i) => ({
   day: i + 1,
@@ -94,25 +81,30 @@ export default function Dashboard() {
   const [period, setPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [metrics] = useState<MetricData>({
-    totalProjects: 12,
-    projectChange: 8,
-    completedPercent: 72,
-    activePeople: 9,
-    performance: 84
-  });
+  const [metrics, setMetrics] = useState<MetricData | null>(null);
+  const [activities, setActivities] = useState<ActivityRow[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(t);
+    load();
   }, []);
 
-  function refresh() {
+  async function load() {
     setLoading(true);
-    setTimeout(() => {
-      setLastUpdate(new Date());
-      setLoading(false);
-    }, 800);
+    const [m, a, n] = await Promise.all([
+      fetchMetrics(),
+      fetchRecentActivities(),
+      fetchAlerts()
+    ]);
+    setMetrics(m);
+    setActivities(a);
+    setNotifications(n);
+    setLastUpdate(new Date());
+    setLoading(false);
+  }
+
+  function refresh() {
+    load();
   }
 
   const spark = lineData.slice(0, 10);
@@ -150,10 +142,10 @@ export default function Dashboard() {
             <div className="flex flex-col h-full p-4">
               <div className="flex items-center justify-between">
                 <FolderOpen className="text-secondary" />
-                <span className={`text-sm ${metrics.projectChange >= 0 ? 'text-indicators-positive' : 'text-indicators-negative'}`}>{metrics.projectChange}%</span>
+                <span className={`text-sm ${metrics && metrics.projectChange >= 0 ? 'text-indicators-positive' : 'text-indicators-negative'}`}>{metrics?.projectChange ?? 0}%</span>
               </div>
               <div className="flex-1 flex items-center justify-center text-4xl font-semibold">
-                {metrics.totalProjects}
+                {metrics?.totalProjects ?? 0}
               </div>
               <div className="h-8 -mb-2">
                 <ResponsiveContainer width="100%" height="100%">
@@ -172,8 +164,8 @@ export default function Dashboard() {
           ) : (
             <div className="flex flex-col items-center justify-center p-4 gap-2">
               <CheckCircle className="text-green-600" />
-              <CircularProgress value={metrics.completedPercent} />
-              <span className="text-sm">{metrics.completedPercent}% concluído</span>
+              <CircularProgress value={metrics?.completedPercent ?? 0} />
+              <span className="text-sm">{metrics?.completedPercent ?? 0}% concluído</span>
             </div>
           )}
         </Card>
@@ -185,7 +177,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center justify-center p-4">
               <Users className="text-blue-600 mb-2" />
               <AvatarStack urls={avatarUrls} />
-              <span className="text-sm mt-2">{metrics.activePeople} ativos hoje</span>
+              <span className="text-sm mt-2">{metrics?.activePeople ?? 0} ativos hoje</span>
             </div>
           )}
         </Card>
@@ -195,8 +187,8 @@ export default function Dashboard() {
             <Skeleton className="h-32" />
           ) : (
             <div className="flex flex-col items-center justify-center p-4">
-              <Gauge value={metrics.performance} className="text-secondary" />
-              <span className="text-sm mt-2">Performance {metrics.performance}%</span>
+              <Gauge value={metrics?.performance ?? 0} className="text-secondary" />
+              <span className="text-sm mt-2">Performance {metrics?.performance ?? 0}%</span>
             </div>
           )}
         </Card>

@@ -14,6 +14,7 @@ import activityRoutes from './routes/activityRoutes';
 import personRoutes from './routes/personRoutes';
 import timeRoutes from './routes/timeRoutes';
 import accessRequestRoutes from './routes/accessRequestRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 
 const app = express();
 const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
@@ -33,6 +34,7 @@ app.use('/api/usuarios', userRoutes);
 app.use('/api/perfis', profileRoutes);
 app.use('/api/audit-logs', auditRoutes);
 app.use('/api/solicitacoes-acesso', accessRequestRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/logs', logRoutes);
 
 const PORT = process.env.PORT || 4000;
