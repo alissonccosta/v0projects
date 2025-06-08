@@ -12,10 +12,12 @@ import Modal from '../components/modules/Modal';
 import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
-import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
+import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { formatDate } from '../utils/date';
+import { DataTable, Column } from '../components/ui/Table';
+
 
 interface Project {
   id_projeto: string;
@@ -42,7 +44,6 @@ export default function Projetos() {
   const [editing, setEditing] = useState<Project | null>(null);
   const [statusFilter, setStatusFilter] = useState('');
   const [filters, setFilters] = useState({ nome: '', codigo: '', inicio: '', fim: '' });
-  const [sort, setSort] = useState<{ column: string; asc: boolean }>({ column: '', asc: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
@@ -92,27 +93,42 @@ export default function Projetos() {
     setEditing({ ...emptyProject, codigo_projeto: code });
   }
 
-  function toggleSort(column: string) {
-    setSort(prev => ({ column, asc: prev.column === column ? !prev.asc : true }));
-  }
+  const columns: Column<Project>[] = [
+    { key: 'nome', header: 'Nome', sortable: true, filterType: 'text' },
+    { key: 'codigo_projeto', header: 'Código', sortable: true, filterType: 'text' },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      filterType: 'select',
+      render: p => <Badge variant="status" value={p.status || ''} />,
+    },
+    { key: 'data_inicio_prevista', header: 'Início', sortable: true },
+    { key: 'data_fim_prevista', header: 'Fim', sortable: true },
+    {
+      key: 'acoes',
+      header: 'Ações',
+      render: p => (
+        <div className="flex gap-2">
+          <button aria-label="Editar" onClick={() => setEditing({ ...p })}>
+            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+          </button>
+          <button aria-label="Excluir" onClick={() => handleDelete(p.id_projeto)}>
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
-  const filtered = projects.filter(p => {
-    if (statusFilter && p.status !== statusFilter) return false;
-    if (filters.nome && !p.nome.toLowerCase().includes(filters.nome.toLowerCase())) return false;
-    if (filters.codigo && !(p.codigo_projeto || '').includes(filters.codigo)) return false;
-    if (filters.inicio && !(p.data_inicio_prevista || '').includes(filters.inicio)) return false;
-    if (filters.fim && !(p.data_fim_prevista || '').includes(filters.fim)) return false;
-    return true;
-  });
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (!sort.column) return 0;
-    const valA = (a as any)[sort.column] || '';
-    const valB = (b as any)[sort.column] || '';
-    if (valA < valB) return sort.asc ? -1 : 1;
-    if (valA > valB) return sort.asc ? 1 : -1;
-    return 0;
-  });
+  const sorted = [...filtered].sort((a, b) => a.nome.localeCompare(b.nome));
+
+  const statusCounts = projects.reduce<Record<string, number>>((acc, p) => {
+    const st = p.status || 'Indefinido';
+    acc[st] = (acc[st] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-4">
@@ -122,22 +138,11 @@ export default function Projetos() {
           <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
         <Button onClick={openNewProject} className="flex items-center gap-1">
-          <Plus size={16} /> Novo Projeto
+          <PlusIcon className="w-5 h-5" /> Novo Projeto
         </Button>
       </div>
 
-      <div>
-        <label className="mr-2">Status:</label>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
-          <option value="">Todos</option>
-          <option>Backlog</option>
-          <option>Documentação</option>
-          <option>Execução</option>
-          <option>Acompanhamento</option>
-          <option>Handoff</option>
-          <option>Sustentação</option>
-        </select>
-      </div>
+
       <div className="overflow-x-auto">
         {loading ? (
           <Skeleton className="h-60 w-full" />
@@ -217,7 +222,118 @@ export default function Projetos() {
             ))}
             </tbody>
           </table>
+          <DataTable
+            data={projects}
+            columns={columns}
+            rowKey={p => p.id_projeto}
+            globalSearch
+            rowsPerPage={10}
+          />
         )}
+      <div className="md:grid md:grid-cols-3 gap-4">
+        <div className="md:col-span-2 space-y-4">
+          <div>
+            <label className="mr-2">Status:</label>
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
+              <option value="">Todos</option>
+              <option>Backlog</option>
+              <option>Documentação</option>
+              <option>Execução</option>
+              <option>Acompanhamento</option>
+              <option>Handoff</option>
+              <option>Sustentação</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <Input
+              placeholder="Nome"
+              className="p-1"
+              value={filters.nome}
+              onChange={e => setFilters({ ...filters, nome: e.target.value })}
+            />
+            <Input
+              placeholder="Código"
+              className="p-1"
+              value={filters.codigo}
+              onChange={e => setFilters({ ...filters, codigo: e.target.value })}
+            />
+            <Input
+              type="date"
+              className="p-1"
+              value={filters.inicio}
+              onChange={e => setFilters({ ...filters, inicio: e.target.value })}
+            />
+            <Input
+              type="date"
+              className="p-1"
+              value={filters.fim}
+              onChange={e => setFilters({ ...filters, fim: e.target.value })}
+            />
+          </div>
+          {loading ? (
+            <Skeleton className="h-60 w-full" />
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {sorted.map(p => (
+                <Card key={p.id_projeto} className="p-4 space-y-2">
+                  <Card.Header
+                    title={p.nome}
+                    subtitle={p.codigo_projeto}
+                    action={<Badge variant="status" value={p.status || ''} />}
+                  />
+                  <div className="text-sm space-y-1">
+                    <p>
+                      <strong>Início:</strong> {p.data_inicio_prevista || '-'}
+                    </p>
+                    <p>
+                      <strong>Fim:</strong> {p.data_fim_prevista || '-'}
+                    </p>
+                  </div>
+                  <Card.Footer>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        aria-label="Editar"
+                        className="text-blue-600"
+                        onClick={() => setEditing({ ...p })}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        aria-label="Excluir"
+                        className="text-red-600"
+                        onClick={() => handleDelete(p.id_projeto)}
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </Card.Footer>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+        <aside className="space-y-4 mt-4 md:mt-0">
+          <Card className="p-4" title="Resumo">
+            <Card.Content>
+              <ul className="space-y-1 text-sm">
+                <li className="flex justify-between font-medium">
+                  <span>Total</span>
+                  <span>{projects.length}</span>
+                </li>
+                {Object.entries(statusCounts).map(([st, count]) => (
+                  <li key={st} className="flex justify-between">
+                    <span>{st}</span>
+                    <span>{count}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card.Content>
+          </Card>
+        </aside>
       </div>
 
       <Modal isOpen={!!editing} title={editing?.id_projeto ? 'Editar Projeto' : 'Novo Projeto'} onClose={() => setEditing(null)}>

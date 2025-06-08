@@ -14,6 +14,8 @@ import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 import { formatDate } from '../utils/date';
+import { DataTable, Column } from '../components/ui/Table';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Activity {
   id_atividade: string;
@@ -40,7 +42,6 @@ const emptyActivity: Activity = {
 export default function Atividades() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editing, setEditing] = useState<Activity | null>(null);
-  const [filter, setFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
@@ -85,7 +86,40 @@ export default function Atividades() {
     load();
   }
 
-  const filtered = filter ? activities.filter(a => a.status === filter) : activities;
+
+  const columns: Column<Activity>[] = [
+    { key: 'titulo', header: 'Título', sortable: true, filterType: 'text' },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      filterType: 'select',
+      render: a => <Badge variant="status" value={a.status || ''} />,
+    },
+    { key: 'data_meta', header: 'Meta', sortable: true },
+    { key: 'data_limite', header: 'Limite', sortable: true },
+    {
+      key: 'horas',
+      header: 'Horas',
+      render: a => (
+        <span>{a.horas_gastas || 0}/{a.horas_estimadas}</span>
+      ),
+    },
+    {
+      key: 'acoes',
+      header: 'Ações',
+      render: a => (
+        <div className="flex gap-2">
+          <button aria-label="Editar" onClick={() => setEditing({ ...a })}>
+            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+          </button>
+          <button aria-label="Excluir" onClick={() => handleDelete(a.id_atividade)}>
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -99,21 +133,11 @@ export default function Atividades() {
         </Button>
       </div>
 
-      <div>
-        <label className="mr-2">Status:</label>
-        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
-          <option value="">Todos</option>
-          <option>Nao Iniciada</option>
-          <option>Em Andamento</option>
-          <option>Concluida</option>
-          <option>Em Risco</option>
-          <option>Bloqueada</option>
-        </select>
-      </div>
       <div className="overflow-x-auto">
         {loading ? (
           <Skeleton className="h-48 w-full" />
         ) : (
+
           <Table>
             <THead>
               <tr>
@@ -143,6 +167,13 @@ export default function Atividades() {
               ))}
             </tbody>
           </Table>
+          <DataTable
+            data={activities}
+            columns={columns}
+            rowKey={a => a.id_atividade}
+            globalSearch
+            rowsPerPage={10}
+          />
         )}
       </div>
 

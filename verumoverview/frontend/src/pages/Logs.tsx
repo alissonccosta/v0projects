@@ -3,7 +3,7 @@ import { fetchLogs } from '../services/auditLogs';
 import { formatDateTime } from '../utils/date';
 import BackButton from '../components/modules/BackButton';
 import Skeleton from '../components/ui/Skeleton';
-import { Table, THead, Th } from '../components/ui/Table';
+import { DataTable, Column } from '../components/ui/Table';
 
 interface Log {
   id: number;
@@ -26,6 +26,17 @@ export default function Logs() {
     setLogs(data);
     setLoading(false);
   }
+
+  const columns: Column<Log>[] = [
+    { key: 'email', header: 'Usuário', sortable: true, filterType: 'text', render: l => l.email || String(l.usuario_id) },
+    { key: 'acao', header: 'Ação', sortable: true, filterType: 'text' },
+    {
+      key: 'criado_em',
+      header: 'Data',
+      sortable: true,
+      render: l => new Date(l.criado_em).toLocaleString(),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -55,6 +66,13 @@ export default function Logs() {
               ))}
             </tbody>
           </Table>
+          <DataTable
+            data={logs}
+            columns={columns}
+            rowKey={l => l.id}
+            globalSearch
+            rowsPerPage={10}
+          />
         )}
       </div>
     </div>
