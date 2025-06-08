@@ -15,6 +15,7 @@ import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import { formatDate } from '../utils/date';
 
 interface Project {
   id_projeto: string;
@@ -202,8 +203,8 @@ export default function Projetos() {
                 <td className="p-2">
                   <Badge variant="status" value={p.status || ''} />
                 </td>
-                <td className="p-2">{p.data_inicio_prevista}</td>
-                <td className="p-2">{p.data_fim_prevista}</td>
+                <td className="p-2">{p.data_inicio_prevista ? formatDate(p.data_inicio_prevista) : ''}</td>
+                <td className="p-2">{p.data_fim_prevista ? formatDate(p.data_fim_prevista) : ''}</td>
                 <td className="p-2 space-x-2">
                   <button aria-label="Editar" className="text-blue-600 inline-flex items-center" onClick={() => setEditing({ ...p })}>
                     <Pencil size={14} className="mr-1" />Editar

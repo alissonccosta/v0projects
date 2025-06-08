@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchLogs } from '../services/auditLogs';
+import { formatDateTime } from '../utils/date';
 import BackButton from '../components/modules/BackButton';
 import Skeleton from '../components/ui/Skeleton';
 import { Table, THead, Th } from '../components/ui/Table';
@@ -49,7 +50,7 @@ export default function Logs() {
                 <tr key={l.id} className="border-t">
                   <td className="p-2">{l.email || l.usuario_id}</td>
                   <td className="p-2">{l.acao}</td>
-                  <td className="p-2">{new Date(l.criado_em).toLocaleString()}</td>
+                  <td className="p-2">{formatDateTime(l.criado_em)}</td>
                 </tr>
               ))}
             </tbody>

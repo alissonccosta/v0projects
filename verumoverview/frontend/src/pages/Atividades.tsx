@@ -13,6 +13,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import { formatDate } from '../utils/date';
 
 interface Activity {
   id_atividade: string;
@@ -131,8 +132,8 @@ export default function Atividades() {
                   <td className="p-2">
                     <Badge variant="status" value={a.status || ''} />
                   </td>
-                  <td className="p-2">{a.data_meta}</td>
-                  <td className="p-2">{a.data_limite}</td>
+                  <td className="p-2">{a.data_meta ? formatDate(a.data_meta) : ''}</td>
+                  <td className="p-2">{a.data_limite ? formatDate(a.data_limite) : ''}</td>
                   <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
                   <td className="p-2 space-x-2">
                     <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
