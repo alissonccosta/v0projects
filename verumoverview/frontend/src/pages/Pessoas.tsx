@@ -6,6 +6,7 @@ import {
   deletePerson
 } from '../services/people';
 import { logAction } from '../services/logger';
+import BackButton from '../components/BackButton';
 
 interface Person {
   id_pessoa: string;
@@ -31,6 +32,7 @@ export default function Pessoas() {
   const [people, setPeople] = useState<Person[]>([]);
   const [editing, setEditing] = useState<Person | null>(null);
   const [filter, setFilter] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     load();
@@ -44,6 +46,14 @@ export default function Pessoas() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    const errs: Record<string, string> = {};
+    if (!editing.nome_completo.trim()) errs.nome_completo = 'Nome é obrigatório';
+    if (!editing.email.trim()) errs.email = 'Email é obrigatório';
+    else if (!/^[^@]+@[^@]+\.[^@]+$/.test(editing.email)) errs.email = 'Email inválido';
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     if (editing.id_pessoa) {
       await updatePerson(editing.id_pessoa, editing);
       logAction('update_person', { id: editing.id_pessoa });
@@ -66,8 +76,11 @@ export default function Pessoas() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between">
-        <h1 className="text-xl font-bold">Pessoas</h1>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <h1 className="text-xl font-bold">Pessoas</h1>
+        </div>
         <button
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
           onClick={() => setEditing({ ...emptyPerson })}
@@ -124,21 +137,29 @@ export default function Pessoas() {
             <label className="block">Nome Completo</label>
             <input
               type="text"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.nome_completo ? 'input-error' : ''}`}
               value={editing.nome_completo}
-              onChange={e => setEditing({ ...editing, nome_completo: e.target.value })}
+              onChange={e => {
+                setEditing({ ...editing, nome_completo: e.target.value });
+                if (errors.nome_completo) setErrors({ ...errors, nome_completo: '' });
+              }}
               required
             />
+            {errors.nome_completo && <span className="error-message">{errors.nome_completo}</span>}
           </div>
           <div>
             <label className="block">Email</label>
             <input
               type="email"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.email ? 'input-error' : ''}`}
               value={editing.email}
-              onChange={e => setEditing({ ...editing, email: e.target.value })}
+              onChange={e => {
+                setEditing({ ...editing, email: e.target.value });
+                if (errors.email) setErrors({ ...errors, email: '' });
+              }}
               required
             />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
           <div>
             <label className="block">Cargo/Função</label>

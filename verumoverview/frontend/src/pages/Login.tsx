@@ -10,7 +10,6 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
@@ -33,16 +32,23 @@ export default function Login() {
         type="email"
         placeholder="Email"
         value={email}
-        onChange={e => setEmail(e.target.value)}
-        className="border p-2 mb-2 w-full"
+        onChange={e => {
+          setEmail(e.target.value);
+          if (erro) setErro('');
+        }}
+        className={`border p-2 mb-2 w-full ${erro ? 'input-error' : ''}`}
       />
       <input
         type="password"
         placeholder="Senha"
         value={senha}
-        onChange={e => setSenha(e.target.value)}
-        className="border p-2 mb-2 w-full"
+        onChange={e => {
+          setSenha(e.target.value);
+          if (erro) setErro('');
+        }}
+        className={`border p-2 mb-2 w-full ${erro ? 'input-error' : ''}`}
       />
+      {erro && <span className="error-message">{erro}</span>}
       <button type="submit" className="bg-blue-500 text-white px-4 py-2">
         Entrar
       </button>
