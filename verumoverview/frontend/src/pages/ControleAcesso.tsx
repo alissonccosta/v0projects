@@ -4,6 +4,8 @@ import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import { ToastContext } from '../contexts/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
+import { Table, THead, Th, Td } from '../components/ui/Table';
+import Badge from '../components/ui/Badge';
 
 interface Solicitacao {
   id: number;
@@ -37,8 +39,9 @@ export default function ControleAcesso() {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <BackButton />
-        <h1 className="text-xl font-bold">Controle de Acesso</h1>
+        <h1 className="text-2xl font-semibold text-secondary mb-4">Controle de Acesso</h1>
       </div>
+
       {loading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
@@ -78,6 +81,42 @@ export default function ControleAcesso() {
           </tbody>
         </table>
       )}
+
+      <Table>
+        <THead>
+          <tr>
+            <Th>Email</Th>
+            <Th>Status</Th>
+            <th className="p-2"></th>
+          </tr>
+        </THead>
+        <tbody>
+          {solicitacoes.map(s => (
+            <tr key={s.id} className="border-t">
+              <td className="p-2">{s.email}</td>
+              <td className="p-2">{s.status}</td>
+              <td className="p-2 space-x-2">
+                {s.status === 'pendente' && (
+                  <>
+                    <button
+                      onClick={() => handle(s.id, 'aprovado')}
+                      className="text-blue-600"
+                    >
+                      Aprovar
+                    </button>
+                    <button
+                      onClick={() => handle(s.id, 'rejeitado')}
+                      className="text-red-600"
+                    >
+                      Rejeitar
+                    </button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 }

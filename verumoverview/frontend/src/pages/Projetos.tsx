@@ -11,7 +11,10 @@ import BackButton from '../components/BackButton';
 import Modal from '../components/Modal';
 import { ToastContext } from '../contexts/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
+import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 
 interface Project {
   id_projeto: string;
@@ -115,14 +118,11 @@ export default function Projetos() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Projetos</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
-        <button
-          className="flex items-center gap-1 bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
-          onClick={openNewProject}
-        >
+        <Button onClick={openNewProject} className="flex items-center gap-1">
           <Plus size={16} /> Novo Projeto
-        </button>
+        </Button>
       </div>
 
       <div>
@@ -144,6 +144,9 @@ export default function Projetos() {
           <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
             <thead>
               <tr className="bg-gray-100 dark:bg-dark-background">
+        <Table>
+          <THead>
+            <tr>
               <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
                 Nome <ArrowUpDown className="inline w-4 h-4" />
               </th>
@@ -162,21 +165,45 @@ export default function Projetos() {
               <th className="p-2 text-left">Ações</th>
             </tr>
             <tr>
-              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.nome} onChange={e => setFilters({ ...filters, nome: e.target.value })} /></th>
-              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.codigo} onChange={e => setFilters({ ...filters, codigo: e.target.value })} /></th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.nome}
+                  onChange={e => setFilters({ ...filters, nome: e.target.value })}
+                />
+              </th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.codigo}
+                  onChange={e => setFilters({ ...filters, codigo: e.target.value })}
+                />
+              </th>
               <th className="p-1"></th>
-              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.inicio} onChange={e => setFilters({ ...filters, inicio: e.target.value })} /></th>
-              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.fim} onChange={e => setFilters({ ...filters, fim: e.target.value })} /></th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.inicio}
+                  onChange={e => setFilters({ ...filters, inicio: e.target.value })}
+                />
+              </th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.fim}
+                  onChange={e => setFilters({ ...filters, fim: e.target.value })}
+                />
+              </th>
               <th></th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {sorted.map(p => (
               <tr key={p.id_projeto} className="border-t">
                 <td className="p-2">{p.nome}</td>
                 <td className="p-2">{p.codigo_projeto}</td>
                 <td className="p-2">
-                  <span className="px-2 py-1 rounded bg-gray-100 text-xs">{p.status}</span>
+                  <Badge variant="status" value={p.status || ''} />
                 </td>
                 <td className="p-2">{p.data_inicio_prevista}</td>
                 <td className="p-2">{p.data_fim_prevista}</td>
@@ -200,24 +227,25 @@ export default function Projetos() {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="block">Nome</label>
-            <input
+            <Input
               type="text"
-              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.nome ? 'input-error' : ''}`}
+              className="p-1"
               value={editing.nome}
               onChange={e => {
                 setEditing({ ...editing, nome: e.target.value });
                 if (errors.nome) setErrors({ ...errors, nome: '' });
               }}
               required
+              error={errors.nome}
             />
             {errors.nome && <span className="error-message">{errors.nome}</span>}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block">Código</label>
-              <input
+              <Input
                 type="text"
-                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                className="p-1"
                 value={editing.codigo_projeto}
                 onChange={e => setEditing({ ...editing, codigo_projeto: e.target.value })}
                 disabled
@@ -240,18 +268,18 @@ export default function Projetos() {
             </div>
             <div>
               <label className="block">Início Previsto</label>
-              <input
+              <Input
                 type="date"
-                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                className="p-1"
                 value={editing.data_inicio_prevista || ''}
                 onChange={e => setEditing({ ...editing, data_inicio_prevista: e.target.value })}
               />
             </div>
             <div>
               <label className="block">Fim Previsto</label>
-              <input
+              <Input
                 type="date"
-                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                className="p-1"
                 value={editing.data_fim_prevista || ''}
                 onChange={e => setEditing({ ...editing, data_fim_prevista: e.target.value })}
               />
@@ -275,9 +303,9 @@ export default function Projetos() {
             <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
+            <Button type="submit" className="py-1">
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
         )}

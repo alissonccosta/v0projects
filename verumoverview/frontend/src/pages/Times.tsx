@@ -5,6 +5,9 @@ import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import { ToastContext } from '../contexts/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Time {
   id_time: string;
@@ -93,23 +96,20 @@ export default function Times() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Times</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Times</h1>
         </div>
-        <button
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
-          onClick={() => setEditing({ ...emptyTime })}
-        >
+        <Button onClick={() => setEditing({ ...emptyTime })}>
           Novo Time
-        </button>
+        </Button>
       </div>
 
       <div>
         <label className="mr-2">Buscar:</label>
-        <input
+        <Input
           type="text"
+          className="p-1"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
         />
       </div>
       <div className="overflow-x-auto">
@@ -142,23 +142,48 @@ export default function Times() {
             </tbody>
           </table>
         )}
+        <Table>
+          <THead>
+            <tr>
+              <Th>Nome</Th>
+              <Th>Líder</Th>
+              <Th>Capacidade</Th>
+              <Th>Membros</Th>
+              <Th>Ações</Th>
+            </tr>
+          </THead>
+          <tbody>
+            {filtered.map(t => (
+              <tr key={t.id_time} className="border-t">
+                <td className="p-2">{t.nome}</td>
+                <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
+                <td className="p-2">{t.capacidade_total}</td>
+                <td className="p-2">{t.membros?.length || 0}</td>
+                <td className="p-2 space-x-2">
+                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
+                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
 
       {editing && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
           <div>
             <label className="block">Nome</label>
-            <input
+            <Input
               type="text"
-              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.nome ? 'input-error' : ''}`}
+              className="p-1"
               value={editing.nome}
               onChange={e => {
                 setEditing({ ...editing, nome: e.target.value });
                 if (errors.nome) setErrors({ ...errors, nome: '' });
               }}
               required
+              error={errors.nome}
             />
-            {errors.nome && <span className="error-message">{errors.nome}</span>}
           </div>
           <div>
             <label className="block">Líder</label>
@@ -175,9 +200,9 @@ export default function Times() {
           </div>
           <div>
             <label className="block">Capacidade Total (h/sem)</label>
-            <input
+            <Input
               type="number"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="p-1"
               value={editing.capacidade_total || 0}
               onChange={e => setEditing({ ...editing, capacidade_total: Number(e.target.value) })}
             />
@@ -202,9 +227,9 @@ export default function Times() {
             <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
+            <Button type="submit" className="py-1">
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       )}
