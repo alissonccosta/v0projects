@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { logAction } from '../services/logger';
 
@@ -32,6 +33,11 @@ export default function Login() {
       <button type="submit" className="bg-blue-500 text-white px-4 py-2">
         Entrar
       </button>
+      <p className="mt-2">
+        <Link to="/solicitar-acesso" className="text-blue-600">
+          Solicitar acesso
+        </Link>
+      </p>
     </form>
   );
 }
