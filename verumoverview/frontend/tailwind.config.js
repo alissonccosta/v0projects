@@ -2,7 +2,7 @@ import designTokens from './src/constants/design-tokens.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  content: ['./index.html', './src/**/*.{ts,tsx,jsx}'],
   darkMode: 'class',
   theme: {
     extend: {
