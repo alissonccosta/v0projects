@@ -13,7 +13,6 @@ import projectRoutes from './routes/projectRoutes';
 import activityRoutes from './routes/activityRoutes';
 import personRoutes from './routes/personRoutes';
 import timeRoutes from './routes/timeRoutes';
-import accessRequestRoutes from './routes/accessRequestRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 
 const app = express();
@@ -33,7 +32,6 @@ app.use('/api/times', timeRoutes);
 app.use('/api/usuarios', userRoutes);
 app.use('/api/perfis', profileRoutes);
 app.use('/api/audit-logs', auditRoutes);
-app.use('/api/solicitacoes-acesso', accessRequestRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/logs', logRoutes);
 
