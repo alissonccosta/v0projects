@@ -2,6 +2,16 @@ import { Request, Response } from 'express';
 import db from '../services/db';
 import { Time } from '../models/Time';
 
+const ALLOWED_FIELDS = [
+  'nome',
+  'lider',
+  'capacidade_total',
+  'membros',
+  'anexos',
+  'historico_alteracoes',
+  'comentarios'
+];
+
 export default class TimeController {
   static async list(req: Request, res: Response): Promise<void> {
     try {
@@ -30,6 +40,11 @@ export default class TimeController {
 
   static async create(req: Request, res: Response): Promise<void> {
     const fields = req.body as Time;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
     try {
       const result = await db.query(
         `INSERT INTO times(
@@ -55,8 +70,13 @@ export default class TimeController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Time;
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(

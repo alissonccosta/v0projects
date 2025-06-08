@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, type ComponentType } from 'react';
 import { Outlet, NavLink, Navigate, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -19,7 +19,14 @@ import { AuthContext } from '../../hooks/AuthContext';
 import { ThemeContext } from '../../hooks/ThemeContext';
 import { logAction } from '../../services/logger';
 
-const items = [
+interface Item {
+  path: string;
+  label: string;
+  icon: ComponentType<{ size?: number }>;
+  roles: string[];
+}
+
+const items: Item[] = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin','gerente','timeleader','colaborador'] },
   { path: '/projetos', label: 'Projetos', icon: FolderOpen, roles: ['admin','gerente','timeleader','colaborador'] },
   { path: '/atividades', label: 'Atividades', icon: CheckSquare, roles: ['admin','gerente','timeleader','colaborador'] },
@@ -31,7 +38,7 @@ const items = [
   { path: '/logs', label: 'Logs', icon: LayoutDashboard, roles: ['admin'] }
 ];
 
-function Breadcrumbs() {
+function Breadcrumbs(): JSX.Element {
   const location = useLocation();
   const parts = location.pathname.split('/').filter(Boolean);
   let path = '';
@@ -63,7 +70,7 @@ export default function MainLayout() {
 
   if (!token) return <Navigate to="/login" replace />;
 
-  const allowed = (item) => user && item.roles.some(r => user.permissoes.includes(r));
+  const allowed = (item: Item) => user && item.roles.some(r => user.permissoes.includes(r));
 
   return (
     <div className="min-h-screen flex bg-gradient-to-b from-white to-gray-light dark:from-dark-background dark:to-dark-card text-gray-900 dark:text-dark-text">

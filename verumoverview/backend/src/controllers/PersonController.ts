@@ -2,6 +2,20 @@ import { Request, Response } from 'express';
 import db from '../services/db';
 import { Person } from '../models/Person';
 
+const ALLOWED_FIELDS = [
+  'nome_completo',
+  'email',
+  'cargo_funcao',
+  'time',
+  'status',
+  'perfil_comportamental',
+  'engajamento',
+  'projetos_vinculados',
+  'anexos',
+  'historico_movimentacoes',
+  'comentarios'
+];
+
 export default class PersonController {
   static async list(req: Request, res: Response): Promise<void> {
     try {
@@ -30,6 +44,11 @@ export default class PersonController {
 
   static async create(req: Request, res: Response): Promise<void> {
     const fields = req.body as Person;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
     try {
       const result = await db.query(
         `INSERT INTO pessoas(
@@ -61,8 +80,13 @@ export default class PersonController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Person;
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(

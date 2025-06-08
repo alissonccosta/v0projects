@@ -24,9 +24,13 @@ export default class AuthController {
         res.status(401).json({ message: 'Credenciais inválidas' });
         return;
       }
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET não definido');
+      }
       const token = jwt.sign(
         { id: user.id, permissoes: user.permissoes },
-        process.env.JWT_SECRET || 'secret',
+        secret,
         { expiresIn: '1h' }
       );
       res.json({ token });

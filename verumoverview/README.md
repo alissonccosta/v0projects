@@ -29,6 +29,7 @@ cp backend/.env.example backend/.env
 ```
 
 Edite as variáveis conforme sua configuração local.
+Defina a variável `JWT_SECRET` com a chave usada na assinatura dos tokens.
 Se precisar liberar origens diferentes da padrão para o CORS, ajuste `CORS_ORIGIN` em `.env`.
 
 ## Uso com Docker Compose
