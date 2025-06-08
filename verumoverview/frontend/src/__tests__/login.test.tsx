@@ -1,53 +1,51 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom';
-import Login from '../pages/Login';
-import { AuthContext } from '../contexts/AuthContext';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 jest.mock('../services/logger', () => ({ logAction: jest.fn() }));
-jest.mock('../services/api', () => ({ default: { post: jest.fn(), defaults: { headers: { common: {} } } } }));
+const MockAuthContext = React.createContext<any>(null);
+jest.mock('../contexts/AuthContext', () => ({ AuthContext: MockAuthContext }));
+import Login from '../pages/Login';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-const navigateMock = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
-  return { ...actual, useNavigate: () => navigateMock };
+function renderWithProviders(ui: React.ReactElement, loginMock: jest.Mock) {
+  return render(
+    <MockAuthContext.Provider value={{ token: null, user: null, login: loginMock, logout: jest.fn() }}>
+      <MemoryRouter initialEntries={['/login']}>
+        <Routes>
+          <Route path="/login" element={ui} />
+          <Route path="/" element={<div>Home</div>} />
+        </Routes>
+      </MemoryRouter>
+    </MockAuthContext.Provider>
+  );
+}
+
+test('renderiza o formulário de login', () => {
+  const loginMock = jest.fn();
+  renderWithProviders(<Login />, loginMock);
+  expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+  expect(screen.getByPlaceholderText(/senha/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /entrar/i })).toBeInTheDocument();
 });
 
-describe('Login', () => {
-  beforeEach(() => {
-    navigateMock.mockReset();
-  });
+test('exibe mensagem de erro ao receber 401', async () => {
+  const loginMock = jest.fn().mockRejectedValue({ response: { status: 401 } });
+  renderWithProviders(<Login />, loginMock);
 
-  test('redireciona apos sucesso', async () => {
-    const loginMock = jest.fn().mockResolvedValue(undefined);
-    render(
-      <AuthContext.Provider value={{ token: null, user: null, login: loginMock, logout: jest.fn() }}>
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-      </AuthContext.Provider>
-    );
+  await userEvent.type(screen.getByPlaceholderText(/email/i), 'user@example.com');
+  await userEvent.type(screen.getByPlaceholderText(/senha/i), '123');
+  await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
-    fireEvent.change(screen.getByPlaceholderText(/email/i), { target: { value: 'a@b.com' } });
-    fireEvent.change(screen.getByPlaceholderText(/senha/i), { target: { value: '123' } });
-    fireEvent.click(screen.getByText(/Entrar/i));
+  expect(await screen.findByText(/credenciais inválidas/i)).toBeInTheDocument();
+});
 
-    await waitFor(() => expect(loginMock).toHaveBeenCalled());
-    expect(navigateMock).toHaveBeenCalledWith('/');
-  });
+test('redireciona para / em caso de sucesso', async () => {
+  const loginMock = jest.fn().mockResolvedValue(undefined);
+  renderWithProviders(<Login />, loginMock);
 
-  test('exibe erro se login falhar', async () => {
-    const loginMock = jest.fn().mockRejectedValue(new Error('fail'));
-    render(
-      <AuthContext.Provider value={{ token: null, user: null, login: loginMock, logout: jest.fn() }}>
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-      </AuthContext.Provider>
-    );
+  await userEvent.type(screen.getByPlaceholderText(/email/i), 'user@example.com');
+  await userEvent.type(screen.getByPlaceholderText(/senha/i), '123');
+  await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
-    fireEvent.click(screen.getByText(/Entrar/i));
-    await waitFor(() => expect(loginMock).toHaveBeenCalled());
-    expect(screen.getByText('Erro ao fazer login')).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
-  });
+  expect(await screen.findByText('Home')).toBeInTheDocument();
 });

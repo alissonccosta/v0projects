@@ -1,6 +1,12 @@
 module.exports = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',
   testMatch: ['**/src/__tests__/**/*.test.ts?(x)'],
-  setupFilesAfterEnv: ['./jest.setup.js']
+  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+      tsconfig: './tsconfig.json'
+    }
+  }
 };
