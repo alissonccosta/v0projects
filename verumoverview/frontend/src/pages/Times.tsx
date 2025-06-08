@@ -3,6 +3,7 @@ import { fetchTimes, createTime, updateTime, deleteTime } from '../services/time
 import { fetchPeople } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Time {
   id_time: string;
@@ -87,7 +88,7 @@ export default function Times() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Times</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Times</h1>
         </div>
         <button
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
@@ -107,16 +108,16 @@ export default function Times() {
         />
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
+        <Table>
+          <THead>
             <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Líder</th>
-              <th className="p-2 text-left">Capacidade</th>
-              <th className="p-2 text-left">Membros</th>
-              <th className="p-2 text-left">Ações</th>
+              <Th>Nome</Th>
+              <Th>Líder</Th>
+              <Th>Capacidade</Th>
+              <Th>Membros</Th>
+              <Th>Ações</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {filtered.map(t => (
               <tr key={t.id_time} className="border-t">
@@ -131,7 +132,7 @@ export default function Times() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {editing && (
