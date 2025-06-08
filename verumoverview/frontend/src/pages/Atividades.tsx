@@ -11,6 +11,7 @@ import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import InputDate from '../components/ui/InputDate';
 import TimeInput from '../components/ui/TimeInput';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/modules/Modal';
@@ -284,20 +285,18 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Data Meta</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_meta || ''}
-                onChange={e => setEditing({ ...editing, data_meta: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_meta: value })}
               />
             </div>
             <div className="flex-1">
               <label className="block">Data Limite</label>
-              <Input
-                type="date"
+              <InputDate
                 className="p-1"
                 value={editing.data_limite || ''}
-                onChange={e => setEditing({ ...editing, data_limite: e.target.value })}
+                onChange={value => setEditing({ ...editing, data_limite: value })}
               />
             </div>
           </div>
