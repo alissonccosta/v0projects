@@ -1,4 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
+import logger from '../services/logger';
+import db from '../services/db';
+
+export default async function logMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
 import { promises as fs } from 'fs';
 import path from 'path';
 import db from '../services/db';
@@ -11,6 +19,8 @@ export default async function logMiddleware(req: Request, res: Response, next: N
     url: req.originalUrl,
     timestamp: new Date().toISOString()
   };
+  logger.info(logEntry);
+  try {
   const logsDir = path.join(__dirname, '../../logs');
   const logFile = path.join(logsDir, 'actions.log');
   try {
@@ -38,7 +48,7 @@ export default async function logMiddleware(req: Request, res: Response, next: N
       JSON.stringify(logEntry)
     ]);
   } catch (err) {
-    console.error('Failed to write log to DB', err);
+    logger.error({ message: 'Failed to write log to DB', error: (err as Error).message });
   }
   next();
 }
