@@ -8,6 +8,7 @@ import Atividades from './pages/Atividades';
 import Pessoas from './pages/Pessoas';
 import Times from './pages/Times';
 import ControleAcesso from './pages/ControleAcesso';
+import SolicitarAcesso from './pages/SolicitarAcesso';
 
 export default function App() {
   return (

@@ -7,14 +7,15 @@ import permissionMiddleware from '../middlewares/permissionMiddleware';
 const router = Router();
 router.post('/login', AuthController.login);
 router.post('/solicitar', AccessRequestController.create);
-router.use('/solicitacoes', authMiddleware);
 router.get(
   '/solicitacoes',
+  authMiddleware,
   permissionMiddleware('admin'),
   AccessRequestController.list
 );
 router.put(
   '/solicitacoes/:id',
+  authMiddleware,
   permissionMiddleware('admin'),
   AccessRequestController.update
 );
