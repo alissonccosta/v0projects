@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchTimes, createTime, updateTime, deleteTime } from '../services/times';
 import { fetchPeople } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { ToastContext } from '../contexts/ToastContext';
+import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Table, THead, Th, Td } from '../components/ui/Table';
@@ -34,10 +36,11 @@ export default function Times() {
   const [editing, setEditing] = useState<Time | null>(null);
   const [filter, setFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
-    load();
-    loadPeople();
+    Promise.all([load(), loadPeople()]).then(() => setLoading(false));
   }, []);
 
   async function load() {
@@ -66,9 +69,11 @@ export default function Times() {
     if (editing.id_time) {
       await updateTime(editing.id_time, payload);
       logAction('update_time', { id: editing.id_time });
+      showToast('Time atualizado com sucesso');
     } else {
       const created = await createTime(payload);
       logAction('create_time', { id: created.id_time });
+      showToast('Time criado com sucesso');
     }
     setEditing(null);
     load();
@@ -78,6 +83,7 @@ export default function Times() {
     if (!confirm('Excluir time?')) return;
     await deleteTime(id);
     logAction('delete_time', { id });
+    showToast('Time excluído com sucesso');
     load();
   }
 
@@ -107,6 +113,35 @@ export default function Times() {
         />
       </div>
       <div className="overflow-x-auto">
+        {loading ? (
+          <Skeleton className="h-60 w-full" />
+        ) : (
+          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+            <thead>
+              <tr>
+                <th className="p-2 text-left">Nome</th>
+                <th className="p-2 text-left">Líder</th>
+                <th className="p-2 text-left">Capacidade</th>
+                <th className="p-2 text-left">Membros</th>
+                <th className="p-2 text-left">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(t => (
+                <tr key={t.id_time} className="border-t">
+                  <td className="p-2">{t.nome}</td>
+                  <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
+                  <td className="p-2">{t.capacidade_total}</td>
+                  <td className="p-2">{t.membros?.length || 0}</td>
+                  <td className="p-2 space-x-2">
+                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
+                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
         <Table>
           <THead>
             <tr>

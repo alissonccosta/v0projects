@@ -10,3 +10,12 @@
     @apply border-red-600 focus:ring-red-600;
   }
 }
+
+@keyframes toast-in {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.toast-show {
+  animation: toast-in 0.3s ease-out;
+}

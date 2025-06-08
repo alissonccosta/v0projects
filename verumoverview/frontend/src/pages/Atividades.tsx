@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   fetchActivities,
   createActivity,
@@ -7,6 +7,8 @@ import {
 } from '../services/activities';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { ToastContext } from '../contexts/ToastContext';
+import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
@@ -39,6 +41,8 @@ export default function Atividades() {
   const [editing, setEditing] = useState<Activity | null>(null);
   const [filter, setFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
     load();
@@ -47,6 +51,7 @@ export default function Atividades() {
   async function load() {
     const data = await fetchActivities();
     setActivities(data);
+    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -61,9 +66,11 @@ export default function Atividades() {
     if (editing.id_atividade) {
       await updateActivity(editing.id_atividade, editing);
       logAction('update_activity', { id: editing.id_atividade });
+      showToast('Atividade atualizada com sucesso');
     } else {
       const created = await createActivity(editing);
       logAction('create_activity', { id: created.id_atividade });
+      showToast('Atividade criada com sucesso');
     }
     setEditing(null);
     load();
@@ -73,6 +80,7 @@ export default function Atividades() {
     if (!confirm('Excluir atividade?')) return;
     await deleteActivity(id);
     logAction('delete_activity', { id });
+    showToast('Atividade excluída com sucesso');
     load();
   }
 
@@ -102,6 +110,38 @@ export default function Atividades() {
         </select>
       </div>
       <div className="overflow-x-auto">
+        {loading ? (
+          <Skeleton className="h-48 w-full" />
+        ) : (
+          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+            <thead>
+              <tr>
+                <th className="p-2 text-left">Título</th>
+                <th className="p-2 text-left">Status</th>
+                <th className="p-2 text-left">Meta</th>
+                <th className="p-2 text-left">Limite</th>
+                <th className="p-2 text-left">Horas</th>
+                <th className="p-2 text-left">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(a => (
+                <tr key={a.id_atividade} className="border-t">
+                  <td className="p-2">{a.titulo}</td>
+                  <td className="p-2">{a.status}</td>
+                  <td className="p-2">{a.data_meta}</td>
+                  <td className="p-2">{a.data_limite}</td>
+                  <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
+                  <td className="p-2 space-x-2">
+                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
         <Table>
           <THead>
             <tr>
@@ -131,6 +171,7 @@ export default function Atividades() {
             ))}
           </tbody>
         </Table>
+
       </div>
 
       {editing && (

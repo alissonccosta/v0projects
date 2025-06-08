@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   fetchProjects,
   createProject,
@@ -9,6 +9,8 @@ import {
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import Modal from '../components/Modal';
+import { ToastContext } from '../contexts/ToastContext';
+import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
 import Button from '../components/ui/Button';
@@ -41,6 +43,8 @@ export default function Projetos() {
   const [filters, setFilters] = useState({ nome: '', codigo: '', inicio: '', fim: '' });
   const [sort, setSort] = useState<{ column: string; asc: boolean }>({ column: '', asc: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
     load();
@@ -49,6 +53,7 @@ export default function Projetos() {
   async function load() {
     const data = await fetchProjects();
     setProjects(data);
+    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -63,9 +68,11 @@ export default function Projetos() {
     if (editing.id_projeto) {
       await updateProject(editing.id_projeto, editing);
       logAction('update_project', { id: editing.id_projeto });
+      showToast('Projeto atualizado com sucesso');
     } else {
       const created = await createProject(editing);
       logAction('create_project', { id: created.id_projeto });
+      showToast('Projeto criado com sucesso');
     }
     setEditing(null);
     load();
@@ -75,6 +82,7 @@ export default function Projetos() {
     if (!confirm('Excluir projeto?')) return;
     await deleteProject(id);
     logAction('delete_project', { id });
+    showToast('Projeto excluído com sucesso');
     load();
   }
 
@@ -130,6 +138,12 @@ export default function Projetos() {
         </select>
       </div>
       <div className="overflow-x-auto">
+        {loading ? (
+          <Skeleton className="h-60 w-full" />
+        ) : (
+          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+            <thead>
+              <tr className="bg-gray-100 dark:bg-dark-background">
         <Table>
           <THead>
             <tr>
@@ -203,8 +217,9 @@ export default function Projetos() {
                 </td>
               </tr>
             ))}
-          </tbody>
-        </Table>
+            </tbody>
+          </table>
+        )}
       </div>
 
       <Modal isOpen={!!editing} title={editing?.id_projeto ? 'Editar Projeto' : 'Novo Projeto'} onClose={() => setEditing(null)}>

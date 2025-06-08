@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchSolicitacoes, atualizarSolicitacao } from '../services/accessRequests';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { ToastContext } from '../contexts/ToastContext';
+import Skeleton from '../components/ui/Skeleton';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import Badge from '../components/ui/Badge';
 
 interface Solicitacao {
   id: number;
@@ -12,6 +15,8 @@ interface Solicitacao {
 
 export default function ControleAcesso() {
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
     load();
@@ -20,11 +25,13 @@ export default function ControleAcesso() {
   async function load() {
     const data = await fetchSolicitacoes();
     setSolicitacoes(data);
+    setLoading(false);
   }
 
   async function handle(id: number, status: string) {
     await atualizarSolicitacao(id, status);
     logAction('update_access_request', { id, status });
+    showToast('Solicitação atualizada');
     load();
   }
 
@@ -34,6 +41,47 @@ export default function ControleAcesso() {
         <BackButton />
         <h1 className="text-2xl font-semibold text-secondary mb-4">Controle de Acesso</h1>
       </div>
+
+      {loading ? (
+        <Skeleton className="h-40 w-full" />
+      ) : (
+        <table className="min-w-full bg-white dark:bg-dark-background text-sm">
+          <thead>
+            <tr>
+              <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Status</th>
+              <th className="p-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {solicitacoes.map(s => (
+              <tr key={s.id} className="border-t">
+                <td className="p-2">{s.email}</td>
+                <td className="p-2">{s.status}</td>
+                <td className="p-2 space-x-2">
+                  {s.status === 'pendente' && (
+                    <>
+                      <button
+                        onClick={() => handle(s.id, 'aprovado')}
+                        className="text-blue-600"
+                      >
+                        Aprovar
+                      </button>
+                      <button
+                        onClick={() => handle(s.id, 'rejeitado')}
+                        className="text-red-600"
+                      >
+                        Rejeitar
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
       <Table>
         <THead>
           <tr>
