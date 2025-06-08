@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { ThemeContext } from '../../hooks/ThemeContext';
 import { AuthContext } from '../../hooks/AuthContext';
 import { useLocation, Link } from 'react-router-dom';
-import { logAction } from '../services/logger';
+import { logAction } from '../../services/logger';
 import { Sun, Moon, Bell, UserCircle, Menu } from 'lucide-react';
 
 function Breadcrumbs() {
