@@ -1,8 +1,9 @@
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
 import { logAction } from '../services/logger';
+import Input from '../components/ui/Input';
+import Button from '../components/ui/Button';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-primary dark:bg-dark-background">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-6 rounded shadow space-y-2 w-full max-w-sm">
-        <input
+        <Input
           type="email"
           placeholder="Email"
           value={email}
@@ -39,9 +40,9 @@ export default function Login() {
             setEmail(e.target.value);
             if (erro) setErro('');
           }}
-          className={`border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${erro ? 'input-error' : ''}`}
+          error={erro || undefined}
         />
-        <input
+        <Input
           type="password"
           placeholder="Senha"
           value={senha}
@@ -49,12 +50,11 @@ export default function Login() {
             setSenha(e.target.value);
             if (erro) setErro('');
           }}
-          className={`border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${erro ? 'input-error' : ''}`}
+          error={erro || undefined}
         />
-        {erro && <span className="error-message">{erro}</span>}
-        <button type="submit" className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700 w-full">
+        <Button type="submit" className="w-full">
           Entrar
-        </button>
+        </Button>
         {erro && <p className="text-red-500 mt-2">{erro}</p>}
         <p className="mt-2 text-center">
           <Link to="/solicitar-acesso" className="text-secondary hover:underline">

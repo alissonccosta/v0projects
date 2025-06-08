@@ -28,3 +28,14 @@ A plataforma utiliza um design moderno, clean e visualmente atrativo. As interfa
 - Botoes primarios roxos com texto branco.
 - Botoes secundarios com borda roxa, texto roxo e fundo branco.
 - Graficos e dashboards seguem a mesma paleta para status e indicadores.
+
+## Componentes de UI
+
+O projeto disponibiliza componentes reutilizáveis em `frontend/src/components/ui`:
+
+- `Button` – botões primário e secundário já estilizados
+- `Input` – campo de texto com exibição automática de erros
+- `Card` – container com título opcional
+- `Modal` – janela modal com overlay escuro
+- `Badge` – rótulos coloridos conforme status ou prioridade
+- `Table` – tabela básica com cabeçalho roxo
