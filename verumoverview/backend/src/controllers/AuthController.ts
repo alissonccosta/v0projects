@@ -10,13 +10,17 @@ const dummyUser = {
 };
 
 export default class AuthController {
-  static async login(req: Request, res: Response) {
+  static async login(req: Request, res: Response): Promise<void> {
     const { email, senha } = req.body;
     if (email !== dummyUser.email) {
-      return res.status(401).json({ message: 'User not found' });
+      res.status(401).json({ message: 'User not found' });
+      return;
     }
     const valid = await bcrypt.compare(senha, dummyUser.senha_hash);
-    if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!valid) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
     const token = jwt.sign({ id: dummyUser.id, permissoes: dummyUser.permissoes }, process.env.JWT_SECRET || 'secret', {
       expiresIn: '1h'
     });

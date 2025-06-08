@@ -38,11 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await api.post('/auth/login', { email, senha });
     const received = response.data.token;
     setToken(received);
+    api.defaults.headers.common['Authorization'] = `Bearer ${received}`;
     setUser(decodeToken(received));
   }
 
   function logout() {
     setToken(null);
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   }
 
