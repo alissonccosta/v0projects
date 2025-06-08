@@ -44,7 +44,7 @@ const emptyActivity: Activity = {
   data_limite: '',
   horas_estimadas: 0,
   horas_gastas: 0,
-  prioridade: 'Média'
+  prioridade: 'Média',
   responsavel: undefined
 };
 
