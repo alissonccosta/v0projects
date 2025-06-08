@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import SolicitarAcesso from './pages/SolicitarAcesso';
-import Layout from './components/layout/Layout';
+import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Projetos from './pages/Projetos';
 import Atividades from './pages/Atividades';
@@ -14,7 +14,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/solicitar-acesso" element={<SolicitarAcesso />} />
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={<MainLayout />}> 
         <Route index element={<Dashboard />} />
         <Route path="projetos" element={<Projetos />} />
         <Route path="atividades" element={<Atividades />} />
