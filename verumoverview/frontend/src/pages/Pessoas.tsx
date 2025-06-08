@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   fetchPeople,
   createPerson,
@@ -7,6 +7,8 @@ import {
 } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { ToastContext } from '../contexts/ToastContext';
+import Skeleton from '../components/ui/Skeleton';
 
 interface Person {
   id_pessoa: string;
@@ -33,6 +35,8 @@ export default function Pessoas() {
   const [editing, setEditing] = useState<Person | null>(null);
   const [filter, setFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
     load();
@@ -41,6 +45,7 @@ export default function Pessoas() {
   async function load() {
     const data = await fetchPeople();
     setPeople(data);
+    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -57,9 +62,11 @@ export default function Pessoas() {
     if (editing.id_pessoa) {
       await updatePerson(editing.id_pessoa, editing);
       logAction('update_person', { id: editing.id_pessoa });
+      showToast('Pessoa atualizada com sucesso');
     } else {
       const created = await createPerson(editing);
       logAction('create_person', { id: created.id_pessoa });
+      showToast('Pessoa criada com sucesso');
     }
     setEditing(null);
     load();
@@ -69,6 +76,7 @@ export default function Pessoas() {
     if (!confirm('Excluir pessoa?')) return;
     await deletePerson(id);
     logAction('delete_person', { id });
+    showToast('Pessoa excluída com sucesso');
     load();
   }
 
@@ -100,35 +108,39 @@ export default function Pessoas() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
-            <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Cargo</th>
-              <th className="p-2 text-left">Time</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Engajamento</th>
-              <th className="p-2 text-left">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(p => (
-              <tr key={p.id_pessoa} className="border-t">
-                <td className="p-2">{p.nome_completo}</td>
-                <td className="p-2">{p.email}</td>
-                <td className="p-2">{p.cargo_funcao}</td>
-                <td className="p-2">{p.time}</td>
-                <td className="p-2">{p.status}</td>
-                <td className="p-2">{p.engajamento}</td>
-                <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
-                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(p.id_pessoa)}>Excluir</button>
-                </td>
+        {loading ? (
+          <Skeleton className="h-60 w-full" />
+        ) : (
+          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+            <thead>
+              <tr>
+                <th className="p-2 text-left">Nome</th>
+                <th className="p-2 text-left">Email</th>
+                <th className="p-2 text-left">Cargo</th>
+                <th className="p-2 text-left">Time</th>
+                <th className="p-2 text-left">Status</th>
+                <th className="p-2 text-left">Engajamento</th>
+                <th className="p-2 text-left">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map(p => (
+                <tr key={p.id_pessoa} className="border-t">
+                  <td className="p-2">{p.nome_completo}</td>
+                  <td className="p-2">{p.email}</td>
+                  <td className="p-2">{p.cargo_funcao}</td>
+                  <td className="p-2">{p.time}</td>
+                  <td className="p-2">{p.status}</td>
+                  <td className="p-2">{p.engajamento}</td>
+                  <td className="p-2 space-x-2">
+                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
+                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(p.id_pessoa)}>Excluir</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {editing && (
