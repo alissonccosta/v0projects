@@ -9,10 +9,12 @@ const designTokens = {
       warning: '#FDCB6E',
       error: '#D63031'
     },
-    priority: {
-      high: '#E17055',
-      medium: '#FDCB6E',
-      low: '#0984E3'
+    prioridade: {
+      emergencial: '#D63031',
+      muitoAlta: '#E17055',
+      alta: '#FDCB6E',
+      media: '#00B894',
+      baixa: '#0984E3'
     },
     indicators: {
       positive: '#00CEC9',
