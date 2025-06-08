@@ -1,6 +1,7 @@
 const designTokens = {
   colors: {
     primary: '#4E008E',
+    secondary: '#4E008E',
     primaryLight: '#EAE0F5',
     primaryDark: '#3A0066',
     white: '#FFFFFF',
