@@ -47,9 +47,15 @@ export default function Pessoas() {
   }, []);
 
   async function load() {
-    const data = await fetchPeople();
-    setPeople(data);
-    setLoading(false);
+    try {
+      const data = await fetchPeople();
+      setPeople(data);
+    } catch (err) {
+      console.error(err);
+      showToast('Erro ao carregar pessoas');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
