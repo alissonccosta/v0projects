@@ -17,9 +17,18 @@ CREATE TABLE usuarios (
 );
 
 CREATE TABLE pessoas (
-  id SERIAL PRIMARY KEY,
-  usuario_id INTEGER REFERENCES usuarios(id),
-  cargo VARCHAR(255)
+  id_pessoa UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome_completo VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  cargo_funcao VARCHAR(255),
+  time VARCHAR(255),
+  status VARCHAR(50),
+  perfil_comportamental JSONB,
+  engajamento INTEGER,
+  projetos_vinculados JSONB,
+  anexos JSONB,
+  historico_movimentacoes JSONB,
+  comentarios JSONB
 );
 
 CREATE TABLE times (
