@@ -13,6 +13,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import Card from '../components/ui/Card';
 
 interface Activity {
   id_atividade: string;
@@ -23,6 +24,7 @@ interface Activity {
   horas_estimadas?: number;
   horas_gastas?: number;
   prioridade?: string;
+  responsavel?: number;
 }
 
 const emptyActivity: Activity = {
@@ -33,7 +35,8 @@ const emptyActivity: Activity = {
   data_limite: '',
   horas_estimadas: 0,
   horas_gastas: 0,
-  prioridade: 'Media'
+  prioridade: 'Media',
+  responsavel: undefined
 };
 
 export default function Atividades() {
@@ -43,6 +46,17 @@ export default function Atividades() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
+
+  function deadlineClass(date?: string) {
+    if (!date) return '';
+    const d = new Date(date);
+    const today = new Date();
+    const diff = d.getTime() - today.getTime();
+    const dayMs = 24 * 60 * 60 * 1000;
+    if (diff < 0) return 'bg-red-50 text-red-800';
+    if (diff <= 3 * dayMs) return 'bg-yellow-50 text-yellow-800';
+    return 'bg-green-50 text-green-800';
+  }
 
   useEffect(() => {
     load();
@@ -109,41 +123,49 @@ export default function Atividades() {
           <option>Bloqueada</option>
         </select>
       </div>
-      <div className="overflow-x-auto">
-        {loading ? (
-          <Skeleton className="h-48 w-full" />
-        ) : (
-          <Table>
-            <THead>
-              <tr>
-                <Th>Título</Th>
-                <Th>Status</Th>
-                <Th>Meta</Th>
-                <Th>Limite</Th>
-                <Th>Horas</Th>
-                <Th>Ações</Th>
-              </tr>
-            </THead>
-            <tbody>
-              {filtered.map(a => (
-                <tr key={a.id_atividade} className="border-t">
-                  <td className="p-2">{a.titulo}</td>
-                  <td className="p-2">
-                    <Badge variant="status" value={a.status || ''} />
-                  </td>
-                  <td className="p-2">{a.data_meta}</td>
-                  <td className="p-2">{a.data_limite}</td>
-                  <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
-                  <td className="p-2 space-x-2">
-                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
-                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
-                  </td>
+      <Card title="Lista de Atividades">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <Skeleton className="h-48 w-full" />
+          ) : (
+            <Table>
+              <THead>
+                <tr>
+                  <Th>Título</Th>
+                  <Th>Status</Th>
+                  <Th>Responsável</Th>
+                  <Th>Meta</Th>
+                  <Th>Limite</Th>
+                  <Th>Horas</Th>
+                  <Th>Ações</Th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </div>
+              </THead>
+              <tbody>
+                {filtered.map(a => (
+                  <tr key={a.id_atividade} className="border-t hover:bg-gray-50 transition-colors">
+                    <Td>{a.titulo}</Td>
+                    <Td>
+                      <Badge variant="status" value={a.status || ''} />
+                    </Td>
+                    <Td>
+                      <span className="px-2 py-1 rounded bg-purple-50 text-secondary">
+                        {a.responsavel || 'N/A'}
+                      </span>
+                    </Td>
+                    <Td className={deadlineClass(a.data_meta)}>{a.data_meta}</Td>
+                    <Td className={deadlineClass(a.data_limite)}>{a.data_limite}</Td>
+                    <Td>{a.horas_gastas || 0}/{a.horas_estimadas}</Td>
+                    <Td className="space-x-2">
+                      <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                      <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </div>
+      </Card>
 
       {editing && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
