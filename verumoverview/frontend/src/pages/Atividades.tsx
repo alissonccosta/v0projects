@@ -264,45 +264,47 @@ export default function Atividades() {
           <Skeleton className="h-48 w-full" />
         ) : (
 
-          <Table>
-            <THead>
-              <tr>
-                <Th>Título</Th>
-                <Th>Status</Th>
-                <Th>Meta</Th>
-                <Th>Limite</Th>
-                <Th>Horas</Th>
-                <Th>Ações</Th>
-              </tr>
-            </THead>
-            <tbody>
-              {filtered.map(a => (
-                <tr key={a.id_atividade} className="border-t">
-                  <td className="p-2">{a.titulo}</td>
-                  <td className="p-2">
-                    <Badge variant="status" value={a.status || ''} />
-                  </td>
-                  <td className="p-2">{a.data_meta}</td>
-                  <td className="p-2">{a.data_limite}</td>
-                  <td className="p-2 flex items-center gap-2">
-                    {minutesToTime(a.horas_gastas || 0)}/{minutesToTime(a.horas_estimadas || 0)}
-                    <TimeDiffIndicator estimado={a.horas_estimadas || 0} gasto={a.horas_gastas || 0} />
-                  </td>
-                  <td className="p-2 space-x-2">
-                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
-                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
-                  </td>
+          <>
+            <Table>
+              <THead>
+                <tr>
+                  <Th>Título</Th>
+                  <Th>Status</Th>
+                  <Th>Meta</Th>
+                  <Th>Limite</Th>
+                  <Th>Horas</Th>
+                  <Th>Ações</Th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-          <DataTable
-            data={activities}
-            columns={columns}
-            rowKey={a => a.id_atividade}
-            globalSearch
-            rowsPerPage={10}
-          />
+              </THead>
+              <tbody>
+                {filtered.map(a => (
+                  <tr key={a.id_atividade} className="border-t">
+                    <td className="p-2">{a.titulo}</td>
+                    <td className="p-2">
+                      <Badge variant="status" value={a.status || ''} />
+                    </td>
+                    <td className="p-2">{a.data_meta}</td>
+                    <td className="p-2">{a.data_limite}</td>
+                    <td className="p-2 flex items-center gap-2">
+                      {minutesToTime(a.horas_gastas || 0)}/{minutesToTime(a.horas_estimadas || 0)}
+                      <TimeDiffIndicator estimado={a.horas_estimadas || 0} gasto={a.horas_gastas || 0} />
+                    </td>
+                    <td className="p-2 space-x-2">
+                      <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                      <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <DataTable
+              data={activities}
+              columns={columns}
+              rowKey={a => a.id_atividade}
+              globalSearch
+              rowsPerPage={10}
+            />
+          </>
         )}
       </div>
 
@@ -412,7 +414,8 @@ export default function Atividades() {
             </Button>
           </div>
         </form>
-      )}
+        )}
+      </Modal>
       <Modal isOpen={projectModal} title="Novo Projeto" onClose={() => setProjectModal(false)}>
         <form onSubmit={handleProjectSubmit} className="space-y-3">
           <div>

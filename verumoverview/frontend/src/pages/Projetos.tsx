@@ -183,9 +183,10 @@ export default function Projetos() {
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
-          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-dark-background">
+          <>
+            <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+              <thead>
+                <tr className="bg-gray-100 dark:bg-dark-background">
               <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
                 Nome <ArrowUpDown className="inline w-4 h-4" />
               </th>
@@ -257,14 +258,15 @@ export default function Projetos() {
               </tr>
             ))}
             </tbody>
-          </table>
-          <DataTable
-            data={projects}
-            columns={columns}
-            rowKey={p => p.id_projeto}
-            globalSearch
-            rowsPerPage={10}
-          />
+            </table>
+            <DataTable
+              data={projects}
+              columns={columns}
+              rowKey={p => p.id_projeto}
+              globalSearch
+              rowsPerPage={10}
+            />
+          </>
         )}
       </div>
       <div className="md:grid md:grid-cols-3 gap-4">
