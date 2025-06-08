@@ -18,3 +18,8 @@ export async function updateProject(id: string, data: any) {
 export async function deleteProject(id: string) {
   await api.delete(`/api/projects/${id}`);
 }
+
+export async function getNextProjectCode() {
+  const res = await api.get('/api/projects/next-code');
+  return res.data.code as string;
+}

@@ -3,10 +3,13 @@ import {
   fetchProjects,
   createProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  getNextProjectCode
 } from '../services/projects';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import Modal from '../components/Modal';
+import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
 
 interface Project {
   id_projeto: string;
@@ -22,16 +25,18 @@ const emptyProject: Project = {
   id_projeto: '',
   nome: '',
   codigo_projeto: '',
-  status: 'Planejado',
+  status: 'Backlog',
   data_inicio_prevista: '',
   data_fim_prevista: '',
-  prioridade: 'Media'
+  prioridade: 'Média'
 };
 
 export default function Projetos() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editing, setEditing] = useState<Project | null>(null);
-  const [filter, setFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [filters, setFilters] = useState({ nome: '', codigo: '', inicio: '', fim: '' });
+  const [sort, setSort] = useState<{ column: string; asc: boolean }>({ column: '', asc: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -70,9 +75,32 @@ export default function Projetos() {
     load();
   }
 
-  const filtered = filter
-    ? projects.filter(p => p.status === filter)
-    : projects;
+  async function openNewProject() {
+    const code = await getNextProjectCode();
+    setEditing({ ...emptyProject, codigo_projeto: code });
+  }
+
+  function toggleSort(column: string) {
+    setSort(prev => ({ column, asc: prev.column === column ? !prev.asc : true }));
+  }
+
+  const filtered = projects.filter(p => {
+    if (statusFilter && p.status !== statusFilter) return false;
+    if (filters.nome && !p.nome.toLowerCase().includes(filters.nome.toLowerCase())) return false;
+    if (filters.codigo && !(p.codigo_projeto || '').includes(filters.codigo)) return false;
+    if (filters.inicio && !(p.data_inicio_prevista || '').includes(filters.inicio)) return false;
+    if (filters.fim && !(p.data_fim_prevista || '').includes(filters.fim)) return false;
+    return true;
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (!sort.column) return 0;
+    const valA = (a as any)[sort.column] || '';
+    const valB = (b as any)[sort.column] || '';
+    if (valA < valB) return sort.asc ? -1 : 1;
+    if (valA > valB) return sort.asc ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="space-y-4">
@@ -82,46 +110,72 @@ export default function Projetos() {
           <h1 className="text-xl font-bold">Projetos</h1>
         </div>
         <button
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
-          onClick={() => setEditing({ ...emptyProject })}
+          className="flex items-center gap-1 bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
+          onClick={openNewProject}
         >
-          Novo Projeto
+          <Plus size={16} /> Novo Projeto
         </button>
       </div>
 
       <div>
         <label className="mr-2">Status:</label>
-        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
           <option value="">Todos</option>
-          <option value="Planejado">Planejado</option>
-          <option value="Em Andamento">Em Andamento</option>
-          <option value="Concluído">Concluído</option>
-          <option value="Em Risco">Em Risco</option>
+          <option>Backlog</option>
+          <option>Documentação</option>
+          <option>Execução</option>
+          <option>Acompanhamento</option>
+          <option>Handoff</option>
+          <option>Sustentação</option>
         </select>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
           <thead>
-            <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Código</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Início</th>
-              <th className="p-2 text-left">Fim</th>
+            <tr className="bg-gray-100 dark:bg-dark-background">
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
+                Nome <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('codigo_projeto')}>
+                Código <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('status')}>
+                Status <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_inicio_prevista')}>
+                Início <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_fim_prevista')}>
+                Fim <ArrowUpDown className="inline w-4 h-4" />
+              </th>
               <th className="p-2 text-left">Ações</th>
+            </tr>
+            <tr>
+              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.nome} onChange={e => setFilters({ ...filters, nome: e.target.value })} /></th>
+              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.codigo} onChange={e => setFilters({ ...filters, codigo: e.target.value })} /></th>
+              <th className="p-1"></th>
+              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.inicio} onChange={e => setFilters({ ...filters, inicio: e.target.value })} /></th>
+              <th className="p-1"><input className="border p-1 rounded w-full" value={filters.fim} onChange={e => setFilters({ ...filters, fim: e.target.value })} /></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map(p => (
+            {sorted.map(p => (
               <tr key={p.id_projeto} className="border-t">
                 <td className="p-2">{p.nome}</td>
                 <td className="p-2">{p.codigo_projeto}</td>
-                <td className="p-2">{p.status}</td>
+                <td className="p-2">
+                  <span className="px-2 py-1 rounded bg-gray-100 text-xs">{p.status}</span>
+                </td>
                 <td className="p-2">{p.data_inicio_prevista}</td>
                 <td className="p-2">{p.data_fim_prevista}</td>
                 <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
-                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(p.id_projeto)}>Excluir</button>
+                  <button aria-label="Editar" className="text-blue-600 inline-flex items-center" onClick={() => setEditing({ ...p })}>
+                    <Pencil size={14} className="mr-1" />Editar
+                  </button>
+                  <button aria-label="Excluir" className="text-red-600 inline-flex items-center" onClick={() => handleDelete(p.id_projeto)}>
+                    <Trash size={14} className="mr-1" />Excluir
+                  </button>
                 </td>
               </tr>
             ))}
@@ -129,8 +183,9 @@ export default function Projetos() {
         </table>
       </div>
 
-      {editing && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
+      <Modal isOpen={!!editing} title={editing?.id_projeto ? 'Editar Projeto' : 'Novo Projeto'} onClose={() => setEditing(null)}>
+        {editing && (
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="block">Nome</label>
             <input
@@ -145,30 +200,33 @@ export default function Projetos() {
             />
             {errors.nome && <span className="error-message">{errors.nome}</span>}
           </div>
-          <div>
-            <label className="block">Código</label>
-            <input
-              type="text"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-              value={editing.codigo_projeto}
-              onChange={e => setEditing({ ...editing, codigo_projeto: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block">Status</label>
-            <select
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-              value={editing.status}
-              onChange={e => setEditing({ ...editing, status: e.target.value })}
-            >
-              <option>Planejado</option>
-              <option>Em Andamento</option>
-              <option>Concluído</option>
-              <option>Em Risco</option>
-            </select>
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block">Código</label>
+              <input
+                type="text"
+                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                value={editing.codigo_projeto}
+                onChange={e => setEditing({ ...editing, codigo_projeto: e.target.value })}
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block">Status</label>
+              <select
+                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                value={editing.status}
+                onChange={e => setEditing({ ...editing, status: e.target.value })}
+              >
+                <option>Backlog</option>
+                <option>Documentação</option>
+                <option>Execução</option>
+                <option>Acompanhamento</option>
+                <option>Handoff</option>
+                <option>Sustentação</option>
+              </select>
+            </div>
+            <div>
               <label className="block">Início Previsto</label>
               <input
                 type="date"
@@ -177,7 +235,7 @@ export default function Projetos() {
                 onChange={e => setEditing({ ...editing, data_inicio_prevista: e.target.value })}
               />
             </div>
-            <div className="flex-1">
+            <div>
               <label className="block">Fim Previsto</label>
               <input
                 type="date"
@@ -186,18 +244,20 @@ export default function Projetos() {
                 onChange={e => setEditing({ ...editing, data_fim_prevista: e.target.value })}
               />
             </div>
-          </div>
-          <div>
-            <label className="block">Prioridade</label>
-            <select
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
-              value={editing.prioridade}
-              onChange={e => setEditing({ ...editing, prioridade: e.target.value })}
-            >
-              <option>Alta</option>
-              <option>Média</option>
-              <option>Baixa</option>
-            </select>
+            <div>
+              <label className="block">Prioridade</label>
+              <select
+                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                value={editing.prioridade}
+                onChange={e => setEditing({ ...editing, prioridade: e.target.value })}
+              >
+                <option>Emergencial</option>
+                <option>Muito Alta</option>
+                <option>Alta</option>
+                <option>Média</option>
+                <option>Baixa</option>
+              </select>
+            </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
@@ -208,7 +268,8 @@ export default function Projetos() {
             </button>
           </div>
         </form>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }
