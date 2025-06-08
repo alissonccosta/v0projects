@@ -20,6 +20,8 @@ export default function Login() {
     } catch (err: any) {
       if ((err as any).response?.status === 401) {
         setErro('Credenciais inválidas');
+      } else if (!(err as any).response) {
+        setErro('Erro ao conectar com o servidor');
       } else {
         console.error(err);
       }

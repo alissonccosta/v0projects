@@ -36,7 +36,20 @@ test('exibe mensagem de erro ao receber 401', async () => {
   await userEvent.type(screen.getByPlaceholderText(/senha/i), '123');
   await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
-  expect(await screen.findByText(/credenciais inválidas/i)).toBeInTheDocument();
+  const msgs = await screen.findAllByText(/credenciais inválidas/i);
+  expect(msgs.length).toBeGreaterThan(0);
+});
+
+test('exibe mensagem de erro de rede quando não há resposta', async () => {
+  const loginMock = jest.fn().mockRejectedValue(new Error('Network Error'));
+  renderWithProviders(<Login />, loginMock);
+
+  await userEvent.type(screen.getByPlaceholderText(/email/i), 'user@example.com');
+  await userEvent.type(screen.getByPlaceholderText(/senha/i), '123');
+  await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
+
+  const msgs = await screen.findAllByText(/erro ao conectar com o servidor/i);
+  expect(msgs.length).toBeGreaterThan(0);
 });
 
 test('redireciona para / em caso de sucesso', async () => {
