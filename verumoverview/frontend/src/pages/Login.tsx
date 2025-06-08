@@ -16,29 +16,36 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark-background p-4">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-6 rounded shadow-md w-full max-w-sm space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-dark-background text-gray-900 dark:text-dark-text p-6 rounded shadow-md w-full max-w-sm space-y-4"
+      >
         <h1 className="text-center text-2xl font-bold text-secondary">VerumOverview</h1>
         <div>
-          <label htmlFor="email" className="block mb-1">Email</label>
+          <label htmlFor="email" className="block mb-1 text-gray-700 dark:text-dark-text">
+            Email
+          </label>
           <input
             id="email"
             type="email"
             placeholder="seu@email.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-background"
             required
           />
         </div>
         <div>
-          <label htmlFor="senha" className="block mb-1">Senha</label>
+          <label htmlFor="senha" className="block mb-1 text-gray-700 dark:text-dark-text">
+            Senha
+          </label>
           <input
             id="senha"
             type="password"
             placeholder="••••••"
             value={senha}
             onChange={e => setSenha(e.target.value)}
-            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-background"
             required
           />
         </div>
@@ -46,7 +53,7 @@ export default function Login() {
           Entrar
         </button>
         <p className="mt-2">
-          <Link to="/solicitar-acesso" className="text-blue-600">
+          <Link to="/solicitar-acesso" className="text-blue-600 dark:text-blue-400">
             Solicitar acesso
           </Link>
         </p>
