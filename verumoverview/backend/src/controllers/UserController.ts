@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import db from '../services/db';
 import { User } from '../models/User';
 
+const ALLOWED_FIELDS = ['nome', 'email', 'senha', 'perfil_id'];
+
 export default class UserController {
   static async list(_req: Request, res: Response): Promise<void> {
     try {
@@ -17,7 +19,13 @@ export default class UserController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { nome, email, senha, perfil_id } = req.body as any;
+    const fields = req.body as any;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const { nome, email, senha, perfil_id } = fields;
     try {
       const hash = await bcrypt.hash(senha || '123456', 10);
       const result = await db.query(
@@ -34,8 +42,13 @@ export default class UserController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Partial<User> & { senha?: string };
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k === 'senha' ? 'senha_hash' : k}=$${i + 1}`);
     try {
       if (fields.senha) {

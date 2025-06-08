@@ -2,6 +2,31 @@ import { Request, Response } from 'express';
 import db from '../services/db';
 import { Project } from '../models/Project';
 
+const ALLOWED_CREATE_FIELDS = ['nome'];
+const ALLOWED_UPDATE_FIELDS = [
+  'nome',
+  'codigo_projeto',
+  'objetivo',
+  'justificativa',
+  'stakeholders',
+  'status',
+  'data_inicio_prevista',
+  'data_fim_prevista',
+  'data_inicio_real',
+  'data_fim_real',
+  'prioridade',
+  'criticidade',
+  'orcamento_planejado',
+  'orcamento_realizado',
+  'kpis',
+  'time_responsavel',
+  'anexos',
+  'links',
+  'historico_atualizacoes',
+  'comentarios',
+  'percentual_concluido'
+];
+
 export default class ProjectController {
   static async list(req: Request, res: Response): Promise<void> {
     try {
@@ -43,7 +68,13 @@ export default class ProjectController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { nome } = req.body as Project;
+    const fields = req.body as Project;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_CREATE_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const { nome } = fields;
     try {
       const codeResult = await db.query(
         'SELECT COALESCE(MAX(CAST(codigo_projeto AS INTEGER)),0) + 1 AS code FROM projetos'
@@ -75,8 +106,13 @@ export default class ProjectController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Project;
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_UPDATE_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_UPDATE_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(

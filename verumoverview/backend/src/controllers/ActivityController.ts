@@ -1,6 +1,24 @@
 import { Request, Response } from 'express';
 import db from '../services/db';
 import { Activity } from '../models/Activity';
+
+const ALLOWED_FIELDS = [
+  'id_projeto',
+  'titulo',
+  'descricao',
+  'responsavel',
+  'time',
+  'status',
+  'data_meta',
+  'data_limite',
+  'horas_estimadas',
+  'horas_gastas',
+  'prioridade',
+  'dependencias',
+  'anexos',
+  'historico_atualizacoes',
+  'comentarios'
+];
 import { toMinutes } from '../utils/time';
 
 export default class ActivityController {
@@ -31,6 +49,11 @@ export default class ActivityController {
 
   static async create(req: Request, res: Response): Promise<void> {
     const fields = req.body as Activity;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
     if (!fields.id_projeto) {
       res.status(400).json({ message: 'id_projeto é obrigatório' });
       return;
@@ -76,14 +99,19 @@ export default class ActivityController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as Activity;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
     if (typeof fields.horas_estimadas === 'string') {
       fields.horas_estimadas = toMinutes(fields.horas_estimadas);
     }
     if (typeof fields.horas_gastas === 'string') {
       fields.horas_gastas = toMinutes(fields.horas_gastas);
     }
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(

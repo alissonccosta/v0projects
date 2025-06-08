@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../services/db';
 
+const ALLOWED_FIELDS = ['nome', 'permissoes'];
+
 export default class ProfileController {
   static async list(_req: Request, res: Response): Promise<void> {
     try {
@@ -13,7 +15,13 @@ export default class ProfileController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { nome, permissoes } = req.body;
+    const fields = req.body as any;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const { nome, permissoes } = fields;
     try {
       const result = await db.query(
         'INSERT INTO perfis_acesso(nome, permissoes) VALUES($1,$2) RETURNING *',
@@ -29,13 +37,18 @@ export default class ProfileController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as any;
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (typeof fields[k] === 'object' ? JSON.stringify(fields[k]) : fields[k]));
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(
         `UPDATE perfis_acesso SET ${sets.join(', ')} WHERE id=$${keys.length + 1} RETURNING *`,
-        [...values.map(v => (typeof v === 'object' ? JSON.stringify(v) : v)), id]
+        [...values, id]
       );
       if (result.rows.length === 0) {
         res.status(404).json({ message: 'Perfil nao encontrado' });
