@@ -4,6 +4,7 @@ import app from '../src/app';
 import bcrypt from 'bcrypt';
 import db from '../src/services/db';
 const mockedQuery = db.query as jest.Mock;
+import { toMinutes, fromMinutes, diffIndicator } from '../src/utils/time';
 
 let token: string;
 
@@ -56,5 +57,21 @@ describe('Activity routes', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({});
+  });
+});
+
+describe('time utils', () => {
+  it('converts HH:MM to minutes', () => {
+    expect(toMinutes('01:30')).toBe(90);
+  });
+
+  it('converts minutes to HH:MM', () => {
+    expect(fromMinutes(75)).toBe('01:15');
+  });
+
+  it('calculates indicator', () => {
+    expect(diffIndicator(60, 60)).toBe('green');
+    expect(diffIndicator(60, 66)).toBe('yellow');
+    expect(diffIndicator(60, 80)).toBe('red');
   });
 });

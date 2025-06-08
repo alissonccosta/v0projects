@@ -11,8 +11,11 @@ import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import TimeInput from '../components/ui/TimeInput';
 import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import TimeDiffIndicator from '../components/modules/TimeDiffIndicator';
+import { minutesToTime } from '../utils/time';
 import Card from '../components/ui/Card';
 import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
@@ -24,6 +27,7 @@ interface Activity {
   status?: string;
   data_meta?: string;
   data_limite?: string;
+  /** minutos */
   horas_estimadas?: number;
   horas_gastas?: number;
   prioridade?: string;
@@ -223,9 +227,12 @@ export default function Atividades() {
                   <td className="p-2">
                     <Badge variant="status" value={a.status || ''} />
                   </td>
-                  <td className="p-2">{a.data_meta ? formatDate(a.data_meta) : ''}</td>
-                  <td className="p-2">{a.data_limite ? formatDate(a.data_limite) : ''}</td>
-                  <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
+                  <td className="p-2">{a.data_meta}</td>
+                  <td className="p-2">{a.data_limite}</td>
+                  <td className="p-2 flex items-center gap-2">
+                    {minutesToTime(a.horas_gastas || 0)}/{minutesToTime(a.horas_estimadas || 0)}
+                    <TimeDiffIndicator estimado={a.horas_estimadas || 0} gasto={a.horas_gastas || 0} />
+                  </td>
                   <td className="p-2 space-x-2">
                     <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
                     <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
@@ -295,20 +302,18 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Horas Estimadas</label>
-              <Input
-                type="number"
-                className="p-1"
+              <TimeInput
                 value={editing.horas_estimadas || 0}
-                onChange={e => setEditing({ ...editing, horas_estimadas: Number(e.target.value) })}
+                onChange={v => setEditing({ ...editing, horas_estimadas: v })}
+                className="p-1"
               />
             </div>
             <div className="flex-1">
               <label className="block">Horas Gastas</label>
-              <Input
-                type="number"
-                className="p-1"
+              <TimeInput
                 value={editing.horas_gastas || 0}
-                onChange={e => setEditing({ ...editing, horas_gastas: Number(e.target.value) })}
+                onChange={v => setEditing({ ...editing, horas_gastas: v })}
+                className="p-1"
               />
             </div>
           </div>
