@@ -113,22 +113,24 @@ export default function Atividades() {
         {loading ? (
           <Skeleton className="h-48 w-full" />
         ) : (
-          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-            <thead>
+          <Table>
+            <THead>
               <tr>
-                <th className="p-2 text-left">Título</th>
-                <th className="p-2 text-left">Status</th>
-                <th className="p-2 text-left">Meta</th>
-                <th className="p-2 text-left">Limite</th>
-                <th className="p-2 text-left">Horas</th>
-                <th className="p-2 text-left">Ações</th>
+                <Th>Título</Th>
+                <Th>Status</Th>
+                <Th>Meta</Th>
+                <Th>Limite</Th>
+                <Th>Horas</Th>
+                <Th>Ações</Th>
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {filtered.map(a => (
                 <tr key={a.id_atividade} className="border-t">
                   <td className="p-2">{a.titulo}</td>
-                  <td className="p-2">{a.status}</td>
+                  <td className="p-2">
+                    <Badge variant="status" value={a.status || ''} />
+                  </td>
                   <td className="p-2">{a.data_meta}</td>
                   <td className="p-2">{a.data_limite}</td>
                   <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
@@ -139,39 +141,8 @@ export default function Atividades() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         )}
-
-        <Table>
-          <THead>
-            <tr>
-              <Th>Título</Th>
-              <Th>Status</Th>
-              <Th>Meta</Th>
-              <Th>Limite</Th>
-              <Th>Horas</Th>
-              <Th>Ações</Th>
-            </tr>
-          </THead>
-          <tbody>
-            {filtered.map(a => (
-              <tr key={a.id_atividade} className="border-t">
-                <td className="p-2">{a.titulo}</td>
-                <td className="p-2">
-                  <Badge variant="status" value={a.status || ''} />
-                </td>
-                <td className="p-2">{a.data_meta}</td>
-                <td className="p-2">{a.data_limite}</td>
-                <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
-                <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
-                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-
       </div>
 
       {editing && (
