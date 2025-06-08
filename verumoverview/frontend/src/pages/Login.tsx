@@ -27,37 +27,39 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => {
-          setEmail(e.target.value);
-          if (erro) setErro('');
-        }}
-        className={`border p-2 mb-2 w-full ${erro ? 'input-error' : ''}`}
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => {
-          setSenha(e.target.value);
-          if (erro) setErro('');
-        }}
-        className={`border p-2 mb-2 w-full ${erro ? 'input-error' : ''}`}
-      />
-      {erro && <span className="error-message">{erro}</span>}
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2">
-        Entrar
-      </button>
-      {erro && <p className="text-red-500 mt-2">{erro}</p>}
-      <p className="mt-2">
-        <Link to="/solicitar-acesso" className="text-blue-600">
-          Solicitar acesso
-        </Link>
-      </p>
-    </form>
+    <div className="flex items-center justify-center min-h-screen bg-primary dark:bg-dark-background">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-6 rounded shadow space-y-2 w-full max-w-sm">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => {
+            setEmail(e.target.value);
+            if (erro) setErro('');
+          }}
+          className={`border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${erro ? 'input-error' : ''}`}
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={e => {
+            setSenha(e.target.value);
+            if (erro) setErro('');
+          }}
+          className={`border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${erro ? 'input-error' : ''}`}
+        />
+        {erro && <span className="error-message">{erro}</span>}
+        <button type="submit" className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700 w-full">
+          Entrar
+        </button>
+        {erro && <p className="text-red-500 mt-2">{erro}</p>}
+        <p className="mt-2 text-center">
+          <Link to="/solicitar-acesso" className="text-secondary hover:underline">
+            Solicitar acesso
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
