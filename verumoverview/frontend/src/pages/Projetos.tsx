@@ -144,9 +144,6 @@ export default function Projetos() {
           <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
             <thead>
               <tr className="bg-gray-100 dark:bg-dark-background">
-        <Table>
-          <THead>
-            <tr>
               <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
                 Nome <ArrowUpDown className="inline w-4 h-4" />
               </th>
@@ -196,7 +193,7 @@ export default function Projetos() {
               </th>
               <th></th>
             </tr>
-          </THead>
+          </thead>
           <tbody>
             {sorted.map(p => (
               <tr key={p.id_projeto} className="border-t">
