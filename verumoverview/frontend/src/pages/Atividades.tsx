@@ -11,8 +11,16 @@ import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import TimeInput from '../components/ui/TimeInput';
 import Badge from '../components/ui/Badge';
+import Modal from '../components/modules/Modal';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import TimeDiffIndicator from '../components/modules/TimeDiffIndicator';
+import { minutesToTime } from '../utils/time';
+import Card from '../components/ui/Card';
+import { formatDate } from '../utils/date';
+import { DataTable, Column } from '../components/ui/Table';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Activity {
   id_atividade: string;
@@ -20,9 +28,11 @@ interface Activity {
   status?: string;
   data_meta?: string;
   data_limite?: string;
+  /** minutos */
   horas_estimadas?: number;
   horas_gastas?: number;
   prioridade?: string;
+  responsavel?: number;
 }
 
 const emptyActivity: Activity = {
@@ -34,15 +44,26 @@ const emptyActivity: Activity = {
   horas_estimadas: 0,
   horas_gastas: 0,
   prioridade: 'Média'
+  responsavel: undefined
 };
 
 export default function Atividades() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editing, setEditing] = useState<Activity | null>(null);
-  const [filter, setFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
+
+  function deadlineClass(date?: string) {
+    if (!date) return '';
+    const d = new Date(date);
+    const today = new Date();
+    const diff = d.getTime() - today.getTime();
+    const dayMs = 24 * 60 * 60 * 1000;
+    if (diff < 0) return 'bg-red-50 text-red-800';
+    if (diff <= 3 * dayMs) return 'bg-yellow-50 text-yellow-800';
+    return 'bg-green-50 text-green-800';
+  }
 
   useEffect(() => {
     load();
@@ -84,7 +105,40 @@ export default function Atividades() {
     load();
   }
 
-  const filtered = filter ? activities.filter(a => a.status === filter) : activities;
+
+  const columns: Column<Activity>[] = [
+    { key: 'titulo', header: 'Título', sortable: true, filterType: 'text' },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      filterType: 'select',
+      render: a => <Badge variant="status" value={a.status || ''} />,
+    },
+    { key: 'data_meta', header: 'Meta', sortable: true },
+    { key: 'data_limite', header: 'Limite', sortable: true },
+    {
+      key: 'horas',
+      header: 'Horas',
+      render: a => (
+        <span>{a.horas_gastas || 0}/{a.horas_estimadas}</span>
+      ),
+    },
+    {
+      key: 'acoes',
+      header: 'Ações',
+      render: a => (
+        <div className="flex gap-2">
+          <button aria-label="Editar" onClick={() => setEditing({ ...a })}>
+            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+          </button>
+          <button aria-label="Excluir" onClick={() => handleDelete(a.id_atividade)}>
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -97,7 +151,6 @@ export default function Atividades() {
           Nova Atividade
         </Button>
       </div>
-
       <div>
         <label className="mr-2">Status:</label>
         <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
@@ -109,10 +162,54 @@ export default function Atividades() {
           <option>Bloqueada</option>
         </select>
       </div>
+      <Card title="Lista de Atividades">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <Skeleton className="h-48 w-full" />
+          ) : (
+            <Table>
+              <THead>
+                <tr>
+                  <Th>Título</Th>
+                  <Th>Status</Th>
+                  <Th>Responsável</Th>
+                  <Th>Meta</Th>
+                  <Th>Limite</Th>
+                  <Th>Horas</Th>
+                  <Th>Ações</Th>
+                </tr>
+              </THead>
+              <tbody>
+                {filtered.map(a => (
+                  <tr key={a.id_atividade} className="border-t hover:bg-gray-50 transition-colors">
+                    <Td>{a.titulo}</Td>
+                    <Td>
+                      <Badge variant="status" value={a.status || ''} />
+                    </Td>
+                    <Td>
+                      <span className="px-2 py-1 rounded bg-purple-50 text-secondary">
+                        {a.responsavel || 'N/A'}
+                      </span>
+                    </Td>
+                    <Td className={deadlineClass(a.data_meta)}>{a.data_meta}</Td>
+                    <Td className={deadlineClass(a.data_limite)}>{a.data_limite}</Td>
+                    <Td>{a.horas_gastas || 0}/{a.horas_estimadas}</Td>
+                    <Td className="space-x-2">
+                      <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                      <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </div>
+      </Card>
       <div className="overflow-x-auto">
         {loading ? (
           <Skeleton className="h-48 w-full" />
         ) : (
+
           <Table>
             <THead>
               <tr>
@@ -133,7 +230,10 @@ export default function Atividades() {
                   </td>
                   <td className="p-2">{a.data_meta}</td>
                   <td className="p-2">{a.data_limite}</td>
-                  <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
+                  <td className="p-2 flex items-center gap-2">
+                    {minutesToTime(a.horas_gastas || 0)}/{minutesToTime(a.horas_estimadas || 0)}
+                    <TimeDiffIndicator estimado={a.horas_estimadas || 0} gasto={a.horas_gastas || 0} />
+                  </td>
                   <td className="p-2 space-x-2">
                     <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
                     <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
@@ -142,24 +242,32 @@ export default function Atividades() {
               ))}
             </tbody>
           </Table>
+          <DataTable
+            data={activities}
+            columns={columns}
+            rowKey={a => a.id_atividade}
+            globalSearch
+            rowsPerPage={10}
+          />
         )}
       </div>
 
-      {editing && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
+      <Modal isOpen={!!editing} title={editing?.id_atividade ? 'Editar Atividade' : 'Nova Atividade'} onClose={() => setEditing(null)}>
+        {editing && (
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div>
             <label className="block">Título</label>
-          <Input
-            type="text"
-            className="p-1"
-            value={editing.titulo}
-            onChange={e => {
-              setEditing({ ...editing, titulo: e.target.value });
-              if (errors.titulo) setErrors({ ...errors, titulo: '' });
-            }}
-            required
-            error={errors.titulo}
-          />
+            <Input
+              type="text"
+              className="p-1"
+              value={editing.titulo}
+              onChange={e => {
+                setEditing({ ...editing, titulo: e.target.value });
+                if (errors.titulo) setErrors({ ...errors, titulo: '' });
+              }}
+              required
+              error={errors.titulo}
+            />
             {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
@@ -196,20 +304,18 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Horas Estimadas</label>
-              <Input
-                type="number"
-                className="p-1"
+              <TimeInput
                 value={editing.horas_estimadas || 0}
-                onChange={e => setEditing({ ...editing, horas_estimadas: Number(e.target.value) })}
+                onChange={v => setEditing({ ...editing, horas_estimadas: v })}
+                className="p-1"
               />
             </div>
             <div className="flex-1">
               <label className="block">Horas Gastas</label>
-              <Input
-                type="number"
-                className="p-1"
+              <TimeInput
                 value={editing.horas_gastas || 0}
-                onChange={e => setEditing({ ...editing, horas_gastas: Number(e.target.value) })}
+                onChange={v => setEditing({ ...editing, horas_gastas: v })}
+                className="p-1"
               />
             </div>
           </div>
@@ -233,7 +339,8 @@ export default function Atividades() {
             </Button>
           </div>
         </form>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

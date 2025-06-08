@@ -8,6 +8,9 @@ export interface Activity {
   status?: string;
   data_meta?: string;
   data_limite?: string;
+  /**
+   * Valores em minutos para padronizar o armazenamento de durações
+   */
   horas_estimadas?: number;
   horas_gastas?: number;
   prioridade?: string;
