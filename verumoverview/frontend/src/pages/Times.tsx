@@ -116,16 +116,16 @@ export default function Times() {
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
-          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-            <thead>
+          <Table>
+            <THead>
               <tr>
-                <th className="p-2 text-left">Nome</th>
-                <th className="p-2 text-left">Líder</th>
-                <th className="p-2 text-left">Capacidade</th>
-                <th className="p-2 text-left">Membros</th>
-                <th className="p-2 text-left">Ações</th>
+                <Th>Nome</Th>
+                <Th>Líder</Th>
+                <Th>Capacidade</Th>
+                <Th>Membros</Th>
+                <Th>Ações</Th>
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {filtered.map(t => (
                 <tr key={t.id_time} className="border-t">
@@ -140,33 +140,8 @@ export default function Times() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         )}
-        <Table>
-          <THead>
-            <tr>
-              <Th>Nome</Th>
-              <Th>Líder</Th>
-              <Th>Capacidade</Th>
-              <Th>Membros</Th>
-              <Th>Ações</Th>
-            </tr>
-          </THead>
-          <tbody>
-            {filtered.map(t => (
-              <tr key={t.id_time} className="border-t">
-                <td className="p-2">{t.nome}</td>
-                <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
-                <td className="p-2">{t.capacidade_total}</td>
-                <td className="p-2">{t.membros?.length || 0}</td>
-                <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
-                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </div>
 
       {editing && (
