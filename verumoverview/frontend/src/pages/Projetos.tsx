@@ -7,9 +7,9 @@ import {
   getNextProjectCode
 } from '../services/projects';
 import { logAction } from '../services/logger';
-import BackButton from '../components/BackButton';
-import Modal from '../components/Modal';
-import { ToastContext } from '../contexts/ToastContext';
+import BackButton from '../components/modules/BackButton';
+import Modal from '../components/modules/Modal';
+import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';

@@ -1,7 +1,7 @@
 import Card from '../components/ui/Card';
-import BarChart from '../components/charts/BarChart';
-import PieChart from '../components/charts/PieChart';
-import RadarChart from '../components/charts/RadarChart';
+import BarChart from '../components/modules/charts/BarChart';
+import PieChart from '../components/modules/charts/PieChart';
+import RadarChart from '../components/modules/charts/RadarChart';
 
 export default function Dashboard() {
   const barLabels = ['Jan', 'Fev', 'Mar', 'Abr'];

@@ -3,8 +3,8 @@ import { useContext, useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { AuthContext } from '../contexts/AuthContext';
-import { logAction } from '../services/logger';
+import { AuthContext } from '../../hooks/AuthContext';
+import { logAction } from '../../services/logger';
 
 export default function Layout() {
   const { token } = useContext(AuthContext);

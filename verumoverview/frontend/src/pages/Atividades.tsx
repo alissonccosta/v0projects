@@ -6,8 +6,8 @@ import {
   deleteActivity
 } from '../services/activities';
 import { logAction } from '../services/logger';
-import BackButton from '../components/BackButton';
-import { ToastContext } from '../contexts/ToastContext';
+import BackButton from '../components/modules/BackButton';
+import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
