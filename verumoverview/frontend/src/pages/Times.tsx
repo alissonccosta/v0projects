@@ -53,13 +53,11 @@ export default function Times() {
       membros: editing.membros
     };
     if (editing.id_time) {
-      if (editing.id_time !== '') {
-        await updateTime(editing.id_time, payload);
-        logAction('update_time', { id: editing.id_time });
-      } else {
-        const created = await createTime(payload);
-        logAction('create_time', { id: created.id_time });
-      }
+      await updateTime(editing.id_time, payload);
+      logAction('update_time', { id: editing.id_time });
+    } else {
+      const created = await createTime(payload);
+      logAction('create_time', { id: created.id_time });
     }
     setEditing(null);
     load();
