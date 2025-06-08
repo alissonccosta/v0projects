@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         primary: designTokens.colors.primary,
+        secondary: designTokens.colors.secondary,
         primaryLight: designTokens.colors.primaryLight,
         primaryDark: designTokens.colors.primaryDark,
         white: designTokens.colors.white,
