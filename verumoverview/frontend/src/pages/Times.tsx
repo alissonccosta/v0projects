@@ -87,7 +87,7 @@ export default function Times() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Times</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Times</h1>
         </div>
         <button
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
