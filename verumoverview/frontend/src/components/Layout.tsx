@@ -1,5 +1,5 @@
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -9,6 +9,7 @@ import { logAction } from '../services/logger';
 export default function Layout() {
   const { token } = useContext(AuthContext);
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     logAction('navigate', { path: location.pathname });
@@ -18,9 +19,9 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-dark-background text-gray-900 dark:text-dark-text">
-      <Sidebar />
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Navbar />
+        <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </main>

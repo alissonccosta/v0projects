@@ -69,7 +69,7 @@ export default function Pessoas() {
       <div className="flex justify-between">
         <h1 className="text-xl font-bold">Pessoas</h1>
         <button
-          className="bg-secondary text-white px-4 py-2 rounded"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
           onClick={() => setEditing({ ...emptyPerson })}
         >
           Nova Pessoa
@@ -78,7 +78,7 @@ export default function Pessoas() {
 
       <div>
         <label className="mr-2">Status:</label>
-        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1">
+        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
           <option value="">Todos</option>
           <option>Ativo</option>
           <option>Licenca</option>
@@ -86,36 +86,37 @@ export default function Pessoas() {
           <option>Desligado</option>
         </select>
       </div>
-
-      <table className="min-w-full bg-white dark:bg-dark-background text-sm">
-        <thead>
-          <tr>
-            <th className="p-2 text-left">Nome</th>
-            <th className="p-2 text-left">Email</th>
-            <th className="p-2 text-left">Cargo</th>
-            <th className="p-2 text-left">Time</th>
-            <th className="p-2 text-left">Status</th>
-            <th className="p-2 text-left">Engajamento</th>
-            <th className="p-2 text-left">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map(p => (
-            <tr key={p.id_pessoa} className="border-t">
-              <td className="p-2">{p.nome_completo}</td>
-              <td className="p-2">{p.email}</td>
-              <td className="p-2">{p.cargo_funcao}</td>
-              <td className="p-2">{p.time}</td>
-              <td className="p-2">{p.status}</td>
-              <td className="p-2">{p.engajamento}</td>
-              <td className="p-2 space-x-2">
-                <button className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
-                <button className="text-red-600" onClick={() => handleDelete(p.id_pessoa)}>Excluir</button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+          <thead>
+            <tr>
+              <th className="p-2 text-left">Nome</th>
+              <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Cargo</th>
+              <th className="p-2 text-left">Time</th>
+              <th className="p-2 text-left">Status</th>
+              <th className="p-2 text-left">Engajamento</th>
+              <th className="p-2 text-left">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map(p => (
+              <tr key={p.id_pessoa} className="border-t">
+                <td className="p-2">{p.nome_completo}</td>
+                <td className="p-2">{p.email}</td>
+                <td className="p-2">{p.cargo_funcao}</td>
+                <td className="p-2">{p.time}</td>
+                <td className="p-2">{p.status}</td>
+                <td className="p-2">{p.engajamento}</td>
+                <td className="p-2 space-x-2">
+                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>
+                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(p.id_pessoa)}>Excluir</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {editing && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
@@ -123,7 +124,7 @@ export default function Pessoas() {
             <label className="block">Nome Completo</label>
             <input
               type="text"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.nome_completo}
               onChange={e => setEditing({ ...editing, nome_completo: e.target.value })}
               required
@@ -133,7 +134,7 @@ export default function Pessoas() {
             <label className="block">Email</label>
             <input
               type="email"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.email}
               onChange={e => setEditing({ ...editing, email: e.target.value })}
               required
@@ -143,7 +144,7 @@ export default function Pessoas() {
             <label className="block">Cargo/Função</label>
             <input
               type="text"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.cargo_funcao}
               onChange={e => setEditing({ ...editing, cargo_funcao: e.target.value })}
             />
@@ -152,7 +153,7 @@ export default function Pessoas() {
             <label className="block">Time</label>
             <input
               type="text"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.time}
               onChange={e => setEditing({ ...editing, time: e.target.value })}
             />
@@ -160,7 +161,7 @@ export default function Pessoas() {
           <div>
             <label className="block">Status</label>
             <select
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.status}
               onChange={e => setEditing({ ...editing, status: e.target.value })}
             >
@@ -174,16 +175,16 @@ export default function Pessoas() {
             <label className="block">Engajamento</label>
             <input
               type="number"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.engajamento || 0}
               onChange={e => setEditing({ ...editing, engajamento: Number(e.target.value) })}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setEditing(null)} className="border px-4 py-1 rounded">
+            <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded">
+            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
               Salvar
             </button>
           </div>

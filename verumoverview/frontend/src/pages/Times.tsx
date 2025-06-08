@@ -79,7 +79,7 @@ export default function Times() {
       <div className="flex justify-between">
         <h1 className="text-xl font-bold">Times</h1>
         <button
-          className="bg-secondary text-white px-4 py-2 rounded"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
           onClick={() => setEditing({ ...emptyTime })}
         >
           Novo Time
@@ -92,35 +92,36 @@ export default function Times() {
           type="text"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          className="border p-1"
+          className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
         />
       </div>
-
-      <table className="min-w-full bg-white dark:bg-dark-background text-sm">
-        <thead>
-          <tr>
-            <th className="p-2 text-left">Nome</th>
-            <th className="p-2 text-left">Líder</th>
-            <th className="p-2 text-left">Capacidade</th>
-            <th className="p-2 text-left">Membros</th>
-            <th className="p-2 text-left">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map(t => (
-            <tr key={t.id_time} className="border-t">
-              <td className="p-2">{t.nome}</td>
-              <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
-              <td className="p-2">{t.capacidade_total}</td>
-              <td className="p-2">{t.membros?.length || 0}</td>
-              <td className="p-2 space-x-2">
-                <button className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
-                <button className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+          <thead>
+            <tr>
+              <th className="p-2 text-left">Nome</th>
+              <th className="p-2 text-left">Líder</th>
+              <th className="p-2 text-left">Capacidade</th>
+              <th className="p-2 text-left">Membros</th>
+              <th className="p-2 text-left">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map(t => (
+              <tr key={t.id_time} className="border-t">
+                <td className="p-2">{t.nome}</td>
+                <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
+                <td className="p-2">{t.capacidade_total}</td>
+                <td className="p-2">{t.membros?.length || 0}</td>
+                <td className="p-2 space-x-2">
+                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
+                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {editing && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
@@ -128,7 +129,7 @@ export default function Times() {
             <label className="block">Nome</label>
             <input
               type="text"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.nome}
               onChange={e => setEditing({ ...editing, nome: e.target.value })}
               required
@@ -137,7 +138,7 @@ export default function Times() {
           <div>
             <label className="block">Líder</label>
             <select
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.lider || ''}
               onChange={e => setEditing({ ...editing, lider: e.target.value ? Number(e.target.value) : undefined })}
             >
@@ -151,7 +152,7 @@ export default function Times() {
             <label className="block">Capacidade Total (h/sem)</label>
             <input
               type="number"
-              className="border p-1 w-full"
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.capacidade_total || 0}
               onChange={e => setEditing({ ...editing, capacidade_total: Number(e.target.value) })}
             />
@@ -160,7 +161,7 @@ export default function Times() {
             <label className="block">Membros</label>
             <select
               multiple
-              className="border p-1 w-full h-32"
+              className="border p-1 w-full h-32 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
               value={editing.membros as string[]}
               onChange={e => {
                 const options = Array.from(e.target.selectedOptions).map(o => o.value);
@@ -173,10 +174,10 @@ export default function Times() {
             </select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setEditing(null)} className="border px-4 py-1 rounded">
+            <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded">
+            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
               Salvar
             </button>
           </div>

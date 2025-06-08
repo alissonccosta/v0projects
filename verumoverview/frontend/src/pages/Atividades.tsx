@@ -70,14 +70,14 @@ export default function Atividades() {
     <div className="space-y-4">
       <div className="flex justify-between">
         <h1 className="text-xl font-bold">Atividades</h1>
-        <button className="bg-secondary text-white px-4 py-2 rounded" onClick={() => setEditing({ ...emptyActivity })}>
+        <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700" onClick={() => setEditing({ ...emptyActivity })}>
           Nova Atividade
         </button>
       </div>
 
       <div>
         <label className="mr-2">Status:</label>
-        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1">
+        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
           <option value="">Todos</option>
           <option>Nao Iniciada</option>
           <option>Em Andamento</option>
@@ -86,45 +86,46 @@ export default function Atividades() {
           <option>Bloqueada</option>
         </select>
       </div>
-
-      <table className="min-w-full bg-white dark:bg-dark-background text-sm">
-        <thead>
-          <tr>
-            <th className="p-2 text-left">Título</th>
-            <th className="p-2 text-left">Status</th>
-            <th className="p-2 text-left">Meta</th>
-            <th className="p-2 text-left">Limite</th>
-            <th className="p-2 text-left">Horas</th>
-            <th className="p-2 text-left">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map(a => (
-            <tr key={a.id_atividade} className="border-t">
-              <td className="p-2">{a.titulo}</td>
-              <td className="p-2">{a.status}</td>
-              <td className="p-2">{a.data_meta}</td>
-              <td className="p-2">{a.data_limite}</td>
-              <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
-              <td className="p-2 space-x-2">
-                <button className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
-                <button className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+          <thead>
+            <tr>
+              <th className="p-2 text-left">Título</th>
+              <th className="p-2 text-left">Status</th>
+              <th className="p-2 text-left">Meta</th>
+              <th className="p-2 text-left">Limite</th>
+              <th className="p-2 text-left">Horas</th>
+              <th className="p-2 text-left">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map(a => (
+              <tr key={a.id_atividade} className="border-t">
+                <td className="p-2">{a.titulo}</td>
+                <td className="p-2">{a.status}</td>
+                <td className="p-2">{a.data_meta}</td>
+                <td className="p-2">{a.data_limite}</td>
+                <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
+                <td className="p-2 space-x-2">
+                  <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                  <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {editing && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
           <div>
             <label className="block">Título</label>
-            <input type="text" className="border p-1 w-full" value={editing.titulo}
+            <input type="text" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.titulo}
               onChange={e => setEditing({ ...editing, titulo: e.target.value })} required />
           </div>
           <div>
             <label className="block">Status</label>
-            <select className="border p-1 w-full" value={editing.status}
+            <select className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.status}
               onChange={e => setEditing({ ...editing, status: e.target.value })}>
               <option>Nao Iniciada</option>
               <option>Em Andamento</option>
@@ -136,30 +137,30 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Data Meta</label>
-              <input type="date" className="border p-1 w-full" value={editing.data_meta || ''}
+              <input type="date" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.data_meta || ''}
                 onChange={e => setEditing({ ...editing, data_meta: e.target.value })} />
             </div>
             <div className="flex-1">
               <label className="block">Data Limite</label>
-              <input type="date" className="border p-1 w-full" value={editing.data_limite || ''}
+              <input type="date" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.data_limite || ''}
                 onChange={e => setEditing({ ...editing, data_limite: e.target.value })} />
             </div>
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Horas Estimadas</label>
-              <input type="number" className="border p-1 w-full" value={editing.horas_estimadas || 0}
+              <input type="number" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.horas_estimadas || 0}
                 onChange={e => setEditing({ ...editing, horas_estimadas: Number(e.target.value) })} />
             </div>
             <div className="flex-1">
               <label className="block">Horas Gastas</label>
-              <input type="number" className="border p-1 w-full" value={editing.horas_gastas || 0}
+              <input type="number" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.horas_gastas || 0}
                 onChange={e => setEditing({ ...editing, horas_gastas: Number(e.target.value) })} />
             </div>
           </div>
           <div>
             <label className="block">Prioridade</label>
-            <select className="border p-1 w-full" value={editing.prioridade}
+            <select className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.prioridade}
               onChange={e => setEditing({ ...editing, prioridade: e.target.value })}>
               <option>Alta</option>
               <option>Media</option>
@@ -167,10 +168,10 @@ export default function Atividades() {
             </select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setEditing(null)} className="border px-4 py-1 rounded">
+            <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded">
+            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
               Salvar
             </button>
           </div>

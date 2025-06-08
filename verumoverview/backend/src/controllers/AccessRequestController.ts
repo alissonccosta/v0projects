@@ -3,6 +3,7 @@ import db from '../services/db';
 
 export default class AccessRequestController {
   static async create(req: Request, res: Response): Promise<void> {
+
     const { email } = req.body;
     if (!email) {
       res.status(400).json({ message: 'Email obrigatorio' });
