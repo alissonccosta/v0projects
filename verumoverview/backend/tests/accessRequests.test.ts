@@ -18,33 +18,33 @@ beforeAll(async () => {
 });
 
 afterEach(() => mockedQuery.mockReset());
-
-describe('Access request routes', () => {
-  it('should create access request', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, email: 'n@example.com', nome: 'New', status: 'pendente' }] });
+describe('AccessRequest routes', () => {
+  it('lists requests', async () => {
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, usuario_id: 1, status: 'pendente' }] });
     const res = await request(app)
-      .post('/auth/solicitar')
-      .send({ email: 'n@example.com', nome: 'New' });
-    expect(res.status).toBe(201);
-    expect(res.body).toEqual({ id: 1, email: 'n@example.com', nome: 'New', status: 'pendente' });
-  });
-
-  it('should list access requests', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, email: 'a@example.com', nome: 'A', status: 'pendente' }] });
-    const res = await request(app)
-      .get('/auth/solicitacoes')
+      .get('/api/solicitacoes-acesso')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([{ id: 1, email: 'a@example.com', nome: 'A', status: 'pendente' }]);
+    expect(res.body).toEqual([{ id: 1, usuario_id: 1, status: 'pendente' }]);
   });
 
-  it('should update access request', async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, email: 'a@example.com', nome: 'A', status: 'aprovado' }] });
+  it('creates request', async () => {
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, usuario_id: 2, status: 'pendente' }] });
     const res = await request(app)
-      .put('/auth/solicitacoes/1')
+      .post('/api/solicitacoes-acesso')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ usuario_id: 2, status: 'pendente' });
+    expect(res.status).toBe(201);
+    expect(res.body).toEqual({ id: 2, usuario_id: 2, status: 'pendente' });
+  });
+
+  it('updates request', async () => {
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id: 2, usuario_id: 2, status: 'aprovado' }] });
+    const res = await request(app)
+      .put('/api/solicitacoes-acesso/2')
       .set('Authorization', `Bearer ${token}`)
       .send({ status: 'aprovado' });
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ id: 1, email: 'a@example.com', nome: 'A', status: 'aprovado' });
+    expect(res.body).toEqual({ id: 2, usuario_id: 2, status: 'aprovado' });
   });
 });
