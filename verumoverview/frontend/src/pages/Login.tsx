@@ -14,24 +14,37 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        className="border p-2 mb-2 w-full"
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-        className="border p-2 mb-2 w-full"
-      />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2">
-        Entrar
-      </button>
-    </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark-background p-4">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-6 rounded shadow-md w-full max-w-sm space-y-4">
+        <h1 className="text-center text-2xl font-bold text-secondary">VerumOverview</h1>
+        <div>
+          <label htmlFor="email" className="block mb-1">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="senha" className="block mb-1">Senha</label>
+          <input
+            id="senha"
+            type="password"
+            placeholder="••••••"
+            value={senha}
+            onChange={e => setSenha(e.target.value)}
+            className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            required
+          />
+        </div>
+        <button type="submit" className="w-full bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-secondary">
+          Entrar
+        </button>
+      </form>
+    </div>
   );
 }
