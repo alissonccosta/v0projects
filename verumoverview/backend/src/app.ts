@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import protectedRoutes from './routes/protectedRoutes';
 import logRoutes from './routes/logRoutes';
@@ -12,6 +13,8 @@ import timeRoutes from './routes/timeRoutes';
 import accessRequestRoutes from './routes/accessRequestRoutes';
 
 const app = express();
+const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+app.use(cors({ origin: allowedOrigin }));
 app.use(bodyParser.json());
 if (process.env.NODE_ENV !== 'test') {
   app.use(logMiddleware);

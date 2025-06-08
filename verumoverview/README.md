@@ -29,6 +29,7 @@ cp backend/.env.example backend/.env
 ```
 
 Edite as variáveis conforme sua configuração local.
+Se precisar liberar origens diferentes da padrão para o CORS, ajuste `CORS_ORIGIN` em `.env`.
 
 ## Uso com Docker Compose
 
