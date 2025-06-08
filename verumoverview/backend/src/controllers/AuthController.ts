@@ -15,13 +15,13 @@ export default class AuthController {
         [email]
       );
       if (result.rows.length === 0) {
-        res.status(401).json({ message: 'User not found' });
+        res.status(401).json({ message: 'Usuário não encontrado' });
         return;
       }
       const user = result.rows[0];
       const valid = await bcrypt.compare(senha, user.senha_hash);
       if (!valid) {
-        res.status(401).json({ message: 'Invalid credentials' });
+        res.status(401).json({ message: 'Credenciais inválidas' });
         return;
       }
       const token = jwt.sign(
