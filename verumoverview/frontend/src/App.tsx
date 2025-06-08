@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useState, type ComponentType } from 'react';
 import {
   LayoutDashboard, Briefcase, Users, BarChart2, Sun, Moon, Bell,
 } from 'lucide-react';
@@ -6,15 +6,35 @@ import {
   LineChart, Line, ResponsiveContainer, Tooltip, CartesianGrid, XAxis, YAxis,
   BarChart, Bar,
 } from 'recharts';
-import { ThemeContext } from './hooks/ThemeContext';
 
-const metrics = [
+interface Metric {
+  title: string;
+  value: string;
+  icon: ComponentType<{ size?: number }>;
+  change: number;
+}
+
+interface ChartItem {
+  name: string;
+  vendas: number;
+}
+
+interface Project {
+  name: string;
+  lead: string;
+  status: string;
+  date: string;
+  avatar: string;
+  change?: number;
+}
+
+const metrics: Metric[] = [
   { title: 'Receita Mensal', value: 'R$ 120k', icon: BarChart2, change: 12 },
   { title: 'Projetos Ativos', value: '8', icon: Briefcase, change: 4 },
   { title: 'Novos Clientes', value: '25', icon: Users, change: 18 },
 ];
 
-const chartData = [
+const chartData: ChartItem[] = [
   { name: 'Jan', vendas: 40 },
   { name: 'Fev', vendas: 55 },
   { name: 'Mar', vendas: 65 },
@@ -23,17 +43,18 @@ const chartData = [
   { name: 'Jun', vendas: 90 },
 ];
 
-const projects = [
+const projects: Project[] = [
   { name: 'ERP Corporativo', lead: 'Ana Paula', status: 'Em andamento', date: '2024-02-12', avatar: 'https://i.pravatar.cc/40?img=1' },
   { name: 'Mobile Banking', lead: 'Bruno Silva', status: 'Concluído', date: '2024-03-05', avatar: 'https://i.pravatar.cc/40?img=2' },
   { name: 'Portal Cliente', lead: 'Carlos Lima', status: 'Em testes', date: '2024-04-18', avatar: 'https://i.pravatar.cc/40?img=3' },
 ];
 
 export default function App() {
-  const { darkMode, toggleDark } = useContext(ThemeContext);
+  const [dark, setDark] = useState<boolean>(false);
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
+    <div className={dark ? 'dark' : ''}>
+      <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
         {/* Sidebar */}
         <aside className="hidden md:flex md:flex-col w-64 p-6 space-y-6" style={{ background: 'linear-gradient(180deg, #4E008E 0%, #6B46C1 100%)' }}>
           <div className="text-white text-2xl font-semibold flex items-center space-x-2">
@@ -52,11 +73,11 @@ export default function App() {
             ))}
           </nav>
           <button
-            onClick={toggleDark}
+            onClick={() => setDark(!dark)}
             className="flex items-center justify-center text-white space-x-2 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
           >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            <span>{darkMode ? 'Light' : 'Dark'}</span>
+            {dark ? <Sun size={20} /> : <Moon size={20} />}
+            <span>{dark ? 'Light' : 'Dark'}</span>
           </button>
         </aside>
 
@@ -160,5 +181,6 @@ export default function App() {
           </main>
         </div>
       </div>
+    </div>
   );
 }

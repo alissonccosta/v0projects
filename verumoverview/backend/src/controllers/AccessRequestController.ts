@@ -14,7 +14,7 @@ export default class AccessRequestController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { email, status } = req.body as AccessRequest;
+    const { email, status = 'pendente' } = req.body as AccessRequest;
     try {
       const result = await db.query(
         'INSERT INTO solicitacoes_acesso(email, status) VALUES($1,$2) RETURNING *',
