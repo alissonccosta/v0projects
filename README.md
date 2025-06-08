@@ -8,6 +8,11 @@ Ao executar `docker-compose up` pela primeira vez o script `verumoverview/db-ini
 
 Para detalhes sobre a identidade visual e a paleta de cores utilizada no projeto, consulte o arquivo [docs/design.md](verumoverview/docs/design.md).
 
+## Solicitação de Acesso
+
+Usuários sem cadastro devem acessar `/solicitar-acesso` e enviar o formulário de pedido de acesso.
+Administradores aprovam ou rejeitam essas solicitações na página "Controle de Acesso" do sistema.
+
 ## Credenciais de Acesso
 
 Após a instalação padrão, o primeiro acesso é realizado com o usuário `admin@example.com` e a senha `password`.
