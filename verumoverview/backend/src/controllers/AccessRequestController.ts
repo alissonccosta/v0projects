@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import db from '../services/db';
 import { AccessRequest } from '../models/AccessRequest';
 
+const ALLOWED_FIELDS = ['email', 'status'];
+
 export default class AccessRequestController {
   static async list(req: Request, res: Response): Promise<void> {
     try {
@@ -14,7 +16,13 @@ export default class AccessRequestController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const { email, status = 'pendente' } = req.body as AccessRequest;
+    const fields = req.body as AccessRequest;
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const { email, status = 'pendente' } = fields;
     try {
       const result = await db.query(
         'INSERT INTO solicitacoes_acesso(email, status) VALUES($1,$2) RETURNING *',
@@ -30,8 +38,13 @@ export default class AccessRequestController {
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const fields = req.body as AccessRequest;
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const invalid = Object.keys(fields).filter(k => !ALLOWED_FIELDS.includes(k));
+    if (invalid.length) {
+      res.status(400).json({ message: `Campos nao permitidos: ${invalid.join(', ')}` });
+      return;
+    }
+    const keys = Object.keys(fields).filter(k => ALLOWED_FIELDS.includes(k));
+    const values = keys.map(k => (fields as any)[k]);
     const sets = keys.map((k, i) => `${k}=$${i + 1}`);
     try {
       const result = await db.query(
