@@ -7,6 +7,7 @@ import {
 } from '../services/activities';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Activity {
@@ -114,7 +115,9 @@ export default function Atividades() {
             {filtered.map(a => (
               <tr key={a.id_atividade} className="border-t">
                 <td className="p-2">{a.titulo}</td>
-                <td className="p-2">{a.status}</td>
+                <td className="p-2">
+                  <Badge variant="status" value={a.status || ''} />
+                </td>
                 <td className="p-2">{a.data_meta}</td>
                 <td className="p-2">{a.data_limite}</td>
                 <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>

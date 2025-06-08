@@ -1,29 +1,54 @@
 interface BadgeProps {
-  color:
-    | 'verde'
-    | 'amarelo'
-    | 'vermelho'
-    | 'alta'
-    | 'media'
-    | 'baixa'
-    | 'positivo'
-    | 'negativo'
-    | 'neutro';
-  text: string;
+  variant: 'status' | 'prioridade' | 'indicador';
+  value: string;
 }
 
-const map: Record<BadgeProps['color'], string> = {
-  verde: 'bg-status-verde text-white',
-  amarelo: 'bg-status-amarelo text-black',
-  vermelho: 'bg-status-vermelho text-white',
-  alta: 'bg-prioridade-alta text-white',
-  media: 'bg-prioridade-media text-black',
-  baixa: 'bg-prioridade-baixa text-white',
-  positivo: 'bg-indicador-positivo text-white',
-  negativo: 'bg-indicador-negativo text-white',
-  neutro: 'bg-indicador-neutro text-white'
-};
+const styles = {
+  status: {
+    verde: 'bg-status-verde text-white',
+    amarelo: 'bg-status-amarelo text-black',
+    vermelho: 'bg-status-vermelho text-white'
+  },
+  prioridade: {
+    alta: 'bg-prioridade-alta text-white',
+    media: 'bg-prioridade-media text-black',
+    baixa: 'bg-prioridade-baixa text-white'
+  },
+  indicador: {
+    positivo: 'bg-indicador-positivo text-white',
+    negativo: 'bg-indicador-negativo text-white',
+    neutro: 'bg-indicador-neutro text-white'
+  }
+} as const;
 
-export default function Badge({ color, text }: BadgeProps) {
-  return <span className={`px-2 py-1 rounded text-xs ${map[color]}`}>{text}</span>;
+type StatusColor = keyof typeof styles.status;
+
+function getStatusColor(value: string): StatusColor {
+  switch (value) {
+    case 'Concluida':
+    case 'Ativo':
+    case 'Acompanhamento':
+    case 'Handoff':
+    case 'Sustentação':
+      return 'verde';
+    case 'Em Risco':
+    case 'Bloqueada':
+    case 'Desligado':
+      return 'vermelho';
+    default:
+      return 'amarelo';
+  }
+}
+
+export default function Badge({ variant, value }: BadgeProps) {
+  let colorClass = '';
+  if (variant === 'status') {
+    colorClass = styles.status[getStatusColor(value)];
+  } else if (variant === 'prioridade') {
+    colorClass = styles.prioridade[value as keyof typeof styles.prioridade];
+  } else {
+    colorClass = styles.indicador[value as keyof typeof styles.indicador];
+  }
+
+  return <span className={`px-2 py-1 rounded text-xs ${colorClass}`}>{value}</span>;
 }
