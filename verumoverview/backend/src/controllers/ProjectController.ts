@@ -29,48 +29,11 @@ export default class ProjectController {
   }
 
   static async create(req: Request, res: Response): Promise<void> {
-    const {
-      nome,
-      codigo_projeto,
-      objetivo,
-      justificativa,
-      stakeholders,
-      status,
-      data_inicio_prevista,
-      data_fim_prevista,
-      prioridade,
-      criticidade,
-      orcamento_planejado,
-      time_responsavel
-    } = req.body as Project;
+    const { nome } = req.body as Project;
     try {
-      let codigo = codigo_projeto;
-      if (!codigo) {
-        const seq = await db.query(
-          'SELECT COALESCE(MAX(CAST(codigo_projeto AS INTEGER)),0) + 1 AS code FROM projetos'
-        );
-        codigo = (seq.rows[0]?.code ?? 1).toString();
-      }
       const result = await db.query(
-        `INSERT INTO projetos(
-          nome, codigo_projeto, objetivo, justificativa, stakeholders, status,
-          data_inicio_prevista, data_fim_prevista, prioridade, criticidade,
-          orcamento_planejado, time_responsavel
-        ) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
-        [
-          nome,
-          codigo,
-          objetivo,
-          justificativa,
-          JSON.stringify(stakeholders || {}),
-          status,
-          data_inicio_prevista,
-          data_fim_prevista,
-          prioridade,
-          criticidade,
-          orcamento_planejado,
-          JSON.stringify(time_responsavel || {})
-        ]
+        'INSERT INTO projetos(nome) VALUES($1) RETURNING id_projeto, nome',
+        [nome]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
