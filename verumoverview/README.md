@@ -74,6 +74,14 @@ npm start
 
 Abrirá a aplicação em `http://localhost:3000`.
 
+## Credenciais de Acesso
+
+Após subir o ambiente, autentique-se com o usuário `admin@example.com` e senha `password`.
+Essas informações encontram-se em [`backend/src/controllers/AuthController.ts`](backend/src/controllers/AuthController.ts).
+
+Em implementações futuras essa configuração poderá ser movida para variáveis de ambiente ou outro arquivo de configuração.
+Por ora, modifique o arquivo indicado caso deseje alterar o login padrão.
+
 ## Banco de Dados
 
 Ao subir com Docker Compose o PostgreSQL já será iniciado na porta `5432`. Os dados são persistidos em `db-data/`.
