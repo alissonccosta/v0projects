@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { logAction } from '../services/logger';
 
@@ -44,6 +45,11 @@ export default function Login() {
         <button type="submit" className="w-full bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-secondary">
           Entrar
         </button>
+        <p className="mt-2">
+          <Link to="/solicitar-acesso" className="text-blue-600">
+            Solicitar acesso
+          </Link>
+        </p>
       </form>
     </div>
   );
