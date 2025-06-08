@@ -15,29 +15,49 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        className="border p-2 mb-2 w-full"
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-        className="border p-2 mb-2 w-full"
-      />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2">
-        Entrar
-      </button>
-      <p className="mt-2">
-        <Link to="/solicitar-acesso" className="text-blue-600">
-          Solicitar acesso
-        </Link>
-      </p>
-    </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-primary p-6 rounded-lg shadow-md w-80">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="border border-secondary p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+          </div>
+          <div>
+            <label htmlFor="senha" className="block text-sm font-medium">
+              Senha
+            </label>
+            <input
+              id="senha"
+              type="password"
+              placeholder="Digite sua senha"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              className="border border-secondary p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-secondary text-white px-4 py-2 rounded w-full"
+          >
+            Entrar
+          </button>
+          <p className="text-sm text-center">
+            Não possui acesso?{' '}
+            <Link to="/solicitar-acesso" className="text-secondary underline">
+              Solicitar acesso
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
   );
 }
