@@ -12,10 +12,10 @@ import Modal from '../components/modules/Modal';
 import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
-import { Plus, Trash, Pencil } from 'lucide-react';
+import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import Card from '../components/ui/Card';
+import { DataTable, Column } from '../components/ui/Table';
 
 interface Project {
   id_projeto: string;
@@ -91,15 +91,34 @@ export default function Projetos() {
     setEditing({ ...emptyProject, codigo_projeto: code });
   }
 
+  const columns: Column<Project>[] = [
+    { key: 'nome', header: 'Nome', sortable: true, filterType: 'text' },
+    { key: 'codigo_projeto', header: 'Código', sortable: true, filterType: 'text' },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      filterType: 'select',
+      render: p => <Badge variant="status" value={p.status || ''} />,
+    },
+    { key: 'data_inicio_prevista', header: 'Início', sortable: true },
+    { key: 'data_fim_prevista', header: 'Fim', sortable: true },
+    {
+      key: 'acoes',
+      header: 'Ações',
+      render: p => (
+        <div className="flex gap-2">
+          <button aria-label="Editar" onClick={() => setEditing({ ...p })}>
+            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+          </button>
+          <button aria-label="Excluir" onClick={() => handleDelete(p.id_projeto)}>
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
-  const filtered = projects.filter(p => {
-    if (statusFilter && p.status !== statusFilter) return false;
-    if (filters.nome && !p.nome.toLowerCase().includes(filters.nome.toLowerCase())) return false;
-    if (filters.codigo && !(p.codigo_projeto || '').includes(filters.codigo)) return false;
-    if (filters.inicio && !(p.data_inicio_prevista || '').includes(filters.inicio)) return false;
-    if (filters.fim && !(p.data_fim_prevista || '').includes(filters.fim)) return false;
-    return true;
-  });
 
   const sorted = [...filtered].sort((a, b) => a.nome.localeCompare(b.nome));
 
@@ -117,10 +136,23 @@ export default function Projetos() {
           <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
         <Button onClick={openNewProject} className="flex items-center gap-1">
-          <Plus size={16} /> Novo Projeto
+          <PlusIcon className="w-5 h-5" /> Novo Projeto
         </Button>
       </div>
 
+
+      <div className="overflow-x-auto">
+        {loading ? (
+          <Skeleton className="h-60 w-full" />
+        ) : (
+          <DataTable
+            data={projects}
+            columns={columns}
+            rowKey={p => p.id_projeto}
+            globalSearch
+            rowsPerPage={10}
+          />
+        )}
       <div className="md:grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2 space-y-4">
           <div>
