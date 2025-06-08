@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchTimes, createTime, updateTime, deleteTime } from '../services/times';
 import { fetchPeople } from '../services/people';
 import { logAction } from '../services/logger';
+import BackButton from '../components/BackButton';
 
 interface Time {
   id_time: string;
@@ -29,6 +30,7 @@ export default function Times() {
   const [people, setPeople] = useState<Person[]>([]);
   const [editing, setEditing] = useState<Time | null>(null);
   const [filter, setFilter] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     load();
@@ -48,6 +50,12 @@ export default function Times() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    const errs: Record<string, string> = {};
+    if (!editing.nome.trim()) errs.nome = 'Nome é obrigatório';
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     const payload = {
       ...editing,
       membros: editing.membros
@@ -76,8 +84,11 @@ export default function Times() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between">
-        <h1 className="text-xl font-bold">Times</h1>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <h1 className="text-xl font-bold">Times</h1>
+        </div>
         <button
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
           onClick={() => setEditing({ ...emptyTime })}
@@ -129,11 +140,15 @@ export default function Times() {
             <label className="block">Nome</label>
             <input
               type="text"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.nome ? 'input-error' : ''}`}
               value={editing.nome}
-              onChange={e => setEditing({ ...editing, nome: e.target.value })}
+              onChange={e => {
+                setEditing({ ...editing, nome: e.target.value });
+                if (errors.nome) setErrors({ ...errors, nome: '' });
+              }}
               required
             />
+            {errors.nome && <span className="error-message">{errors.nome}</span>}
           </div>
           <div>
             <label className="block">Líder</label>

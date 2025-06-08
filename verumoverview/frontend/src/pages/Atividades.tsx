@@ -6,6 +6,7 @@ import {
   deleteActivity
 } from '../services/activities';
 import { logAction } from '../services/logger';
+import BackButton from '../components/BackButton';
 
 interface Activity {
   id_atividade: string;
@@ -33,6 +34,7 @@ export default function Atividades() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editing, setEditing] = useState<Activity | null>(null);
   const [filter, setFilter] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     load();
@@ -46,6 +48,12 @@ export default function Atividades() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    const errs: Record<string, string> = {};
+    if (!editing.titulo.trim()) errs.titulo = 'Título é obrigatório';
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     if (editing.id_atividade) {
       await updateActivity(editing.id_atividade, editing);
       logAction('update_activity', { id: editing.id_atividade });
@@ -68,8 +76,11 @@ export default function Atividades() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between">
-        <h1 className="text-xl font-bold">Atividades</h1>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <h1 className="text-xl font-bold">Atividades</h1>
+        </div>
         <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700" onClick={() => setEditing({ ...emptyActivity })}>
           Nova Atividade
         </button>
@@ -120,8 +131,17 @@ export default function Atividades() {
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
           <div>
             <label className="block">Título</label>
-            <input type="text" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.titulo}
-              onChange={e => setEditing({ ...editing, titulo: e.target.value })} required />
+            <input
+              type="text"
+              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.titulo ? 'input-error' : ''}`}
+              value={editing.titulo}
+              onChange={e => {
+                setEditing({ ...editing, titulo: e.target.value });
+                if (errors.titulo) setErrors({ ...errors, titulo: '' });
+              }}
+              required
+            />
+            {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
             <label className="block">Status</label>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchSolicitacoes, atualizarSolicitacao } from '../services/accessRequests';
 import { logAction } from '../services/logger';
+import BackButton from '../components/BackButton';
 
 interface Solicitacao {
   id: number;
@@ -28,7 +29,10 @@ export default function ControleAcesso() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Controle de Acesso</h1>
+      <div className="flex items-center gap-2">
+        <BackButton />
+        <h1 className="text-xl font-bold">Controle de Acesso</h1>
+      </div>
       <table className="min-w-full bg-white dark:bg-dark-background text-sm">
         <thead>
           <tr>
