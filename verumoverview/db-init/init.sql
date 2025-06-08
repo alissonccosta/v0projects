@@ -95,6 +95,13 @@ CREATE TABLE logs (
   criado_em TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE solicitacoes_acesso (
+  id SERIAL PRIMARY KEY,
+  usuario_id INTEGER REFERENCES usuarios(id),
+  status VARCHAR(50) DEFAULT 'pendente',
+  criado_em TIMESTAMP DEFAULT NOW()
+);
+
 -- Perfil administrador padrao
 INSERT INTO perfis_acesso (nome, permissoes)
 VALUES ('Administrador', '["admin"]');
