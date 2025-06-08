@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { logAction } from '../services/logger';
@@ -27,9 +27,8 @@ const items: MenuItem[] = [
   { path: '/controle-acesso', label: 'Controle de Acesso', icon: <Shield size={20} />, roles: ['admin'] },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void; }) {
   const { user } = useContext(AuthContext);
-  const [open, setOpen] = useState(true);
 
   const allowed = (item: MenuItem) => {
     if (!user) return false;
@@ -41,8 +40,9 @@ export default function Sidebar() {
   };
 
   return (
-    <div className={`bg-secondary text-white ${open ? 'w-56' : 'w-14'} transition-width duration-200 flex flex-col`}>
-      <button onClick={() => setOpen(!open)} className="p-2">
+    <aside className={`bg-secondary text-white ${open ? 'w-56' : 'w-0 md:w-14'} transition-all duration-200 flex flex-col overflow-hidden`}
+      aria-label="Menu lateral">
+      <button onClick={() => setOpen(!open)} aria-label="Alternar menu" className="p-2 focus:outline-none focus:ring-2 focus:ring-white">
         {open ? '<' : '>'}
       </button>
       <nav className="flex-1">
@@ -60,6 +60,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-    </div>
+    </aside>
   );
 }
