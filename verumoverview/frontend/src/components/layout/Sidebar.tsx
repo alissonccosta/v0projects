@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../../hooks/AuthContext';
-import { logAction } from '../services/logger';
+import { logAction } from '../../services/logger';
 import {
   Home,
   FolderKanban,
