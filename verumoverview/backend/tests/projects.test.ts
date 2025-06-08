@@ -41,6 +41,15 @@ describe('Project routes', () => {
     expect(res.body).toEqual({ id_projeto: '1', nome: 'P1' });
   });
 
+  it('should list project activities', async () => {
+    mockedQuery.mockResolvedValueOnce({ rows: [{ id_atividade: '10', titulo: 'A1' }] });
+    const res = await request(app)
+      .get('/api/projects/1/atividades')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([{ id_atividade: '10', titulo: 'A1' }]);
+  });
+
   it('should create project', async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [{ code: '2' }] });
     mockedQuery.mockResolvedValueOnce({ rows: [{ id_projeto: '2', nome: 'New' }] });

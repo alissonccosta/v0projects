@@ -4,7 +4,8 @@ import {
   createProject,
   updateProject,
   deleteProject,
-  getNextProjectCode
+  getNextProjectCode,
+  fetchProjectActivities
 } from '../services/projects';
 import { logAction } from '../services/logger';
 import BackButton from '../components/modules/BackButton';
@@ -12,7 +13,7 @@ import Modal from '../components/modules/Modal';
 import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
-import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { formatDate } from '../utils/date';
@@ -29,6 +30,14 @@ interface Project {
   prioridade?: string;
 }
 
+interface Activity {
+  id_atividade: string;
+  titulo: string;
+  status?: string;
+  data_meta?: string;
+  data_limite?: string;
+}
+
 const emptyProject: Project = {
   id_projeto: '',
   nome: '',
@@ -42,6 +51,8 @@ const emptyProject: Project = {
 export default function Projetos() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editing, setEditing] = useState<Project | null>(null);
+  const [details, setDetails] = useState<Project | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [filters, setFilters] = useState({ nome: '', codigo: '', inicio: '', fim: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -93,6 +104,20 @@ export default function Projetos() {
     setEditing({ ...emptyProject, codigo_projeto: code });
   }
 
+  async function openDetails(project: Project) {
+    setDetails(project);
+    const acts = await fetchProjectActivities(project.id_projeto);
+    setActivities(acts);
+  }
+
+  const filtered = projects.filter(p =>
+    (!statusFilter || (p.status || '') === statusFilter) &&
+    p.nome.toLowerCase().includes(filters.nome.toLowerCase()) &&
+    p.codigo_projeto?.toLowerCase().includes(filters.codigo.toLowerCase()) &&
+    (!filters.inicio || (p.data_inicio_prevista || '').startsWith(filters.inicio)) &&
+    (!filters.fim || (p.data_fim_prevista || '').startsWith(filters.fim))
+  );
+
   const columns: Column<Project>[] = [
     { key: 'nome', header: 'Nome', sortable: true, filterType: 'text' },
     { key: 'codigo_projeto', header: 'Código', sortable: true, filterType: 'text' },
@@ -110,6 +135,9 @@ export default function Projetos() {
       header: 'Ações',
       render: p => (
         <div className="flex gap-2">
+          <button aria-label="Detalhes" onClick={() => openDetails(p)}>
+            <EyeIcon className="w-5 h-5 text-purple-600" />
+          </button>
           <button aria-label="Editar" onClick={() => setEditing({ ...p })}>
             <PencilSquareIcon className="w-5 h-5 text-blue-600" />
           </button>
@@ -119,6 +147,13 @@ export default function Projetos() {
         </div>
       ),
     },
+  ];
+
+  const activityColumns: Column<Activity>[] = [
+    { key: 'titulo', header: 'Título' },
+    { key: 'status', header: 'Status' },
+    { key: 'data_meta', header: 'Meta' },
+    { key: 'data_limite', header: 'Limite' }
   ];
 
 
@@ -423,6 +458,13 @@ export default function Projetos() {
           </div>
         </form>
         )}
+      </Modal>
+      <Modal isOpen={!!details} title={details?.nome || ''} onClose={() => setDetails(null)}>
+        <DataTable
+          data={activities}
+          columns={activityColumns}
+          rowKey={a => a.id_atividade}
+        />
       </Modal>
     </div>
   );

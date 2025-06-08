@@ -13,6 +13,20 @@ export default class ProjectController {
     }
   }
 
+  static async activities(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const result = await db.query(
+        'SELECT * FROM atividades WHERE id_projeto=$1 ORDER BY data_meta',
+        [id]
+      );
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Erro ao listar atividades do projeto' });
+    }
+  }
+
   static async get(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
