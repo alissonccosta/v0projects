@@ -8,6 +8,7 @@ import {
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import Badge from '../components/ui/Badge';
+import { Table, THead} from '../components/ui/Table';
 
 interface Person {
   id_pessoa: string;
@@ -80,7 +81,7 @@ export default function Pessoas() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Pessoas</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Pessoas</h1>
         </div>
         <button
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
@@ -101,18 +102,18 @@ export default function Pessoas() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
+        <Table>
+          <THead>
             <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Cargo</th>
-              <th className="p-2 text-left">Time</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Engajamento</th>
-              <th className="p-2 text-left">Ações</th>
+              <Th>Nome</Th>
+              <Th>Email</Th>
+              <Th>Cargo</Th>
+              <Th>Time</Th>
+              <Th>Status</Th>
+              <Th>Engajamento</Th>
+              <Th>Ações</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {filtered.map(p => (
               <tr key={p.id_pessoa} className="border-t">
@@ -131,7 +132,7 @@ export default function Pessoas() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {editing && (

@@ -108,7 +108,7 @@ export default function Projetos() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Projetos</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
         <button
           className="flex items-center gap-1 bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
@@ -131,9 +131,9 @@ export default function Projetos() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-dark-background">
+        <Table>
+          <THead>
+            <tr>
               <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
                 Nome <ArrowUpDown className="inline w-4 h-4" />
               </th>
@@ -159,7 +159,7 @@ export default function Projetos() {
               <th className="p-1"><input className="border p-1 rounded w-full" value={filters.fim} onChange={e => setFilters({ ...filters, fim: e.target.value })} /></th>
               <th></th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {sorted.map(p => (
               <tr key={p.id_projeto} className="border-t">
@@ -181,7 +181,7 @@ export default function Projetos() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       <Modal isOpen={!!editing} title={editing?.id_projeto ? 'Editar Projeto' : 'Novo Projeto'} onClose={() => setEditing(null)}>

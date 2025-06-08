@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchSolicitacoes, atualizarSolicitacao } from '../services/accessRequests';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Solicitacao {
   id: number;
@@ -31,16 +32,16 @@ export default function ControleAcesso() {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <BackButton />
-        <h1 className="text-xl font-bold">Controle de Acesso</h1>
+        <h1 className="text-2xl font-semibold text-secondary mb-4">Controle de Acesso</h1>
       </div>
-      <table className="min-w-full bg-white dark:bg-dark-background text-sm">
-        <thead>
+      <Table>
+        <THead>
           <tr>
-            <th className="p-2 text-left">Email</th>
-            <th className="p-2 text-left">Status</th>
+            <Th>Email</Th>
+            <Th>Status</Th>
             <th className="p-2"></th>
           </tr>
-        </thead>
+        </THead>
         <tbody>
           {solicitacoes.map(s => (
             <tr key={s.id} className="border-t">
@@ -67,7 +68,7 @@ export default function ControleAcesso() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }

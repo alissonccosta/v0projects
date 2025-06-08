@@ -26,6 +26,9 @@ export default {
           background: '#1E1E2F',
           text: '#FFFFFF'
         }
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif']
       }
     }
   },
