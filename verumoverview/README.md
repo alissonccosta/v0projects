@@ -75,6 +75,8 @@ Abrirá a aplicação em `http://localhost:3000`.
 ## Banco de Dados
 
 Ao subir com Docker Compose o PostgreSQL já será iniciado na porta `5432`. Os dados são persistidos em `db-data/`.
+No primeiro `docker-compose up` o arquivo `db-init/init.sql` será executado automaticamente
+para criar o esquema inicial do banco.
 
 Você pode acessar via `psql`:
 
@@ -86,10 +88,11 @@ Ou utilizar ferramentas como Adminer ou TablePlus apontando para `localhost:5432
 
 ## Migrações e Seeds
 
-Dentro de `backend/src/db/schema.sql` existe o esquema inicial. Você pode executá-lo manualmente caso precise recriar o banco:
+O script utilizado fica em `db-init/init.sql`. Caso precise recriar o banco manualmente
+execute-o via `psql`:
 
 ```bash
-psql -h localhost -U <usuario> -d <banco> -f backend/src/db/schema.sql
+psql -h localhost -U <usuario> -d <banco> -f db-init/init.sql
 ```
 
 ## Monitoramento de Logs
