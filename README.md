@@ -4,7 +4,7 @@ Este repositório contém o projeto **VerumOverview**, plataforma para gerenciam
 
 A estrutura principal está dentro da pasta `verumoverview` com front-end em React e back-end em Node.js/Express utilizando TypeScript.
 Ao executar `docker-compose up` pela primeira vez o script `verumoverview/db-init/init.sql`
-é aplicado automaticamente ao PostgreSQL.
+é aplicado automaticamente ao PostgreSQL e cria o usuário administrador padrão.
 
 Para detalhes sobre a identidade visual e a paleta de cores utilizada no projeto, consulte o arquivo [docs/design.md](verumoverview/docs/design.md).
 
@@ -15,3 +15,6 @@ Os administradores analisam essas solicitações na página **Controle de Acesso
 
 Logo após a instalação, utilize o usuário `admin@example.com` e a senha `password`
 para realizar o primeiro login. Altere esse usuário assim que possível.
+Esse cadastro é criado automaticamente pelo seed do banco de dados. Se já houver
+um banco existente, exclua-o (ou remova a pasta `db-data/`) antes de subir os
+containers para que os registros iniciais sejam recriados.
