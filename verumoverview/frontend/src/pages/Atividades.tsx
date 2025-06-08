@@ -22,6 +22,12 @@ import Card from '../components/ui/Card';
 import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import Modal from '../components/modules/Modal';
+import {
+  fetchProjects,
+  createProject,
+  getNextProjectCode
+} from '../services/projects';
 
 interface Activity {
   id_atividade: string;
@@ -35,6 +41,26 @@ interface Activity {
   prioridade?: string;
   responsavel?: number;
 }
+
+interface Project {
+  id_projeto: string;
+  nome: string;
+  codigo_projeto?: string;
+  status?: string;
+  data_inicio_prevista?: string;
+  data_fim_prevista?: string;
+  prioridade?: string;
+}
+
+const emptyProject: Project = {
+  id_projeto: '',
+  nome: '',
+  codigo_projeto: '',
+  status: 'Backlog',
+  data_inicio_prevista: '',
+  data_fim_prevista: '',
+  prioridade: 'Média'
+};
 
 const emptyActivity: Activity = {
   id_atividade: '',
@@ -51,6 +77,9 @@ const emptyActivity: Activity = {
 export default function Atividades() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editing, setEditing] = useState<Activity | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectModal, setProjectModal] = useState(false);
+  const [newProject, setNewProject] = useState<Project>(emptyProject);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
@@ -68,6 +97,7 @@ export default function Atividades() {
 
   useEffect(() => {
     load();
+    loadProjects();
   }, []);
 
   async function load() {
@@ -76,11 +106,34 @@ export default function Atividades() {
     setLoading(false);
   }
 
+  async function loadProjects() {
+    const data = await fetchProjects();
+    setProjects(data);
+  }
+
+  async function openNewProject() {
+    const code = await getNextProjectCode();
+    setNewProject({ ...emptyProject, codigo_projeto: code });
+    setProjectModal(true);
+  }
+
+  async function handleProjectSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newProject.nome.trim()) return;
+    const created = await createProject(newProject);
+    setProjectModal(false);
+    loadProjects();
+    if (editing) {
+      setEditing({ ...editing, id_projeto: created.id_projeto });
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
     const errs: Record<string, string> = {};
     if (!editing.titulo.trim()) errs.titulo = 'Título é obrigatório';
+    if (!editing.id_projeto) errs.id_projeto = 'Projeto é obrigatório';
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
@@ -272,6 +325,27 @@ export default function Atividades() {
             {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
+            <label className="block">Projeto</label>
+            <select
+              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              value={editing.id_projeto || ''}
+              onChange={e => {
+                if (e.target.value === 'new') {
+                  openNewProject();
+                } else {
+                  setEditing({ ...editing, id_projeto: e.target.value });
+                }
+              }}
+            >
+              <option value="">Selecione</option>
+              {projects.map(p => (
+                <option key={p.id_projeto} value={p.id_projeto}>{p.nome}</option>
+              ))}
+              <option value="new">Novo Projeto...</option>
+            </select>
+            {errors.id_projeto && <span className="error-message">{errors.id_projeto}</span>}
+          </div>
+          <div>
             <label className="block">Status</label>
             <select className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.status}
               onChange={e => setEditing({ ...editing, status: e.target.value })}>
@@ -338,7 +412,83 @@ export default function Atividades() {
             </Button>
           </div>
         </form>
-        )}
+      )}
+      <Modal isOpen={projectModal} title="Novo Projeto" onClose={() => setProjectModal(false)}>
+        <form onSubmit={handleProjectSubmit} className="space-y-3">
+          <div>
+            <label className="block">Nome</label>
+            <Input
+              type="text"
+              className="p-1"
+              value={newProject.nome}
+              onChange={e => setNewProject({ ...newProject, nome: e.target.value })}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block">Código</label>
+              <Input
+                type="text"
+                className="p-1"
+                value={newProject.codigo_projeto}
+                onChange={e => setNewProject({ ...newProject, codigo_projeto: e.target.value })}
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block">Status</label>
+              <select
+                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                value={newProject.status}
+                onChange={e => setNewProject({ ...newProject, status: e.target.value })}
+              >
+                <option>Backlog</option>
+                <option>Documentação</option>
+                <option>Execução</option>
+                <option>Acompanhamento</option>
+                <option>Handoff</option>
+                <option>Sustentação</option>
+              </select>
+            </div>
+            <div>
+              <label className="block">Início Previsto</label>
+              <Input
+                type="date"
+                className="p-1"
+                value={newProject.data_inicio_prevista || ''}
+                onChange={e => setNewProject({ ...newProject, data_inicio_prevista: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block">Fim Previsto</label>
+              <Input
+                type="date"
+                className="p-1"
+                value={newProject.data_fim_prevista || ''}
+                onChange={e => setNewProject({ ...newProject, data_fim_prevista: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block">Prioridade</label>
+              <select
+                className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                value={newProject.prioridade}
+                onChange={e => setNewProject({ ...newProject, prioridade: e.target.value })}
+              >
+                <option>Emergencial</option>
+                <option>Muito Alta</option>
+                <option>Alta</option>
+                <option>Média</option>
+                <option>Baixa</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setProjectModal(false)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">Cancelar</button>
+            <Button type="submit" className="py-1">Salvar</Button>
+          </div>
+        </form>
       </Modal>
     </div>
   );
