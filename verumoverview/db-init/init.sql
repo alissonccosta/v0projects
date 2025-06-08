@@ -101,3 +101,14 @@ CREATE TABLE solicitacoes_acesso (
   status VARCHAR(20) NOT NULL DEFAULT 'pendente',
   criado_em TIMESTAMP DEFAULT NOW()
 );
+-- Dados iniciais
+INSERT INTO perfis_acesso (nome, permissoes)
+VALUES ('Administrador', '["admin"]');
+
+INSERT INTO usuarios (nome, email, senha_hash, perfil_id)
+VALUES (
+  'Administrador',
+  'admin@example.com',
+  '$2b$10$xCUl3rLwWSr9i5VR1NML0.OnPNoC3pltXYeT45vXDqH4BhIK8a21i',
+  (SELECT id FROM perfis_acesso WHERE nome = 'Administrador')
+);
