@@ -39,6 +39,12 @@ docker-compose up
 ```
 
 Se você modificou `docker-compose.yml`, execute `docker-compose build` para recriar as imagens com as novas configurações.
+Alterações em variáveis de ambiente do front-end, como `VITE_API_URL`, exigem a
+recriação do container correspondente com:
+
+```bash
+docker-compose up --build
+```
 
 ### Dependências
 
