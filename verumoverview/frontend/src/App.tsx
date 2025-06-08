@@ -14,8 +14,9 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/solicitar-acesso" element={<SolicitarAcesso />} />
-      <Route path="/" element={<MainLayout />}> 
+      <Route path="/" element={<MainLayout />}>
         <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="projetos" element={<Projetos />} />
         <Route path="atividades" element={<Atividades />} />
         <Route path="pessoas" element={<Pessoas />} />
