@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode, useEffect } from 'react';
 import api from '../services/api';
 
 interface User {
@@ -34,16 +34,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const stored = localStorage.getItem('token');
+    if (stored) {
+      setToken(stored);
+      api.defaults.headers.common['Authorization'] = `Bearer ${stored}`;
+      setUser(decodeToken(stored));
+    }
+  }, []);
+
   async function login(email: string, senha: string) {
     const response = await api.post('/auth/login', { email, senha });
     const received = response.data.token;
     setToken(received);
+    localStorage.setItem('token', received);
     api.defaults.headers.common['Authorization'] = `Bearer ${received}`;
     setUser(decodeToken(received));
   }
 
   function logout() {
     setToken(null);
+    localStorage.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
     setUser(null);
   }
