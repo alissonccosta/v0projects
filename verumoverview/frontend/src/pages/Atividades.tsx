@@ -79,7 +79,7 @@ export default function Atividades() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Atividades</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Atividades</h1>
         </div>
         <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700" onClick={() => setEditing({ ...emptyActivity })}>
           Nova Atividade

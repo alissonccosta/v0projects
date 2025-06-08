@@ -31,7 +31,7 @@ export default function ControleAcesso() {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <BackButton />
-        <h1 className="text-xl font-bold">Controle de Acesso</h1>
+        <h1 className="text-2xl font-semibold text-secondary mb-4">Controle de Acesso</h1>
       </div>
       <table className="min-w-full bg-white dark:bg-dark-background text-sm">
         <thead>
