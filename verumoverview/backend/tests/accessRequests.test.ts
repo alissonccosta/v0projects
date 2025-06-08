@@ -18,7 +18,6 @@ beforeAll(async () => {
 });
 
 afterEach(() => mockedQuery.mockReset());
-
 describe('AccessRequest routes', () => {
   it('lists requests', async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [{ id: 1, usuario_id: 1, status: 'pendente' }] });

@@ -94,3 +94,10 @@ CREATE TABLE logs (
   detalhes JSONB,
   criado_em TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE solicitacoes_acesso (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pendente',
+  criado_em TIMESTAMP DEFAULT NOW()
+);

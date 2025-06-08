@@ -97,16 +97,7 @@ CREATE TABLE logs (
 
 CREATE TABLE solicitacoes_acesso (
   id SERIAL PRIMARY KEY,
-  usuario_id INTEGER REFERENCES usuarios(id),
-  status VARCHAR(50) DEFAULT 'pendente',
+  email VARCHAR(255) UNIQUE NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pendente',
   criado_em TIMESTAMP DEFAULT NOW()
 );
-
--- Perfil administrador padrao
-INSERT INTO perfis_acesso (nome, permissoes)
-VALUES ('Administrador', '["admin"]');
-
--- Usuario administrador padrao
-INSERT INTO usuarios (nome, email, senha_hash, perfil_id)
-VALUES ('Admin', 'admin@example.com',
-  '$2b$10$hzfKMSkIf.j4fyR29zi25uMWUGJqLPLGhwVMSENOSIvuPJBgSpun6', 1);
