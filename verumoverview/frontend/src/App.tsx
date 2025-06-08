@@ -7,11 +7,13 @@ import Atividades from './pages/Atividades';
 import Pessoas from './pages/Pessoas';
 import Times from './pages/Times';
 import ControleAcesso from './pages/ControleAcesso';
+import SolicitarAcesso from './pages/SolicitarAcesso';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/solicitar-acesso" element={<SolicitarAcesso />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="projetos" element={<Projetos />} />
