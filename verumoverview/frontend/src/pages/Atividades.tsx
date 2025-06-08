@@ -12,6 +12,7 @@ import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
+import Modal from '../components/modules/Modal';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Activity {
@@ -145,21 +146,22 @@ export default function Atividades() {
         )}
       </div>
 
-      {editing && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
+      <Modal isOpen={!!editing} title={editing?.id_atividade ? 'Editar Atividade' : 'Nova Atividade'} onClose={() => setEditing(null)}>
+        {editing && (
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div>
             <label className="block">Título</label>
-          <Input
-            type="text"
-            className="p-1"
-            value={editing.titulo}
-            onChange={e => {
-              setEditing({ ...editing, titulo: e.target.value });
-              if (errors.titulo) setErrors({ ...errors, titulo: '' });
-            }}
-            required
-            error={errors.titulo}
-          />
+            <Input
+              type="text"
+              className="p-1"
+              value={editing.titulo}
+              onChange={e => {
+                setEditing({ ...editing, titulo: e.target.value });
+                if (errors.titulo) setErrors({ ...errors, titulo: '' });
+              }}
+              required
+              error={errors.titulo}
+            />
             {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
@@ -231,7 +233,8 @@ export default function Atividades() {
             </Button>
           </div>
         </form>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }
