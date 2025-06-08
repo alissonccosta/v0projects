@@ -7,6 +7,7 @@ import {
 } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import Badge from '../components/ui/Badge';
 
 interface Person {
   id_pessoa: string;
@@ -119,7 +120,9 @@ export default function Pessoas() {
                 <td className="p-2">{p.email}</td>
                 <td className="p-2">{p.cargo_funcao}</td>
                 <td className="p-2">{p.time}</td>
-                <td className="p-2">{p.status}</td>
+                <td className="p-2">
+                  <Badge variant="status" value={p.status || ''} />
+                </td>
                 <td className="p-2">{p.engajamento}</td>
                 <td className="p-2 space-x-2">
                   <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...p })}>Editar</button>

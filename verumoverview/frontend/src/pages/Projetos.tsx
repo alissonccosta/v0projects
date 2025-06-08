@@ -9,6 +9,7 @@ import {
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import Modal from '../components/Modal';
+import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
 
 interface Project {
@@ -165,7 +166,7 @@ export default function Projetos() {
                 <td className="p-2">{p.nome}</td>
                 <td className="p-2">{p.codigo_projeto}</td>
                 <td className="p-2">
-                  <span className="px-2 py-1 rounded bg-gray-100 text-xs">{p.status}</span>
+                  <Badge variant="status" value={p.status || ''} />
                 </td>
                 <td className="p-2">{p.data_inicio_prevista}</td>
                 <td className="p-2">{p.data_fim_prevista}</td>
