@@ -23,3 +23,8 @@ export async function getNextProjectCode() {
   const res = await api.get('/api/projects/next-code');
   return res.data.code as string;
 }
+
+export async function fetchProjectActivities(id: string) {
+  const res = await api.get(`/api/projects/${id}/atividades`);
+  return res.data;
+}
