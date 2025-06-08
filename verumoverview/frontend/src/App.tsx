@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import {
   LayoutDashboard, Briefcase, Users, BarChart2, Sun, Moon, Bell,
 } from 'lucide-react';
@@ -7,13 +7,34 @@ import {
   BarChart, Bar,
 } from 'recharts';
 
-const metrics = [
+interface Metric {
+  title: string;
+  value: string;
+  icon: ComponentType<{ size?: number }>;
+  change: number;
+}
+
+interface ChartItem {
+  name: string;
+  vendas: number;
+}
+
+interface Project {
+  name: string;
+  lead: string;
+  status: string;
+  date: string;
+  avatar: string;
+  change?: number;
+}
+
+const metrics: Metric[] = [
   { title: 'Receita Mensal', value: 'R$ 120k', icon: BarChart2, change: 12 },
   { title: 'Projetos Ativos', value: '8', icon: Briefcase, change: 4 },
   { title: 'Novos Clientes', value: '25', icon: Users, change: 18 },
 ];
 
-const chartData = [
+const chartData: ChartItem[] = [
   { name: 'Jan', vendas: 40 },
   { name: 'Fev', vendas: 55 },
   { name: 'Mar', vendas: 65 },
@@ -22,14 +43,14 @@ const chartData = [
   { name: 'Jun', vendas: 90 },
 ];
 
-const projects = [
+const projects: Project[] = [
   { name: 'ERP Corporativo', lead: 'Ana Paula', status: 'Em andamento', date: '2024-02-12', avatar: 'https://i.pravatar.cc/40?img=1' },
   { name: 'Mobile Banking', lead: 'Bruno Silva', status: 'Concluído', date: '2024-03-05', avatar: 'https://i.pravatar.cc/40?img=2' },
   { name: 'Portal Cliente', lead: 'Carlos Lima', status: 'Em testes', date: '2024-04-18', avatar: 'https://i.pravatar.cc/40?img=3' },
 ];
 
 export default function App() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState<boolean>(false);
 
   return (
     <div className={dark ? 'dark' : ''}>
