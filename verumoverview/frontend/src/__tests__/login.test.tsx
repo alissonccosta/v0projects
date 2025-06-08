@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 jest.mock('../services/logger', () => ({ logAction: jest.fn() }));
 const MockAuthContext = React.createContext<any>(null);
-jest.mock('../contexts/AuthContext', () => ({ AuthContext: MockAuthContext }));
+jest.mock('../hooks/AuthContext', () => ({ AuthContext: MockAuthContext }));
 import Login from '../pages/Login';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 

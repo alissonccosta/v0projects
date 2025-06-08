@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from 'react';
 import { fetchSolicitacoes, atualizarSolicitacao } from '../services/accessRequests';
 import { logAction } from '../services/logger';
-import BackButton from '../components/BackButton';
-import { ToastContext } from '../contexts/ToastContext';
+import BackButton from '../components/modules/BackButton';
+import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 import Badge from '../components/ui/Badge';

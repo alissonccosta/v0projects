@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { solicitarAcesso } from '../services/accessRequests';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/modules/BackButton';
 
 export default function SolicitarAcesso() {
   const [email, setEmail] = useState('');
