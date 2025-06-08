@@ -18,6 +18,8 @@ Copie `.env.example` para `.env` dentro da pasta `frontend` e ajuste se necessá
 cp frontend/.env.example frontend/.env
 ```
 
+No arquivo `.env` defina a variável `VITE_API_URL` apontando para a URL da API, por padrão `http://localhost:4000`.
+
 ### Backend
 
 Copie `.env.example` para `.env` dentro da pasta `backend`:
