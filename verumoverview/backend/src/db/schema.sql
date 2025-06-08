@@ -53,11 +53,22 @@ CREATE TABLE projetos (
 );
 
 CREATE TABLE atividades (
-  id SERIAL PRIMARY KEY,
+  id_atividade UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id_projeto UUID REFERENCES projetos(id_projeto),
   titulo VARCHAR(255) NOT NULL,
   descricao TEXT,
-  projeto_id UUID REFERENCES projetos(id_projeto),
-  responsavel_id INTEGER REFERENCES usuarios(id),
+  responsavel INTEGER REFERENCES usuarios(id),
+  time INTEGER REFERENCES times(id),
+  status VARCHAR(50),
+  data_meta DATE,
+  data_limite DATE,
+  horas_estimadas NUMERIC,
+  horas_gastas NUMERIC,
+  prioridade VARCHAR(10),
+  dependencias JSONB,
+  anexos JSONB,
+  historico_atualizacoes JSONB,
+  comentarios JSONB,
   criado_em TIMESTAMP DEFAULT NOW()
 );
 
