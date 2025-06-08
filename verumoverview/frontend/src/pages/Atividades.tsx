@@ -22,7 +22,6 @@ import Card from '../components/ui/Card';
 import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import Modal from '../components/modules/Modal';
 import {
   fetchProjects,
   createProject,
