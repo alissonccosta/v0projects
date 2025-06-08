@@ -36,6 +36,12 @@ Para levantar todos os serviços (db, backend e frontend) execute na raiz do pro
 docker-compose up
 ```
 
+Se você modificou `docker-compose.yml`, execute `docker-compose build` para recriar as imagens com as novas configurações.
+
+### Dependências
+Se aplicou o ajuste de volumes para preservar os `node_modules` dentro dos containers, `docker-compose up` instalará tudo durante o build.
+Caso contrário, mantendo os volumes atuais (`./frontend:/app` e `./backend:/app`), rode `npm install` em cada pasta localmente antes de subir os serviços.
+
 A aplicação React estará em `http://localhost:3000` e o backend em `http://localhost:4000`.
 
 Comandos úteis:
