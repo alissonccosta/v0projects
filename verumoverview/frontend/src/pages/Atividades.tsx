@@ -12,6 +12,8 @@ import Skeleton from '../components/ui/Skeleton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
+import { Table, THead, Th, Td } from '../components/ui/Table';
+import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
@@ -135,6 +137,36 @@ export default function Atividades() {
         {loading ? (
           <Skeleton className="h-48 w-full" />
         ) : (
+
+          <Table>
+            <THead>
+              <tr>
+                <Th>Título</Th>
+                <Th>Status</Th>
+                <Th>Meta</Th>
+                <Th>Limite</Th>
+                <Th>Horas</Th>
+                <Th>Ações</Th>
+              </tr>
+            </THead>
+            <tbody>
+              {filtered.map(a => (
+                <tr key={a.id_atividade} className="border-t">
+                  <td className="p-2">{a.titulo}</td>
+                  <td className="p-2">
+                    <Badge variant="status" value={a.status || ''} />
+                  </td>
+                  <td className="p-2">{a.data_meta ? formatDate(a.data_meta) : ''}</td>
+                  <td className="p-2">{a.data_limite ? formatDate(a.data_limite) : ''}</td>
+                  <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
+                  <td className="p-2 space-x-2">
+                    <button aria-label="Editar" className="text-blue-600" onClick={() => setEditing({ ...a })}>Editar</button>
+                    <button aria-label="Excluir" className="text-red-600" onClick={() => handleDelete(a.id_atividade)}>Excluir</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
           <DataTable
             data={activities}
             columns={columns}

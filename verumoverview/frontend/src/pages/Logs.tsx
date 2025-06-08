@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchLogs } from '../services/auditLogs';
+import { formatDateTime } from '../utils/date';
 import BackButton from '../components/modules/BackButton';
 import Skeleton from '../components/ui/Skeleton';
 import { DataTable, Column } from '../components/ui/Table';
@@ -47,6 +48,24 @@ export default function Logs() {
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
+          <Table>
+            <THead>
+              <tr>
+                <Th>Usuário</Th>
+                <Th>Ação</Th>
+                <Th>Data</Th>
+              </tr>
+            </THead>
+            <tbody>
+              {logs.map(l => (
+                <tr key={l.id} className="border-t">
+                  <td className="p-2">{l.email || l.usuario_id}</td>
+                  <td className="p-2">{l.acao}</td>
+                  <td className="p-2">{formatDateTime(l.criado_em)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
           <DataTable
             data={logs}
             columns={columns}

@@ -15,7 +15,9 @@ import Badge from '../components/ui/Badge';
 import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
+
 
 interface Project {
   id_projeto: string;
@@ -145,6 +147,81 @@ export default function Projetos() {
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
+          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
+            <thead>
+              <tr className="bg-gray-100 dark:bg-dark-background">
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
+                Nome <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('codigo_projeto')}>
+                Código <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('status')}>
+                Status <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_inicio_prevista')}>
+                Início <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_fim_prevista')}>
+                Fim <ArrowUpDown className="inline w-4 h-4" />
+              </th>
+              <th className="p-2 text-left">Ações</th>
+            </tr>
+            <tr>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.nome}
+                  onChange={e => setFilters({ ...filters, nome: e.target.value })}
+                />
+              </th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.codigo}
+                  onChange={e => setFilters({ ...filters, codigo: e.target.value })}
+                />
+              </th>
+              <th className="p-1"></th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.inicio}
+                  onChange={e => setFilters({ ...filters, inicio: e.target.value })}
+                />
+              </th>
+              <th className="p-1">
+                <Input
+                  className="p-1"
+                  value={filters.fim}
+                  onChange={e => setFilters({ ...filters, fim: e.target.value })}
+                />
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map(p => (
+              <tr key={p.id_projeto} className="border-t">
+                <td className="p-2">{p.nome}</td>
+                <td className="p-2">{p.codigo_projeto}</td>
+                <td className="p-2">
+                  <Badge variant="status" value={p.status || ''} />
+                </td>
+                <td className="p-2">{p.data_inicio_prevista ? formatDate(p.data_inicio_prevista) : ''}</td>
+                <td className="p-2">{p.data_fim_prevista ? formatDate(p.data_fim_prevista) : ''}</td>
+                <td className="p-2 space-x-2">
+                  <button aria-label="Editar" className="text-blue-600 inline-flex items-center" onClick={() => setEditing({ ...p })}>
+                    <Pencil size={14} className="mr-1" />Editar
+                  </button>
+                  <button aria-label="Excluir" className="text-red-600 inline-flex items-center" onClick={() => handleDelete(p.id_projeto)}>
+                    <Trash size={14} className="mr-1" />Excluir
+                  </button>
+                </td>
+              </tr>
+            ))}
+            </tbody>
+          </table>
           <DataTable
             data={projects}
             columns={columns}
