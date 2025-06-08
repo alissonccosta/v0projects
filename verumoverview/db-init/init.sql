@@ -94,3 +94,12 @@ CREATE TABLE logs (
   detalhes JSONB,
   criado_em TIMESTAMP DEFAULT NOW()
 );
+
+-- Perfil administrador padrao
+INSERT INTO perfis_acesso (nome, permissoes)
+VALUES ('Administrador', '["admin"]');
+
+-- Usuario administrador padrao
+INSERT INTO usuarios (nome, email, senha_hash, perfil_id)
+VALUES ('Admin', 'admin@example.com',
+  '$2b$10$hzfKMSkIf.j4fyR29zi25uMWUGJqLPLGhwVMSENOSIvuPJBgSpun6', 1);
