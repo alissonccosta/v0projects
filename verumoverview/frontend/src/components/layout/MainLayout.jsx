@@ -25,7 +25,10 @@ const items = [
   { path: '/atividades', label: 'Atividades', icon: CheckSquare, roles: ['admin','gerente','timeleader','colaborador'] },
   { path: '/pessoas', label: 'Pessoas', icon: Users, roles: ['admin','gerente'] },
   { path: '/times', label: 'Times', icon: UserCheck, roles: ['admin','gerente','timeleader'] },
-  { path: '/controle-acesso', label: 'Controle de Acesso', icon: Shield, roles: ['admin'] }
+  { path: '/controle-acesso', label: 'Controle de Acesso', icon: Shield, roles: ['admin'] },
+  { path: '/usuarios', label: 'Usuários', icon: Users, roles: ['admin'] },
+  { path: '/perfis', label: 'Perfis', icon: Shield, roles: ['admin'] },
+  { path: '/logs', label: 'Logs', icon: LayoutDashboard, roles: ['admin'] }
 ];
 
 function Breadcrumbs() {

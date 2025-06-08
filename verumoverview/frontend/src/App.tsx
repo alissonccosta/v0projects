@@ -8,6 +8,9 @@ import Atividades from './pages/Atividades';
 import Pessoas from './pages/Pessoas';
 import Times from './pages/Times';
 import ControleAcesso from './pages/ControleAcesso';
+import Usuarios from './pages/Usuarios';
+import Perfis from './pages/Perfis';
+import Logs from './pages/Logs';
 
 export default function App() {
   return (
@@ -21,6 +24,9 @@ export default function App() {
         <Route path="pessoas" element={<Pessoas />} />
         <Route path="times" element={<Times />} />
         <Route path="controle-acesso" element={<ControleAcesso />} />
+        <Route path="usuarios" element={<Usuarios />} />
+        <Route path="perfis" element={<Perfis />} />
+        <Route path="logs" element={<Logs />} />
       </Route>
     </Routes>
   );
