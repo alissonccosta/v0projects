@@ -1,3 +1,189 @@
+import { useEffect, useState } from 'react';
+import { fetchTimes, createTime, updateTime, deleteTime } from '../services/times';
+import { fetchPeople } from '../services/people';
+import { logAction } from '../services/logger';
+
+interface Time {
+  id_time: string;
+  nome: string;
+  lider?: number;
+  capacidade_total?: number;
+  membros?: string[];
+}
+
+interface Person {
+  id_pessoa: string;
+  nome_completo: string;
+}
+
+const emptyTime: Time = {
+  id_time: '',
+  nome: '',
+  lider: undefined,
+  capacidade_total: 0,
+  membros: []
+};
+
 export default function Times() {
-  return <div>Times</div>;
+  const [times, setTimes] = useState<Time[]>([]);
+  const [people, setPeople] = useState<Person[]>([]);
+  const [editing, setEditing] = useState<Time | null>(null);
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    load();
+    loadPeople();
+  }, []);
+
+  async function load() {
+    const data = await fetchTimes();
+    setTimes(data);
+  }
+
+  async function loadPeople() {
+    const data = await fetchPeople();
+    setPeople(data);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editing) return;
+    const payload = {
+      ...editing,
+      membros: editing.membros
+    };
+    if (editing.id_time) {
+      if (editing.id_time !== '') {
+        await updateTime(editing.id_time, payload);
+        logAction('update_time', { id: editing.id_time });
+      } else {
+        const created = await createTime(payload);
+        logAction('create_time', { id: created.id_time });
+      }
+    }
+    setEditing(null);
+    load();
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm('Excluir time?')) return;
+    await deleteTime(id);
+    logAction('delete_time', { id });
+    load();
+  }
+
+  const filtered = filter
+    ? times.filter(t => t.nome.toLowerCase().includes(filter.toLowerCase()))
+    : times;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between">
+        <h1 className="text-xl font-bold">Times</h1>
+        <button
+          className="bg-secondary text-white px-4 py-2 rounded"
+          onClick={() => setEditing({ ...emptyTime })}
+        >
+          Novo Time
+        </button>
+      </div>
+
+      <div>
+        <label className="mr-2">Buscar:</label>
+        <input
+          type="text"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          className="border p-1"
+        />
+      </div>
+
+      <table className="min-w-full bg-white dark:bg-dark-background text-sm">
+        <thead>
+          <tr>
+            <th className="p-2 text-left">Nome</th>
+            <th className="p-2 text-left">Líder</th>
+            <th className="p-2 text-left">Capacidade</th>
+            <th className="p-2 text-left">Membros</th>
+            <th className="p-2 text-left">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map(t => (
+            <tr key={t.id_time} className="border-t">
+              <td className="p-2">{t.nome}</td>
+              <td className="p-2">{people.find(p => p.id_pessoa === String(t.lider))?.nome_completo || ''}</td>
+              <td className="p-2">{t.capacidade_total}</td>
+              <td className="p-2">{t.membros?.length || 0}</td>
+              <td className="p-2 space-x-2">
+                <button className="text-blue-600" onClick={() => setEditing({ ...t })}>Editar</button>
+                <button className="text-red-600" onClick={() => handleDelete(t.id_time)}>Excluir</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {editing && (
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
+          <div>
+            <label className="block">Nome</label>
+            <input
+              type="text"
+              className="border p-1 w-full"
+              value={editing.nome}
+              onChange={e => setEditing({ ...editing, nome: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block">Líder</label>
+            <select
+              className="border p-1 w-full"
+              value={editing.lider || ''}
+              onChange={e => setEditing({ ...editing, lider: e.target.value ? Number(e.target.value) : undefined })}
+            >
+              <option value="">Selecione</option>
+              {people.map(p => (
+                <option key={p.id_pessoa} value={p.id_pessoa}>{p.nome_completo}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block">Capacidade Total (h/sem)</label>
+            <input
+              type="number"
+              className="border p-1 w-full"
+              value={editing.capacidade_total || 0}
+              onChange={e => setEditing({ ...editing, capacidade_total: Number(e.target.value) })}
+            />
+          </div>
+          <div>
+            <label className="block">Membros</label>
+            <select
+              multiple
+              className="border p-1 w-full h-32"
+              value={editing.membros as string[]}
+              onChange={e => {
+                const options = Array.from(e.target.selectedOptions).map(o => o.value);
+                setEditing({ ...editing, membros: options });
+              }}
+            >
+              {people.map(p => (
+                <option key={p.id_pessoa} value={p.id_pessoa}>{p.nome_completo}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setEditing(null)} className="border px-4 py-1 rounded">
+              Cancelar
+            </button>
+            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded">
+              Salvar
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
 }
