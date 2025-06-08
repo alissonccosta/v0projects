@@ -5,7 +5,7 @@ export function Table({ children }: { children: ReactNode }) {
 }
 
 export function THead({ children }: { children: ReactNode }) {
-  return <thead className="bg-secondary text-white">{children}</thead>;
+  return <thead className="bg-[#EAE0F5] text-secondary">{children}</thead>;
 }
 
 export function Th({ children }: { children: ReactNode }) {
