@@ -42,6 +42,7 @@ describe('Project routes', () => {
   });
 
   it('should create project', async () => {
+    mockedQuery.mockResolvedValueOnce({ rows: [{ code: '2' }] });
     mockedQuery.mockResolvedValueOnce({ rows: [{ id_projeto: '2', nome: 'New' }] });
     const res = await request(app)
       .post('/api/projects')

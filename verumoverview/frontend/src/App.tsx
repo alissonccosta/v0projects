@@ -1,3 +1,16 @@
+import { Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import SolicitarAcesso from './pages/SolicitarAcesso';
+import MainLayout from './components/layout/MainLayout';
+import Dashboard from './pages/Dashboard';
+import Projetos from './pages/Projetos';
+import Atividades from './pages/Atividades';
+import Pessoas from './pages/Pessoas';
+import Times from './pages/Times';
+import ControleAcesso from './pages/ControleAcesso';
+import Usuarios from './pages/Usuarios';
+import Perfis from './pages/Perfis';
+import Logs from './pages/Logs';
 import { useState, type ComponentType } from 'react';
 import {
   LayoutDashboard, Briefcase, Users, BarChart2, Sun, Moon, Bell,
@@ -49,10 +62,26 @@ const projects: Project[] = [
   { name: 'Portal Cliente', lead: 'Carlos Lima', status: 'Em testes', date: '2024-04-18', avatar: 'https://i.pravatar.cc/40?img=3' },
 ];
 
+
 export default function App() {
   const [dark, setDark] = useState<boolean>(false);
 
   return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/solicitar-acesso" element={<SolicitarAcesso />} />
+      <Route path="/" element={<MainLayout />}> 
+        <Route index element={<Dashboard />} />
+        <Route path="projetos" element={<Projetos />} />
+        <Route path="atividades" element={<Atividades />} />
+        <Route path="pessoas" element={<Pessoas />} />
+        <Route path="times" element={<Times />} />
+        <Route path="controle-acesso" element={<ControleAcesso />} />
+        <Route path="usuarios" element={<Usuarios />} />
+        <Route path="perfis" element={<Perfis />} />
+        <Route path="logs" element={<Logs />} />
+      </Route>
+    </Routes>
     <div className={dark ? 'dark' : ''}>
       <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
         {/* Sidebar */}
