@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { logAction } from '../services/logger';
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -9,6 +10,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, senha);
+    logAction('login');
   };
 
   return (
