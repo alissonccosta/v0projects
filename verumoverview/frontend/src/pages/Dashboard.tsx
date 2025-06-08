@@ -24,6 +24,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton from '../components/ui/Skeleton';
 import { Table, THead, Th, Td } from '../components/ui/Table';
+import { formatDateTime, formatDate } from '../utils/date';
 import {
   fetchMetrics,
   fetchRecentActivities,
@@ -126,7 +127,7 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-          <span className="text-sm text-gray-medium">Última atualização: {lastUpdate.toLocaleDateString()} {lastUpdate.toLocaleTimeString()}</span>
+          <span className="text-sm text-gray-medium">Última atualização: {formatDateTime(lastUpdate)}</span>
           <Button onClick={refresh} className="flex items-center gap-1">
             <RefreshCw size={16} /> Atualizar Dados
           </Button>
@@ -259,7 +260,7 @@ export default function Dashboard() {
                         {a.status}
                       </Badge>
                     </Td>
-                    <Td>{a.date}</Td>
+                    <Td>{formatDate(a.date)}</Td>
                   </tr>
                 ))}
               </tbody>
