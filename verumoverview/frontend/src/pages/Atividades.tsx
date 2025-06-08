@@ -7,6 +7,7 @@ import {
 } from '../services/activities';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Activity {
   id_atividade: string;
@@ -98,17 +99,17 @@ export default function Atividades() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
+        <Table>
+          <THead>
             <tr>
-              <th className="p-2 text-left">Título</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Meta</th>
-              <th className="p-2 text-left">Limite</th>
-              <th className="p-2 text-left">Horas</th>
-              <th className="p-2 text-left">Ações</th>
+              <Th>Título</Th>
+              <Th>Status</Th>
+              <Th>Meta</Th>
+              <Th>Limite</Th>
+              <Th>Horas</Th>
+              <Th>Ações</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {filtered.map(a => (
               <tr key={a.id_atividade} className="border-t">
@@ -124,7 +125,7 @@ export default function Atividades() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {editing && (

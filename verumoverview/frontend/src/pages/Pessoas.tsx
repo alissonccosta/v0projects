@@ -7,6 +7,7 @@ import {
 } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Person {
   id_pessoa: string;
@@ -100,18 +101,18 @@ export default function Pessoas() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
+        <Table>
+          <THead>
             <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Cargo</th>
-              <th className="p-2 text-left">Time</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Engajamento</th>
-              <th className="p-2 text-left">Ações</th>
+              <Th>Nome</Th>
+              <Th>Email</Th>
+              <Th>Cargo</Th>
+              <Th>Time</Th>
+              <Th>Status</Th>
+              <Th>Engajamento</Th>
+              <Th>Ações</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {filtered.map(p => (
               <tr key={p.id_pessoa} className="border-t">
@@ -128,7 +129,7 @@ export default function Pessoas() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {editing && (
