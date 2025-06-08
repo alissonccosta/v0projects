@@ -31,6 +31,10 @@ export default class ActivityController {
 
   static async create(req: Request, res: Response): Promise<void> {
     const fields = req.body as Activity;
+    if (!fields.id_projeto) {
+      res.status(400).json({ message: 'id_projeto é obrigatório' });
+      return;
+    }
     if (typeof fields.horas_estimadas === 'string') {
       fields.horas_estimadas = toMinutes(fields.horas_estimadas);
     }

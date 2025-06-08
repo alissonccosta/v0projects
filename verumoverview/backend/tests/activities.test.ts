@@ -35,9 +35,17 @@ describe('Activity routes', () => {
     const res = await request(app)
       .post('/api/atividades')
       .set('Authorization', `Bearer ${token}`)
-      .send({ titulo: 'New' });
+      .send({ titulo: 'New', id_projeto: '1' });
     expect(res.status).toBe(201);
     expect(res.body).toEqual({ id_atividade: '2', titulo: 'New' });
+  });
+
+  it('returns 400 when id_projeto is missing', async () => {
+    const res = await request(app)
+      .post('/api/atividades')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ titulo: 'New' });
+    expect(res.status).toBe(400);
   });
 
   it('updates activity', async () => {
