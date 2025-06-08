@@ -9,6 +9,8 @@ import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import Badge from '../components/ui/Badge';
+import { Table, THead, Th, Td } from '../components/ui/Table';
 
 interface Activity {
   id_atividade: string;
@@ -81,7 +83,7 @@ export default function Atividades() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Atividades</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Atividades</h1>
         </div>
         <Button onClick={() => setEditing({ ...emptyActivity })}>
           Nova Atividade
@@ -100,22 +102,24 @@ export default function Atividades() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
+        <Table>
+          <THead>
             <tr>
-              <th className="p-2 text-left">Título</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Meta</th>
-              <th className="p-2 text-left">Limite</th>
-              <th className="p-2 text-left">Horas</th>
-              <th className="p-2 text-left">Ações</th>
+              <Th>Título</Th>
+              <Th>Status</Th>
+              <Th>Meta</Th>
+              <Th>Limite</Th>
+              <Th>Horas</Th>
+              <Th>Ações</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {filtered.map(a => (
               <tr key={a.id_atividade} className="border-t">
                 <td className="p-2">{a.titulo}</td>
-                <td className="p-2">{a.status}</td>
+                <td className="p-2">
+                  <Badge variant="status" value={a.status || ''} />
+                </td>
                 <td className="p-2">{a.data_meta}</td>
                 <td className="p-2">{a.data_limite}</td>
                 <td className="p-2">{a.horas_gastas || 0}/{a.horas_estimadas}</td>
@@ -126,7 +130,7 @@ export default function Atividades() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {editing && (

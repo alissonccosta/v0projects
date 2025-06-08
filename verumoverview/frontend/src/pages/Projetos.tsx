@@ -9,6 +9,7 @@ import {
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
 import Modal from '../components/Modal';
+import Badge from '../components/ui/Badge';
 import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -109,7 +110,7 @@ export default function Projetos() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h1 className="text-xl font-bold">Projetos</h1>
+          <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
         <Button onClick={openNewProject} className="flex items-center gap-1">
           <Plus size={16} /> Novo Projeto
@@ -129,9 +130,9 @@ export default function Projetos() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-dark-background">
+        <Table>
+          <THead>
+            <tr>
               <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
                 Nome <ArrowUpDown className="inline w-4 h-4" />
               </th>
@@ -181,14 +182,14 @@ export default function Projetos() {
               </th>
               <th></th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {sorted.map(p => (
               <tr key={p.id_projeto} className="border-t">
                 <td className="p-2">{p.nome}</td>
                 <td className="p-2">{p.codigo_projeto}</td>
                 <td className="p-2">
-                  <span className="px-2 py-1 rounded bg-gray-100 text-xs">{p.status}</span>
+                  <Badge variant="status" value={p.status || ''} />
                 </td>
                 <td className="p-2">{p.data_inicio_prevista}</td>
                 <td className="p-2">{p.data_fim_prevista}</td>
@@ -203,7 +204,7 @@ export default function Projetos() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       <Modal isOpen={!!editing} title={editing?.id_projeto ? 'Editar Projeto' : 'Novo Projeto'} onClose={() => setEditing(null)}>
