@@ -19,6 +19,7 @@ import Input from '../components/ui/Input';
 import InputDate from '../components/ui/InputDate';
 import { formatDate } from '../utils/date';
 import { DataTable, Column } from '../components/ui/Table';
+import Card from '../components/ui/Card';
 
 
 interface Project {
