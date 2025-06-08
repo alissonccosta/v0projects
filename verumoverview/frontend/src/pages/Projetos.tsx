@@ -12,9 +12,10 @@ import Modal from '../components/modules/Modal';
 import { ToastContext } from '../hooks/ToastContext';
 import Skeleton from '../components/ui/Skeleton';
 import Badge from '../components/ui/Badge';
-import { ArrowUpDown, Plus, Trash, Pencil } from 'lucide-react';
+import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import { DataTable, Column } from '../components/ui/Table';
 
 interface Project {
   id_projeto: string;
@@ -39,9 +40,6 @@ const emptyProject: Project = {
 export default function Projetos() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editing, setEditing] = useState<Project | null>(null);
-  const [statusFilter, setStatusFilter] = useState('');
-  const [filters, setFilters] = useState({ nome: '', codigo: '', inicio: '', fim: '' });
-  const [sort, setSort] = useState<{ column: string; asc: boolean }>({ column: '', asc: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const { showToast } = useContext(ToastContext);
@@ -91,27 +89,35 @@ export default function Projetos() {
     setEditing({ ...emptyProject, codigo_projeto: code });
   }
 
-  function toggleSort(column: string) {
-    setSort(prev => ({ column, asc: prev.column === column ? !prev.asc : true }));
-  }
+  const columns: Column<Project>[] = [
+    { key: 'nome', header: 'Nome', sortable: true, filterType: 'text' },
+    { key: 'codigo_projeto', header: 'Código', sortable: true, filterType: 'text' },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      filterType: 'select',
+      render: p => <Badge variant="status" value={p.status || ''} />,
+    },
+    { key: 'data_inicio_prevista', header: 'Início', sortable: true },
+    { key: 'data_fim_prevista', header: 'Fim', sortable: true },
+    {
+      key: 'acoes',
+      header: 'Ações',
+      render: p => (
+        <div className="flex gap-2">
+          <button aria-label="Editar" onClick={() => setEditing({ ...p })}>
+            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+          </button>
+          <button aria-label="Excluir" onClick={() => handleDelete(p.id_projeto)}>
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
-  const filtered = projects.filter(p => {
-    if (statusFilter && p.status !== statusFilter) return false;
-    if (filters.nome && !p.nome.toLowerCase().includes(filters.nome.toLowerCase())) return false;
-    if (filters.codigo && !(p.codigo_projeto || '').includes(filters.codigo)) return false;
-    if (filters.inicio && !(p.data_inicio_prevista || '').includes(filters.inicio)) return false;
-    if (filters.fim && !(p.data_fim_prevista || '').includes(filters.fim)) return false;
-    return true;
-  });
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (!sort.column) return 0;
-    const valA = (a as any)[sort.column] || '';
-    const valB = (b as any)[sort.column] || '';
-    if (valA < valB) return sort.asc ? -1 : 1;
-    if (valA > valB) return sort.asc ? 1 : -1;
-    return 0;
-  });
 
   return (
     <div className="space-y-4">
@@ -121,101 +127,21 @@ export default function Projetos() {
           <h1 className="text-2xl font-semibold text-secondary mb-4">Projetos</h1>
         </div>
         <Button onClick={openNewProject} className="flex items-center gap-1">
-          <Plus size={16} /> Novo Projeto
+          <PlusIcon className="w-5 h-5" /> Novo Projeto
         </Button>
       </div>
 
-      <div>
-        <label className="mr-2">Status:</label>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="border p-1 rounded focus:outline-none focus:ring-2 focus:ring-secondary">
-          <option value="">Todos</option>
-          <option>Backlog</option>
-          <option>Documentação</option>
-          <option>Execução</option>
-          <option>Acompanhamento</option>
-          <option>Handoff</option>
-          <option>Sustentação</option>
-        </select>
-      </div>
       <div className="overflow-x-auto">
         {loading ? (
           <Skeleton className="h-60 w-full" />
         ) : (
-          <table className="min-w-full bg-white dark:bg-dark-background text-sm rounded shadow">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-dark-background">
-              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('nome')}>
-                Nome <ArrowUpDown className="inline w-4 h-4" />
-              </th>
-              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('codigo_projeto')}>
-                Código <ArrowUpDown className="inline w-4 h-4" />
-              </th>
-              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('status')}>
-                Status <ArrowUpDown className="inline w-4 h-4" />
-              </th>
-              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_inicio_prevista')}>
-                Início <ArrowUpDown className="inline w-4 h-4" />
-              </th>
-              <th className="p-2 text-left cursor-pointer" onClick={() => toggleSort('data_fim_prevista')}>
-                Fim <ArrowUpDown className="inline w-4 h-4" />
-              </th>
-              <th className="p-2 text-left">Ações</th>
-            </tr>
-            <tr>
-              <th className="p-1">
-                <Input
-                  className="p-1"
-                  value={filters.nome}
-                  onChange={e => setFilters({ ...filters, nome: e.target.value })}
-                />
-              </th>
-              <th className="p-1">
-                <Input
-                  className="p-1"
-                  value={filters.codigo}
-                  onChange={e => setFilters({ ...filters, codigo: e.target.value })}
-                />
-              </th>
-              <th className="p-1"></th>
-              <th className="p-1">
-                <Input
-                  className="p-1"
-                  value={filters.inicio}
-                  onChange={e => setFilters({ ...filters, inicio: e.target.value })}
-                />
-              </th>
-              <th className="p-1">
-                <Input
-                  className="p-1"
-                  value={filters.fim}
-                  onChange={e => setFilters({ ...filters, fim: e.target.value })}
-                />
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map(p => (
-              <tr key={p.id_projeto} className="border-t">
-                <td className="p-2">{p.nome}</td>
-                <td className="p-2">{p.codigo_projeto}</td>
-                <td className="p-2">
-                  <Badge variant="status" value={p.status || ''} />
-                </td>
-                <td className="p-2">{p.data_inicio_prevista}</td>
-                <td className="p-2">{p.data_fim_prevista}</td>
-                <td className="p-2 space-x-2">
-                  <button aria-label="Editar" className="text-blue-600 inline-flex items-center" onClick={() => setEditing({ ...p })}>
-                    <Pencil size={14} className="mr-1" />Editar
-                  </button>
-                  <button aria-label="Excluir" className="text-red-600 inline-flex items-center" onClick={() => handleDelete(p.id_projeto)}>
-                    <Trash size={14} className="mr-1" />Excluir
-                  </button>
-                </td>
-              </tr>
-            ))}
-            </tbody>
-          </table>
+          <DataTable
+            data={projects}
+            columns={columns}
+            rowKey={p => p.id_projeto}
+            globalSearch
+            rowsPerPage={10}
+          />
         )}
       </div>
 
