@@ -7,6 +7,8 @@ import {
 } from '../services/people';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
 import { Table, THead} from '../components/ui/Table';
 
@@ -83,12 +85,9 @@ export default function Pessoas() {
           <BackButton />
           <h1 className="text-2xl font-semibold text-secondary mb-4">Pessoas</h1>
         </div>
-        <button
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700"
-          onClick={() => setEditing({ ...emptyPerson })}
-        >
+        <Button onClick={() => setEditing({ ...emptyPerson })}>
           Nova Pessoa
-        </button>
+        </Button>
       </div>
 
       <div>
@@ -139,46 +138,46 @@ export default function Pessoas() {
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
           <div>
             <label className="block">Nome Completo</label>
-            <input
+            <Input
               type="text"
-              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.nome_completo ? 'input-error' : ''}`}
+              className="p-1"
               value={editing.nome_completo}
               onChange={e => {
                 setEditing({ ...editing, nome_completo: e.target.value });
                 if (errors.nome_completo) setErrors({ ...errors, nome_completo: '' });
               }}
               required
+              error={errors.nome_completo}
             />
-            {errors.nome_completo && <span className="error-message">{errors.nome_completo}</span>}
           </div>
           <div>
             <label className="block">Email</label>
-            <input
+            <Input
               type="email"
-              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.email ? 'input-error' : ''}`}
+              className="p-1"
               value={editing.email}
               onChange={e => {
                 setEditing({ ...editing, email: e.target.value });
                 if (errors.email) setErrors({ ...errors, email: '' });
               }}
               required
+              error={errors.email}
             />
-            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
           <div>
             <label className="block">Cargo/Função</label>
-            <input
+            <Input
               type="text"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="p-1"
               value={editing.cargo_funcao}
               onChange={e => setEditing({ ...editing, cargo_funcao: e.target.value })}
             />
           </div>
           <div>
             <label className="block">Time</label>
-            <input
+            <Input
               type="text"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="p-1"
               value={editing.time}
               onChange={e => setEditing({ ...editing, time: e.target.value })}
             />
@@ -198,9 +197,9 @@ export default function Pessoas() {
           </div>
           <div>
             <label className="block">Engajamento</label>
-            <input
+            <Input
               type="number"
-              className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="p-1"
               value={editing.engajamento || 0}
               onChange={e => setEditing({ ...editing, engajamento: Number(e.target.value) })}
             />
@@ -209,9 +208,9 @@ export default function Pessoas() {
             <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
+            <Button type="submit" className="py-1">
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       )}

@@ -7,6 +7,8 @@ import {
 } from '../services/activities';
 import { logAction } from '../services/logger';
 import BackButton from '../components/BackButton';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
 import { Table, THead, Th, Td } from '../components/ui/Table';
 
@@ -83,9 +85,9 @@ export default function Atividades() {
           <BackButton />
           <h1 className="text-2xl font-semibold text-secondary mb-4">Atividades</h1>
         </div>
-        <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-purple-700" onClick={() => setEditing({ ...emptyActivity })}>
+        <Button onClick={() => setEditing({ ...emptyActivity })}>
           Nova Atividade
-        </button>
+        </Button>
       </div>
 
       <div>
@@ -135,16 +137,17 @@ export default function Atividades() {
         <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-background p-4 rounded shadow space-y-2">
           <div>
             <label className="block">Título</label>
-            <input
-              type="text"
-              className={`border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary ${errors.titulo ? 'input-error' : ''}`}
-              value={editing.titulo}
-              onChange={e => {
-                setEditing({ ...editing, titulo: e.target.value });
-                if (errors.titulo) setErrors({ ...errors, titulo: '' });
-              }}
-              required
-            />
+          <Input
+            type="text"
+            className="p-1"
+            value={editing.titulo}
+            onChange={e => {
+              setEditing({ ...editing, titulo: e.target.value });
+              if (errors.titulo) setErrors({ ...errors, titulo: '' });
+            }}
+            required
+            error={errors.titulo}
+          />
             {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
           <div>
@@ -161,25 +164,41 @@ export default function Atividades() {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Data Meta</label>
-              <input type="date" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.data_meta || ''}
-                onChange={e => setEditing({ ...editing, data_meta: e.target.value })} />
+              <Input
+                type="date"
+                className="p-1"
+                value={editing.data_meta || ''}
+                onChange={e => setEditing({ ...editing, data_meta: e.target.value })}
+              />
             </div>
             <div className="flex-1">
               <label className="block">Data Limite</label>
-              <input type="date" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.data_limite || ''}
-                onChange={e => setEditing({ ...editing, data_limite: e.target.value })} />
+              <Input
+                type="date"
+                className="p-1"
+                value={editing.data_limite || ''}
+                onChange={e => setEditing({ ...editing, data_limite: e.target.value })}
+              />
             </div>
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="block">Horas Estimadas</label>
-              <input type="number" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.horas_estimadas || 0}
-                onChange={e => setEditing({ ...editing, horas_estimadas: Number(e.target.value) })} />
+              <Input
+                type="number"
+                className="p-1"
+                value={editing.horas_estimadas || 0}
+                onChange={e => setEditing({ ...editing, horas_estimadas: Number(e.target.value) })}
+              />
             </div>
             <div className="flex-1">
               <label className="block">Horas Gastas</label>
-              <input type="number" className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.horas_gastas || 0}
-                onChange={e => setEditing({ ...editing, horas_gastas: Number(e.target.value) })} />
+              <Input
+                type="number"
+                className="p-1"
+                value={editing.horas_gastas || 0}
+                onChange={e => setEditing({ ...editing, horas_gastas: Number(e.target.value) })}
+              />
             </div>
           </div>
           <div>
@@ -195,9 +214,9 @@ export default function Atividades() {
             <button type="button" onClick={() => setEditing(null)} className="border border-secondary text-secondary px-4 py-1 rounded hover:bg-purple-50">
               Cancelar
             </button>
-            <button type="submit" className="bg-secondary text-white px-4 py-1 rounded hover:bg-purple-700">
+            <Button type="submit" className="py-1">
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       )}
