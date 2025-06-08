@@ -9,6 +9,7 @@ import projectRoutes from './routes/projectRoutes';
 import activityRoutes from './routes/activityRoutes';
 import personRoutes from './routes/personRoutes';
 import timeRoutes from './routes/timeRoutes';
+import accessRequestRoutes from './routes/accessRequestRoutes';
 
 const app = express();
 app.use(bodyParser.json());
@@ -22,6 +23,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/atividades', activityRoutes);
 app.use('/api/pessoas', personRoutes);
 app.use('/api/times', timeRoutes);
+app.use('/api/solicitacoes-acesso', accessRequestRoutes);
 app.use('/logs', logRoutes);
 
 const PORT = process.env.PORT || 4000;
