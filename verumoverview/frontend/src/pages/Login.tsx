@@ -31,10 +31,18 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-primary dark:bg-dark-background p-4">
-      <div className="w-full max-w-sm">
-        <Card title="VerumOverview">
-          <form onSubmit={handleSubmit} className="space-y-2">
+    <div className="min-h-screen grid md:grid-cols-2 bg-gradient-to-br from-primaryDark via-primary to-primaryLight dark:from-dark-background dark:via-dark-card dark:to-primaryDark">
+      <div className="hidden md:flex items-center justify-center">
+        <img
+          src="https://source.unsplash.com/600x800/?technology"
+          alt="Ilustração"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="flex items-center justify-center p-6">
+        <Card className="w-full max-w-sm p-6">
+          <h1 className="text-2xl font-bold text-center text-primary mb-4">VerumOverview</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               type="email"
               placeholder="Email"
