@@ -43,7 +43,7 @@ const emptyActivity: Activity = {
   data_limite: '',
   horas_estimadas: 0,
   horas_gastas: 0,
-  prioridade: 'Media',
+  prioridade: 'Média'
   responsavel: undefined
 };
 
@@ -323,8 +323,10 @@ export default function Atividades() {
             <label className="block">Prioridade</label>
             <select className="border p-1 w-full rounded focus:outline-none focus:ring-2 focus:ring-secondary" value={editing.prioridade}
               onChange={e => setEditing({ ...editing, prioridade: e.target.value })}>
+              <option>Emergencial</option>
+              <option>Muito Alta</option>
               <option>Alta</option>
-              <option>Media</option>
+              <option>Média</option>
               <option>Baixa</option>
             </select>
           </div>

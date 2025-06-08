@@ -13,7 +13,7 @@ export default {
         primaryDark: designTokens.colors.primaryDark,
         white: designTokens.colors.white,
         status: designTokens.colors.status,
-        priority: designTokens.colors.priority,
+        prioridade: designTokens.colors.prioridade,
         indicators: designTokens.colors.indicators,
         dark: designTokens.colors.dark,
         gray: designTokens.colors.gray

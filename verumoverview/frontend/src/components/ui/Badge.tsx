@@ -10,9 +10,11 @@ const styles = {
     vermelho: 'bg-status-vermelho text-white'
   },
   prioridade: {
-    alta: 'bg-prioridade-alta text-white',
-    media: 'bg-prioridade-media text-black',
-    baixa: 'bg-prioridade-baixa text-white'
+    Emergencial: 'bg-[#D63031] text-white',
+    'Muito Alta': 'bg-[#E17055] text-white',
+    Alta: 'bg-[#FDCB6E] text-black',
+    Média: 'bg-[#00B894] text-white',
+    Baixa: 'bg-[#0984E3] text-white'
   },
   indicador: {
     positivo: 'bg-indicador-positivo text-white',

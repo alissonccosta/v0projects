@@ -12,8 +12,10 @@ A plataforma utiliza um design moderno, clean e visualmente atrativo. As interfa
 - **Vermelho:** `#D63031`
 
 ## Cores de Criticidade/Prioridade
-- **Alta:** `#E17055`
-- **Media:** `#FDCB6E`
+- **Emergencial:** `#D63031`
+- **Muito Alta:** `#E17055`
+- **Alta:** `#FDCB6E`
+- **Média:** `#00B894`
 - **Baixa:** `#0984E3`
 
 ## Cores para Indicadores e Insights
