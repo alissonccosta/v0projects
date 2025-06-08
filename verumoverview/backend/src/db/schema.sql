@@ -32,8 +32,14 @@ CREATE TABLE pessoas (
 );
 
 CREATE TABLE times (
-  id SERIAL PRIMARY KEY,
-  nome VARCHAR(255) NOT NULL
+  id_time UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome VARCHAR(255) NOT NULL,
+  lider INTEGER REFERENCES usuarios(id),
+  capacidade_total INTEGER,
+  membros JSONB,
+  anexos JSONB,
+  historico_alteracoes JSONB,
+  comentarios JSONB
 );
 
 CREATE TABLE projetos (
@@ -67,7 +73,7 @@ CREATE TABLE atividades (
   titulo VARCHAR(255) NOT NULL,
   descricao TEXT,
   responsavel INTEGER REFERENCES usuarios(id),
-  time INTEGER REFERENCES times(id),
+  time UUID REFERENCES times(id_time),
   status VARCHAR(50),
   data_meta DATE,
   data_limite DATE,
