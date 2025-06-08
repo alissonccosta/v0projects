@@ -44,6 +44,13 @@ export default class ProjectController {
       time_responsavel
     } = req.body as Project;
     try {
+      let codigo = codigo_projeto;
+      if (!codigo) {
+        const seq = await db.query(
+          'SELECT COALESCE(MAX(CAST(codigo_projeto AS INTEGER)),0) + 1 AS code FROM projetos'
+        );
+        codigo = (seq.rows[0]?.code ?? 1).toString();
+      }
       const result = await db.query(
         `INSERT INTO projetos(
           nome, codigo_projeto, objetivo, justificativa, stakeholders, status,
@@ -52,7 +59,7 @@ export default class ProjectController {
         ) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
         [
           nome,
-          codigo_projeto,
+          codigo,
           objetivo,
           justificativa,
           JSON.stringify(stakeholders || {}),
@@ -69,6 +76,18 @@ export default class ProjectController {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Erro ao criar projeto' });
+    }
+  }
+
+  static async nextCode(_req: Request, res: Response): Promise<void> {
+    try {
+      const result = await db.query(
+        'SELECT COALESCE(MAX(CAST(codigo_projeto AS INTEGER)),0) + 1 AS code FROM projetos'
+      );
+      res.json({ code: result.rows[0].code });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Erro ao gerar código' });
     }
   }
 
