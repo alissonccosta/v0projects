@@ -33,24 +33,30 @@ Objetivo: projeto, dependências, lint, formatter, env, CI, docs, plano e QA.
 
 ---
 
-## Fase 1 — Design system e shell
+## Fase 1 — Design system e shell ✅ (concluída em 12/07/2026)
 
 Objetivo: tokens, fontes, componentes base, sidebar, navegação mobile, header, responsividade.
 
-- [ ] Tokens completos da paleta (seção 12.2) como design tokens Tailwind
-- [ ] Fontes Fraunces (títulos) e Manrope (interface) com fallback `system-ui`
-- [ ] shadcn/ui inicializado e totalmente tematizado (proibido visual default — seção 0.1)
-- [ ] Escala de espaçamento (4px), radius (12/18/24/999) e motion (120–220ms, reduced motion)
-- [ ] Phosphor Icons padronizado (16/20/24, peso consistente; nunca emoji)
-- [ ] `AppShell`: sidebar desktop (224–248px), header 64–72px, breadcrumbs, área de sync
-- [ ] Navegação mobile: barra inferior (Início, Necessidades, Tarefas, Compras, Mais) + folha "Mais" (Estoque, Decisões, Jornada, Orçamento, Configurações)
-- [ ] Componentes essenciais estáticos: MetricCard, StatusBadge (mapeamento centralizado),
-      EmptyState, ConfirmDialog, SyncIndicator (estados visuais)
-- [ ] Estados obrigatórios de layout: loading, vazio, erro (seção 13.4)
-- [ ] Rotas placeholder do app shell com navegação real entre elas (seção 11.1)
+- [x] Tokens completos da paleta (seção 12.2) como design tokens Tailwind v4 (`globals.css`),
+      incluindo variantes suaves e "strong" para contraste AA
+- [x] Fontes Fraunces (títulos) e Manrope (interface) auto-hospedadas, fallback `system-ui`
+- [x] Base de componentes padrão shadcn/ui totalmente tematizada — vendorizada sobre Radix
+      (registry bloqueada pela rede; ver D-015): Button, Badge, Card, Dialog, Sheet,
+      Skeleton, Separator, Toaster
+- [x] Escala de espaçamento (4px), radius (12/18/24/999) e motion (120–220ms, reduced motion)
+- [x] Phosphor Icons padronizado (16/20/24, regular; `fill` para navegação ativa; nunca emoji)
+- [x] `AppShell`: sidebar desktop 240px, header 64px com breadcrumb, área de sync,
+      skip link e landmarks
+- [x] Navegação mobile: barra inferior (Início, Necessidades, Tarefas, Compras, Mais) + folha "Mais" (Estoque, Decisões, Jornada, Orçamento, Configurações), toque ≥44px
+- [x] Componentes essenciais: MetricCard, StatusBadge (mapeamento centralizado dos 9
+      domínios, testado por completude), EmptyState, ConfirmDialog, SyncIndicator
+- [x] Estados obrigatórios de layout: loading (skeleton), vazio (EmptyState), erro (retry)
+- [x] Rotas da seção 11.1 com navegação real e placeholders honestos (sem controles mortos);
+      `/app/design-system` como referência viva dos componentes
 
-**Gate:** capturas 390/768/1440 · zero overflow horizontal · navegação funcional ·
-toque ≥44px · contraste AA
+**Gate:** capturas 390/768/1440 ✅ · zero overflow (testado por rota) ✅ · navegação
+funcional (E2E desktop e mobile) ✅ · toque ≥44px (testado) ✅ · contraste AA (axe) ✅
+(evidências no `QA_REPORT.md`)
 
 ## Fase 2 — Banco e autenticação
 

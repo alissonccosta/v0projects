@@ -60,7 +60,67 @@ Pendências P0/P1/P2: **nenhuma**.
 
 ---
 
-## Fases 1–9
+## Fase 1 — Design system e shell · **APROVADA** · 12/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                             |
+| ----------- | ---------------------- | --------------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                           |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                        |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                          |
+| Unitários   | `npm run test`         | ✅ 6 arquivos, 22 testes aprovados                                    |
+| Build       | `npm run build`        | ✅ 12 rotas do app estáticas                                          |
+| E2E         | `npm run e2e`          | ✅ 16 aprovados, 0 falhas (5 pulados: testes específicos de viewport) |
+
+### Testes adicionados na fase
+
+- **StatusBadge/STATUS_CONFIG**: completude — todos os valores dos 9 domínios
+  (seções 9 e 7.6) têm rótulo pt-BR, tom e ícone, e todos renderizam.
+- **Navegação**: ordem da sidebar (11.2), barra inferior e folha "Mais" (11.3),
+  unicidade das rotas (11.1), resolução de módulo ativo por pathname.
+- **ModulePlaceholder**: todos os módulos em preparação sem nenhum controle
+  interativo (seção 0.2).
+- **ConfirmDialog**: só executa após confirmação; cancelar não executa.
+- **E2E (desktop/tablet/mobile)**: raiz → painel; navegação completa pela sidebar
+  com `aria-current`; breadcrumb; barra inferior com alvos de toque ≥44px
+  medidos; folha "Mais" abre, navega e fecha; **overflow horizontal testado em
+  todas as 12 rotas**; axe (WCAG 2.2 AA) sem violações graves em painel,
+  necessidades e design system; confirmação + toast de ponta a ponta.
+
+### Verificação visual (evidências em `docs/qa/fase-1/`)
+
+| Viewport | Capturas                                                                     |
+| -------- | ---------------------------------------------------------------------------- |
+| 390×844  | `dashboard-`, `necessidades-`, `design-system-`, `mais-sheet-mobile-390.png` |
+| 768×1024 | `dashboard-`, `necessidades-`, `design-system-`, `mais-sheet-tablet-768.png` |
+| 1440×900 | `dashboard-`, `necessidades-`, `design-system-desktop-1440.png`              |
+
+Conferido manualmente: Fraunces nos títulos e Manrope no corpo; paleta do quarto
+aplicada em sidebar, badges, cards e estados; folha "Mais" com radius 24px e
+overlay discreto; navegação ativa em sage/moss com ícone `fill`; chip real
+"Notion não conectado" (estado verdadeiro até a Fase 7); nenhum controle morto.
+
+### Correções feitas durante o gate
+
+- Contraste AA: textos pequenos sobre fundos suaves reprovavam (4,29:1) — criadas
+  variantes `--*-strong` via `color-mix` e ajustado o MetricCard enfatizado (D-017).
+- Cleanup da Testing Library registrado manualmente (sem `globals`, o automático
+  não roda).
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                                                               | Plano                              |
+| ---- | ------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| P3   | Ícones PWA e marca definitiva pendentes                                                                | Fase 8 (manifest e instalação)     |
+| P3   | Sidebar sem perfil/sair — dependem de autenticação                                                     | Fase 2 (decisão D-019)             |
+| P3   | Placeholders não têm ação de navegação cruzada (por definição, sem controles até os módulos existirem) | resolve-se conforme módulos chegam |
+
+Pendências P0/P1/P2: **nenhuma**.
+
+---
+
+## Fases 2–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

@@ -6,6 +6,47 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 1 — 12/07/2026
+
+### D-015 · Componentes base vendorizados manualmente (padrão shadcn/ui sobre Radix)
+
+A política de rede do ambiente permite apenas registries de pacotes (npm etc.) e
+bloqueia `ui.shadcn.com`, então `shadcn init/add` não funciona aqui. Como o modelo
+do shadcn/ui é justamente "copie e possua os componentes", eles foram escritos à mão
+em `src/components/ui/` sobre os primitives do Radix (instalados via npm), com a
+mesma API e estrutura — e já nasceram tematizados com a paleta do SDD, o que
+elimina qualquer estágio com o visual default (proibido pela seção 0.1).
+Componentes futuros seguem o mesmo padrão.
+
+### D-016 · Breakpoint do shell em 1024px (lg)
+
+A sidebar aparece de 1024px em diante; 768px (tablet retrato) usa o padrão mobile
+(header + barra inferior), que funciona bem ao toque. A seção 13.3 descreve a
+sidebar para desktop; 768 não comporta sidebar fixa + conteúdo confortável.
+
+### D-017 · Variantes "strong" de cor para texto pequeno
+
+Os tons de status do SDD (warning `#B3833E`, info `#667D7A` etc.) não atingem
+4,5:1 sobre os fundos suaves dos badges. Textos pequenos usam variantes
+escurecidas via `color-mix` com forest-900 (`--warning-strong` etc.), mantendo a
+paleta como base e cumprindo WCAG AA (seção 31). Verificado por axe no E2E.
+
+### D-018 · Página interna `/app/design-system`
+
+Referência viva de tokens e componentes, fora da navegação principal. Valores de
+exemplo são explicitamente rotulados como exemplo (não violam a regra de dados
+falsos silenciosos) e a página serve de alvo estável para QA visual e axe.
+
+### D-019 · URLs da seção 11.1 são canônicas; raiz redireciona
+
+As rotas vivem literalmente sob `/app/*` (pasta `src/app/app/`), como a seção 11.1
+define — a árvore da seção 30 usa `(app)` como agrupador, que não gera segmento.
+`/` redireciona para `/app/dashboard`. `/login` só nasce na Fase 2, junto com a
+autenticação real (uma tela de login sem backend seria um controle falso).
+Perfil e sair também entram na Fase 2 (seção 11.2, rodapé da sidebar).
+
+---
+
 ## Fase 0 — 12/07/2026
 
 ### D-001 · Projeto em subdiretório `ninho-do-cael/`

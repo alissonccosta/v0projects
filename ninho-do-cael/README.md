@@ -70,8 +70,14 @@ Documentadas em [`.env.example`](./.env.example) (SDD, seção 7.3). Regras ineg
 ```text
 ninho-do-cael/
   src/
-    app/            rotas (App Router)
-    lib/            utilitários (env, validação, cálculos, formatadores)
+    app/            rotas (App Router; módulos sob /app/*)
+    components/
+      app-shell/    sidebar, header, navegação inferior
+      status/       StatusBadge + mapeamento centralizado de status
+      sync/         SyncIndicator
+      ui/           base de componentes tematizada (padrão shadcn/ui sobre Radix)
+    lib/            utilitários (env, navegação, cn; cálculos chegam na Fase 3)
+    types/          domínios e enums do produto (seção 9 do SDD)
   tests/
     e2e/            testes Playwright
   docs/
@@ -81,6 +87,8 @@ ninho-do-cael/
     qa/                       evidências visuais por fase
   supabase/         migrations e seed (a partir da Fase 2)
 ```
+
+A rota interna `/app/design-system` é a referência viva dos tokens e componentes.
 
 Os demais diretórios da árvore prevista no SDD (seção 30) são criados quando a fase correspondente lhes dá conteúdo real.
 

@@ -1,42 +1,172 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
-  /* Tokens iniciais da paleta do SDD (seção 12.2).
-     O design system completo — tipografia, radius, espaçamento e todos os
-     tokens — é implementado na Fase 1. */
+  /* ---------------------------------------------------------------------- */
+  /* Paleta do SDD (seção 12.2) — o quarto do Cael                          */
+  /* ---------------------------------------------------------------------- */
   --canvas: #f5f0e6;
   --surface: #fffdf8;
+  --surface-muted: #eee7da;
   --sand: #d8cbb8;
+  --rattan: #c7a77d;
+  --wood: #9a6b49;
+  --sage-100: #dde5d7;
   --sage-300: #b4c1aa;
+  --sage-500: #819174;
   --olive-600: #617055;
   --moss-700: #465441;
   --forest-900: #29352c;
+  --success: #5f7d5c;
+  --warning: #b3833e;
+  --danger: #a65d4f;
+  --info: #667d7a;
   --text-primary: #2d342e;
   --text-secondary: #687067;
+
+  /* Tons suaves para chips, badges e fundos de estado */
+  --success-soft: color-mix(in oklab, var(--success) 14%, var(--surface));
+  --warning-soft: color-mix(in oklab, var(--warning) 14%, var(--surface));
+  --danger-soft: color-mix(in oklab, var(--danger) 14%, var(--surface));
+  --info-soft: color-mix(in oklab, var(--info) 14%, var(--surface));
+  --sage-soft: color-mix(in oklab, var(--sage-500) 14%, var(--surface));
+  --sand-soft: color-mix(in oklab, var(--sand) 32%, var(--surface));
+
+  /* Variantes escuras para texto pequeno sobre os tons suaves (WCAG AA) */
+  --success-strong: color-mix(in oklab, var(--success) 55%, var(--forest-900));
+  --warning-strong: color-mix(in oklab, var(--warning) 50%, var(--forest-900));
+  --danger-strong: color-mix(in oklab, var(--danger) 50%, var(--forest-900));
+  --info-strong: color-mix(in oklab, var(--info) 55%, var(--forest-900));
+
+  /* ---------------------------------------------------------------------- */
+  /* Tokens semânticos (base de componentes tematizada)                      */
+  /* ---------------------------------------------------------------------- */
+  --background: var(--canvas);
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--olive-600);
+  --primary-foreground: var(--surface);
+  --secondary: var(--sage-100);
+  --secondary-foreground: var(--moss-700);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--sage-100);
+  --accent-foreground: var(--moss-700);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--surface);
+  --border: var(--sand);
+  --input: var(--sand);
+  --ring: var(--sage-500);
+
+  /* Tipografia (seção 12.4) */
+  --font-stack-sans:
+    "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-stack-display: "Fraunces Variable", "Fraunces", Georgia, serif;
+
+  /* Radius (seção 12.6): input 12, card 18, modal 24, chip 999 */
+  --radius-input: 12px;
+  --radius-card: 18px;
+  --radius-modal: 24px;
+
+  /* Motion (seção 12.8): 120–220ms */
+  --motion-quick: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 220ms;
 }
 
 @theme inline {
+  /* Paleta nomeada */
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-sand: var(--sand);
+  --color-rattan: var(--rattan);
+  --color-wood: var(--wood);
+  --color-sage-100: var(--sage-100);
   --color-sage-300: var(--sage-300);
+  --color-sage-500: var(--sage-500);
   --color-olive-600: var(--olive-600);
   --color-moss-700: var(--moss-700);
   --color-forest-900: var(--forest-900);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-success-soft: var(--success-soft);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-info-soft: var(--info-soft);
+  --color-sage-soft: var(--sage-soft);
+  --color-sand-soft: var(--sand-soft);
+  --color-success-strong: var(--success-strong);
+  --color-warning-strong: var(--warning-strong);
+  --color-danger-strong: var(--danger-strong);
+  --color-info-strong: var(--info-strong);
+
+  /* Semânticos */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Fontes */
+  --font-sans: var(--font-stack-sans);
+  --font-display: var(--font-stack-display);
+
+  /* Radius mapeado para utilitários rounded-* */
+  --radius-sm: 8px;
+  --radius-md: var(--radius-input);
+  --radius-lg: var(--radius-card);
+  --radius-xl: var(--radius-modal);
+
+  /* Duração padrão de transições dentro da faixa do SDD */
+  --default-transition-duration: var(--motion-base);
 }
 
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--canvas);
-  color: var(--text-primary);
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-stack-sans);
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Motion respeita reduced motion (seções 12.8 e 31) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

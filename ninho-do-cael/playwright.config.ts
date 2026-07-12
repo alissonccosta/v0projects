@@ -31,6 +31,15 @@ export default defineConfig({
       },
     },
     {
+      name: "tablet-768",
+      // Viewport tablet do SDD (seção 13.1).
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 768, height: 1024 },
+        hasTouch: true,
+      },
+    },
+    {
       name: "mobile-390",
       // Emulação móvel em Chromium (WebKit não está disponível no ambiente).
       // Viewport 390×844: o principal viewport móvel do SDD (seção 13.1).
