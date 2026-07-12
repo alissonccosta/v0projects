@@ -1,5 +1,12 @@
 # v0projects
 
+Este repositório reúne projetos independentes, um por pasta:
+
+- [`verumoverview/`](verumoverview) — **VerumOverview**, plataforma para gerenciamento de produtos digitais.
+- [`ninho-do-cael/`](ninho-do-cael) — **Ninho do Cael**, sistema de gestão do enxoval e da preparação para a chegada do Cael (Next.js + Supabase + integração Notion). Setup e documentação em [`ninho-do-cael/README.md`](ninho-do-cael/README.md).
+
+## VerumOverview
+
 Este repositório contém o projeto **VerumOverview**, plataforma para gerenciamento de produtos digitais.
 
 A estrutura principal está dentro da pasta `verumoverview` com front-end em React e back-end em Node.js/Express utilizando TypeScript.
