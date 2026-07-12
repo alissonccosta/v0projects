@@ -46,9 +46,12 @@ import type {
   AcquisitionStatus,
   Criticality,
   DecisionStatus,
+  ItemCondition,
   LogisticsStatus,
   NeedDecisionStatus,
   Priority,
+  ProductStatus,
+  PurchaseStatus,
   ReadinessStatus,
   SyncStatus,
   TaskStatus,
@@ -226,6 +229,41 @@ export const STATUS_CONFIG = {
       icon: ArrowElbowDownRightIcon,
     },
   } satisfies Record<Priority, StatusVisual>,
+
+  compra: {
+    confirmada: { label: "Confirmada", tone: "info", icon: CheckCircleIcon },
+    aguardando_envio: {
+      label: "Aguardando envio",
+      tone: "warning",
+      icon: ClockIcon,
+    },
+    enviada: { label: "Enviada", tone: "info", icon: TruckIcon },
+    entregue_parcial: {
+      label: "Entrega parcial",
+      tone: "warning",
+      icon: PackageIcon,
+    },
+    entregue: { label: "Entregue", tone: "success", icon: PackageIcon },
+    devolvida: {
+      label: "Devolvida",
+      tone: "danger",
+      icon: ArrowCounterClockwiseIcon,
+    },
+    cancelada: { label: "Cancelada", tone: "outline", icon: XCircleIcon },
+  } satisfies Record<PurchaseStatus, StatusVisual>,
+
+  condicao: {
+    novo: { label: "Novo", tone: "success", icon: SparkleIcon },
+    seminovo: { label: "Seminovo", tone: "sage", icon: CheckCircleIcon },
+    usado: { label: "Usado", tone: "neutral", icon: CircleDashedIcon },
+    avariado: { label: "Avariado", tone: "danger", icon: WarningCircleIcon },
+  } satisfies Record<ItemCondition, StatusVisual>,
+
+  produto: {
+    candidato: { label: "Candidato", tone: "neutral", icon: CircleDashedIcon },
+    escolhido: { label: "Escolhido", tone: "success", icon: CheckCircleIcon },
+    descartado: { label: "Descartado", tone: "outline", icon: ArchiveIcon },
+  } satisfies Record<ProductStatus, StatusVisual>,
 
   sincronizacao: {
     synced: { label: "Sincronizado", tone: "success", icon: CloudCheckIcon },

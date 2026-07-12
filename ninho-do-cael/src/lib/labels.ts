@@ -68,4 +68,30 @@ export const AUDIENCE_LABELS: Record<NeedAudience, string> = {
   casa: "Casa",
 };
 
+export const PURCHASE_TYPE_LABELS = {
+  online: "Compra online",
+  loja_fisica: "Loja física",
+  presente: "Presente",
+  servico: "Serviço",
+  outro: "Outro",
+} as const;
+
+export const PAYMENT_LABELS = {
+  pix: "Pix",
+  cartao_credito: "Cartão de crédito",
+  cartao_debito: "Cartão de débito",
+  boleto: "Boleto",
+  dinheiro: "Dinheiro",
+  outro: "Outro",
+} as const;
+
+export const ITEM_ORIGIN_LABELS = {
+  compra: "Compra",
+  presente: "Presente",
+  cha_de_bebe: "Chá de bebê",
+  emprestimo: "Empréstimo",
+  ja_possuia: "Já possuía",
+  outro: "Outro",
+} as const;
+
 export { CATEGORIES, PRIORITIES, USAGE_PHASES };

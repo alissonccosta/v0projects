@@ -6,6 +6,41 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 4 — 12/07/2026
+
+### D-030 · Regras de compra/entrega como planejadores puros
+
+`lib/purchases/plan.ts` decide tudo (status parcial/total, estoque a criar,
+necessidades a atualizar, tarefas de preparo, validações de devolução) sem
+tocar no banco; os serviços apenas executam o plano. Isso deixa a regra da
+seção 18 coberta por testes rápidos e independentes do Supabase.
+
+### D-031 · Subtotal calculado a partir dos itens
+
+No formulário de compra o subtotal é sempre a soma dos itens (não um campo
+livre), eliminando divergência na criação; o alerta de divergência da seção
+10.9 (`hasTotalDivergence`) fica para reconciliar dados importados do Notion
+na Fase 7. Rateio de desconto/frete é proporcional ao subtotal de cada item,
+em centavos, sem perder nem inventar centavo (método de Hamilton, testado).
+
+### D-032 · Semântica das propagações automáticas
+
+Compra criada com item vinculado marca a necessidade como `comprado` (e
+`aguardando_envio` se a logística não estava confirmada). Entrega soma a
+quantidade recebida, define logística (`entregue`/`enviado` se parcial) e, se a
+necessidade estava `pendente`, assume o preparo informado. Item de estoque
+marcado `pronto_para_uso` propaga a prontidão à necessidade vinculada. Tudo
+gera `activity_logs`.
+
+### D-033 · Devolução no próprio pedido
+
+Sem tabela própria no MVP: `returned_amount` acumula devoluções parciais (com
+motivo concatenado) e a total muda o status para `devolvida`. O comprometido
+(10.7) abate o valor devolvido. Constraint no banco impede devolver mais que o
+total.
+
+---
+
 ## Fase 3 — 12/07/2026
 
 ### D-027 · Filtragem de necessidades em memória, no servidor

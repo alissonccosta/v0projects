@@ -232,7 +232,61 @@ Pendências P0/P1/P2 de código: **nenhuma**.
 
 ---
 
-## Fases 4–9
+## Fase 4 — Produtos, compras e estoque · **IMPLEMENTADA (gate parcial)** · 12/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                                 |
+| ----------- | ---------------------- | ------------------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                               |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                            |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                              |
+| Unit + DB   | `npm run test`         | ✅ 18 arquivos, 98 testes (migrations 1–5 aplicadas no Postgres real)     |
+| Build       | `npm run build`        | ✅ rotas novas de produtos/compras/estoque + 9 endpoints de API           |
+| E2E         | `npm run e2e`          | ✅ 31 aprovados em 3 viewports (cadeia autenticada pronta, ativa com env) |
+
+### Testes adicionados na fase
+
+- **Financeiro (10.7–10.9 e 23)**: total sem drift de ponto flutuante,
+  divergência > R$ 0,01, comprometido (ignora cancelada, abate devolução),
+  economia, pendente estimado nos modos total e "até o parto", **rateio
+  proporcional em centavos** que nunca perde nem inventa centavo.
+- **Planejador de entrega (seção 18)**: entrega completa vs. parcial, criação
+  de estoque, atualização de necessidade (quantidade e completude), tarefas de
+  preparo por tipo ("Lavar…", nada quando pronto), validação de quantidades e
+  de itens estranhos.
+- **Planejador de devolução**: parcial acumula, total exige o restante e muda
+  o status; nunca devolve mais do que foi pago.
+- **E2E autenticado (gated)** estendido com a cadeia completa do gate:
+  produto vinculado e preferido → compra com desconto+frete (total ao vivo
+  R$ 54,90) → enviada → **entrega com preparo "precisa lavar" → estoque →
+  lote marca pronto → necessidade fica "Entregue", 1/1 e "Pronto para uso"**
+  → devolução parcial com impacto visível.
+
+### Verificação visual
+
+Modo demonstração dos três módulos coberto pela varredura de overflow e axe
+nos três viewports (31 e2e verdes). As telas com dados reais entram nas
+capturas da validação com Supabase, junto com as das Fases 2–3.
+
+### Pendência que impede a aprovação total da fase
+
+A mesma das Fases 2–3: validação de ponta a ponta com Supabase real
+(credenciais — `docs/setup-supabase.md`). A cadeia inteira do gate já está
+roteirizada em teste e roda sozinha quando as variáveis chegarem.
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                                   | Plano                                      |
+| ---- | -------------------------------------------------------------------------- | ------------------------------------------ |
+| P3   | Detalhe da necessidade ainda não lista produtos/compras/estoque vinculados | Fase 5, junto com tarefas/decisões (D-029) |
+| P3   | Validade/lote de estoque sem edição na UI (dados entram via entrega/seed)  | ajuste fino na validação com Supabase      |
+
+Pendências P0/P1/P2 de código: **nenhuma**.
+
+---
+
+## Fases 5–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

@@ -55,6 +55,9 @@ const DOMAIN_TITLES: Record<StatusDomain, string> = {
   decisao: "Decisões (9.10)",
   criticidade: "Criticidade (9.3)",
   prioridade: "Prioridade (9.4)",
+  compra: "Pedidos (seção 18)",
+  condicao: "Condição do item (seção 19)",
+  produto: "Produtos (seção 17)",
   sincronizacao: "Sincronização (7.6)",
 };
 

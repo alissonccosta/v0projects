@@ -113,22 +113,34 @@ Objetivo: lista, filtros, detalhe, CRUD, histórico e cálculos.
 mobile sem overflow ✅ · **persistência real de ponta a ponta: e2e autenticado pronto
 (`tests/e2e/needs.spec.ts`), ativa e valida quando as credenciais do Supabase existirem**
 
-## Fase 4 — Produtos, compras e estoque
+## Fase 4 — Produtos, compras e estoque 🔶 (implementada em 12/07/2026 — gate parcial)
 
 Objetivo: produtos, compras, itens, entrega, estoque, prontidão e financeiro.
 
-- [ ] Produtos: CRUD, relação N:N com necessidades (`is_preferred`), comparador de até 4
-- [ ] Compras: registrar com subtotal, desconto, frete, total (`total = subtotal - desconto + frete`,
-      alerta de divergência > R$ 0,01), itens com rateio
-- [ ] Fluxo de entrega com checklist (seção 18): atualiza pedido, cria estoque, atualiza
-      necessidade, cria tarefa de preparo, registra histórico
-- [ ] Devolução parcial/total com impacto financeiro
-- [ ] Estoque: visualizações por prontidão, local, categoria, quantidade, validade
-- [ ] Ações de prontidão (lavar, higienizar, esterilizar, montar, instalar, configurar,
-      validar, pronto) e lote de preparo
-- [ ] Cálculos financeiros testados: pago, comprometido, pendente estimado (seções 10.7–10.9)
+- [x] Produtos: cadastro/edição em dialog, vínculo com necessidade (preferido é único
+      por necessidade), link real de loja e **comparador de até 4** em tabela acessível
+- [x] Compras: formulário com itens dinâmicos, subtotal calculado dos itens,
+      `total = subtotal − desconto + frete` ao vivo, **rateio proporcional em
+      centavos** (método de Hamilton, testado) e alerta de divergência > R$ 0,01
+      na biblioteca financeira
+- [x] Fluxo de entrega com checklist (seção 18): quantidades por item, preparo
+      necessário e local → atualiza pedido (parcial/total), **cria estoque,
+      atualiza necessidade (quantidade, logística, prontidão inicial), cria
+      tarefa de preparo e registra histórico** — planejador puro com 16 testes
+- [x] Devolução parcial/total com motivo, validação de valor e impacto no
+      comprometido (abate o reembolsado)
+- [x] Estoque: agrupamentos por prontidão/local/categoria/validade, item vencido
+      destacado, link para a necessidade
+- [x] Ações de prontidão + **lote de preparo** (seleção múltipla → aplicar);
+      item pronto propaga prontidão à necessidade vinculada
+- [x] Cálculos financeiros testados: total/divergência (10.9), comprometido (10.7),
+      pendente estimado nos modos total e "até o parto" (10.8), economia (23)
+- [x] API da seção 29: /api/products(/:id), /api/purchases(/:id, /deliver, /return),
+      /api/inventory(/:id, /batch-readiness)
 
-**Gate:** fluxo completo compra → entrega → estoque → prontidão comprovado por teste E2E
+**Gate:** cálculos e planejadores testados ✅ · UI completa sem overflow ✅ ·
+**cadeia compra → entrega → estoque → prontidão roteirizada no e2e autenticado
+(`needs.spec.ts`), valida automaticamente com as credenciais do Supabase**
 
 ## Fase 5 — Tarefas, decisões e jornada
 

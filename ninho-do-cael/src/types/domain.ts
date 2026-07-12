@@ -148,3 +148,58 @@ export const RESPONSIBLE_PARTIES = [
   "outro",
 ] as const;
 export type ResponsibleParty = (typeof RESPONSIBLE_PARTIES)[number];
+
+export const PURCHASE_STATUSES = [
+  "confirmada",
+  "aguardando_envio",
+  "enviada",
+  "entregue_parcial",
+  "entregue",
+  "devolvida",
+  "cancelada",
+] as const;
+export type PurchaseStatus = (typeof PURCHASE_STATUSES)[number];
+
+export const PURCHASE_TYPES = [
+  "online",
+  "loja_fisica",
+  "presente",
+  "servico",
+  "outro",
+] as const;
+export type PurchaseType = (typeof PURCHASE_TYPES)[number];
+
+export const PAYMENT_METHODS = [
+  "pix",
+  "cartao_credito",
+  "cartao_debito",
+  "boleto",
+  "dinheiro",
+  "outro",
+] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+export const ITEM_CONDITIONS = [
+  "novo",
+  "seminovo",
+  "usado",
+  "avariado",
+] as const;
+export type ItemCondition = (typeof ITEM_CONDITIONS)[number];
+
+export const ITEM_ORIGINS = [
+  "compra",
+  "presente",
+  "cha_de_bebe",
+  "emprestimo",
+  "ja_possuia",
+  "outro",
+] as const;
+export type ItemOrigin = (typeof ITEM_ORIGINS)[number];
+
+export const PRODUCT_STATUSES = [
+  "candidato",
+  "escolhido",
+  "descartado",
+] as const;
+export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
