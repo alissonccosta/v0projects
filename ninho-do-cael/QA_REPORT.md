@@ -176,7 +176,63 @@ Pendências P0/P1/P2 de código: **nenhuma**.
 
 ---
 
-## Fases 3–9
+## Fase 3 — Necessidades · **IMPLEMENTADA (gate parcial)** · 12/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                         |
+| ----------- | ---------------------- | ----------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                       |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                    |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                      |
+| Unit + DB   | `npm run test`         | ✅ 16 arquivos, 82 testes                                         |
+| Build       | `npm run build`        | ✅ novas rotas: lista, detalhe, nova, editar + `/api/needs(/:id)` |
+| E2E         | `npm run e2e`          | ✅ 31 aprovados (fluxo autenticado pronto, ativa com credenciais) |
+
+### Testes adicionados na fase
+
+- **Cálculos (seção 10)**: cobertura `min(disp/nec, 1)`, prontidão de
+  produto/consumível (20/25/20/15/20), tarefa e decisão, pesos 5/3/2/1,
+  prontidão geral ponderada e item vencido — 18 casos, incluindo o princípio
+  10.1 ("comprado ≠ pronto": entregue sem lavar = 80%).
+- **Filtros (seção 16)**: ciclo parse↔serialize da URL sem perda, inválidos
+  caem no padrão, busca sem acento ("berco" acha "Berço"), combinação de
+  dimensões, "somente pendências" exclui prontos e descartados, arquivadas sob
+  demanda, ordenação determinística.
+- **Diff de histórico**: só campos alterados, com antes/depois.
+- **Componente NeedsExplorer (jsdom)**: busca filtra e grava `?q=` na URL,
+  toggle + visão por categoria combinam, estado "filtro sem resultado" com
+  ação de recuperação.
+- **E2E preparado (`needs.spec.ts`)**: login via link administrativo,
+  onboarding, sessão persiste após refresh, criar necessidade, busca sem
+  acento na URL, ação rápida persistida com histórico, arquivar/restaurar —
+  **ativa automaticamente com as variáveis do Supabase**.
+
+### Verificação visual (evidências em `docs/qa/fase-3/`)
+
+`necessidades-demo-*` (390/768/1440): estado honesto sem Supabase. As telas com
+dados reais (lista com filtros, detalhe, formulário) serão capturadas na
+validação com Supabase — o layout já passou por axe e overflow nos três
+viewports em modo demonstração.
+
+### Pendência que impede a aprovação total da fase
+
+A mesma da Fase 2: validação de ponta a ponta com Supabase real (credenciais —
+`docs/setup-supabase.md`). O fluxo completo de necessidades já está roteirizado
+em teste e roda sozinho quando as variáveis chegarem.
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                                               | Plano                                   |
+| ---- | -------------------------------------------------------------------------------------- | --------------------------------------- |
+| P3   | Edição otimista fina (rollback visual) não implementada — ações usam transição + toast | refinar na validação com Supabase real  |
+| P3   | Abas de relações do detalhe (produtos/compras/estoque/tarefas/decisões)                | Fases 4–5, junto com os módulos (D-029) |
+
+Pendências P0/P1/P2 de código: **nenhuma**.
+
+---
+
+## Fases 4–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

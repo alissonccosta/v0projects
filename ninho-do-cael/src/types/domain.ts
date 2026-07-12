@@ -124,3 +124,27 @@ export const SYNC_STATUSES = [
   "not_linked",
 ] as const;
 export type SyncStatus = (typeof SYNC_STATUSES)[number];
+
+// Domínios complementares do schema (decisão D-020)
+export const NEED_TYPES = [
+  "produto",
+  "consumivel",
+  "servico",
+  "documento",
+  "outro",
+] as const;
+export type NeedType = (typeof NEED_TYPES)[number];
+
+export const NEED_AUDIENCES = ["bebe", "mae", "pais", "casa"] as const;
+export type NeedAudience = (typeof NEED_AUDIENCES)[number];
+
+export const RESPONSIBLE_PARTIES = [
+  "mae",
+  "pai",
+  "casal",
+  "obstetra",
+  "pediatra",
+  "maternidade",
+  "outro",
+] as const;
+export type ResponsibleParty = (typeof RESPONSIBLE_PARTIES)[number];

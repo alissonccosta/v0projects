@@ -7,6 +7,7 @@ export type SessionInfo =
   | { mode: "needs_onboarding"; email: string }
   | {
       mode: "member";
+      userId: string;
       email: string;
       displayName: string;
       role: "owner" | "collaborator";
@@ -48,6 +49,7 @@ export async function getSessionInfo(): Promise<SessionInfo> {
 
   return {
     mode: "member",
+    userId: user.id,
     email: user.email ?? "",
     displayName: profile.display_name,
     role: profile.role,

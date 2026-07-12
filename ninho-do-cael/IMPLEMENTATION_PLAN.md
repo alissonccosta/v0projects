@@ -87,26 +87,31 @@ seed ✅ · **login/sessão/convite com Supabase real: pendente de credenciais**
 (ação do Alisson — `docs/setup-supabase.md`; testes e2e já preparados ativam
 automaticamente com as variáveis presentes)
 
-## Fase 3 — Necessidades
+## Fase 3 — Necessidades 🔶 (implementada em 12/07/2026 — gate parcial)
 
 Objetivo: lista, filtros, detalhe, CRUD, histórico e cálculos.
 
-- [ ] API `/api/needs` (GET/POST) e `/api/needs/:id` (GET/PATCH/DELETE) com Zod e `ApiResult`
-- [ ] Lista com busca sem acento, filtros combináveis (categoria, fase, criticidade,
+- [x] API `/api/needs` (GET/POST) e `/api/needs/:id` (GET/PATCH/DELETE) com Zod e `ApiResult`
+- [x] Lista com busca sem acento, filtros combináveis (categoria, fase, criticidade,
       responsável, aquisição, logística, prontidão, "antes do parto", "somente pendências",
-      "somente críticas") persistidos na URL
-- [ ] Visualizações: lista, por categoria, por fase, por prontidão, por responsável
-- [ ] Criar/editar com obrigatórios e opcionais da seção 16, edição otimista com rollback
-- [ ] Detalhe (DetailDrawer): situação, motivo, o que falta, próxima ação, relações, histórico
-- [ ] Ações rápidas reais: marcar comprado, confirmar entrega, quantidade, pronto,
-      criar tarefa, criar decisão, arquivar (soft delete + restauração)
-- [ ] Cálculos testados: cobertura de quantidade, prontidão individual, peso por criticidade
-      (seção 10) em `lib/calculations/`
-- [ ] `activity_logs` para toda alteração relevante
-- [ ] 131 registros sem travamento perceptível (paginação/virtualização se necessário)
+      "somente críticas") persistidos na URL — testados em unidade e componente
+- [x] Visualizações: lista, por categoria, por fase, por prontidão, por responsável
+- [x] Criar/editar com obrigatórios e opcionais da seção 16 (server actions com estado
+      pendente e erro por campo; refinamento otimista fino na validação com Supabase real)
+- [x] Detalhe em página completa (full-screen no mobile — seção 13.2): situação,
+      status, valores, observações, ações e histórico. Abas de relações (produtos,
+      compras, estoque, tarefas, decisões) entram nas Fases 4–5 com os módulos (D-029)
+- [x] Ações rápidas reais: marcar comprada, confirmar entrega, quantidade, pronta,
+      arquivar (soft delete) + restaurar — "criar tarefa/decisão daqui" vem na Fase 5
+- [x] Cálculos testados: cobertura, prontidão individual, pesos, prontidão geral e
+      item vencido (seção 10) em `lib/calculations/`
+- [x] `activity_logs` em criação, edição (diff campo a campo), arquivamento e restauração
+- [x] 131 registros: carga única no servidor + filtro/agrupamento em memória (D-027);
+      sem paginação necessária nesse volume
 
-**Gate:** persistência real · filtros combinam · URL preserva estado · mobile sem
-overflow · testes unitários dos cálculos
+**Gate:** filtros combinam ✅ (testes) · URL preserva estado ✅ · cálculos testados ✅ ·
+mobile sem overflow ✅ · **persistência real de ponta a ponta: e2e autenticado pronto
+(`tests/e2e/needs.spec.ts`), ativa e valida quando as credenciais do Supabase existirem**
 
 ## Fase 4 — Produtos, compras e estoque
 

@@ -48,6 +48,24 @@ test("modo demonstração: aviso 'Sem autenticação' visível no app", async ({
   ).toBeVisible();
 });
 
+test("modo demonstração: necessidades explica a configuração pendente", async ({
+  page,
+}, testInfo) => {
+  test.skip(configured, "com Supabase a lista real aparece");
+
+  await page.goto("/app/necessidades");
+  await expect(
+    page.getByText("Disponível após configurar a autenticação"),
+  ).toBeVisible();
+
+  const fase3Dir = path.join(__dirname, "..", "..", "docs", "qa", "fase-3");
+  fs.mkdirSync(fase3Dir, { recursive: true });
+  await page.screenshot({
+    path: path.join(fase3Dir, `necessidades-demo-${testInfo.project.name}.png`),
+    fullPage: true,
+  });
+});
+
 test("modo demonstração: onboarding e convite levam ao /login", async ({
   page,
 }) => {

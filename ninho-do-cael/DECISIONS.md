@@ -6,6 +6,35 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 3 — 12/07/2026
+
+### D-027 · Filtragem de necessidades em memória, no servidor
+
+A base tem ~131 necessidades (seção 1.4): a página carrega tudo em uma consulta
+e filtra/ordena/agrupa com funções puras testadas (`lib/needs/filters.ts`),
+compartilhadas pela API. Interação local fica muito abaixo dos 200ms da seção 32
+e a URL é atualizada de forma rasa (`history.replaceState`), preservando o
+estado sem novo fetch. Se o volume crescer uma ordem de grandeza, o mesmo
+contrato de filtros passa a ser aplicado no SQL (paginação) sem mudar a UI.
+
+### D-028 · E2E autenticado via link administrativo
+
+O login é por magic link (sem senha), o que normalmente impede e2e automatizado.
+Solução: o spec `tests/e2e/needs.spec.ts` usa a admin API do Supabase
+(service_role, só no runner) para criar um usuário de teste e gerar o
+`action_link` do magic link — o Playwright entra por ele, faz onboarding e
+percorre criar → buscar → ação rápida → arquivar → restaurar, limpando tudo no
+final. Os testes ativam sozinhos quando as três variáveis existirem no ambiente.
+
+### D-029 · Relações do detalhe chegam com os módulos
+
+O detalhe da necessidade nasce com situação, valores, ações rápidas e
+histórico. As abas de relações (Produtos, Compras, Estoque, Tarefas, Decisões
+— seção 14) entram nas Fases 4 e 5, quando essas entidades ganham telas; antes
+disso seriam links mortos, proibidos pela seção 0.2.
+
+---
+
 ## Fase 2 — 12/07/2026
 
 ### D-020 · Domínios complementares não fixados pelo SDD
