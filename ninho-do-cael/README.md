@@ -33,7 +33,7 @@ cp .env.example .env.local   # preencha quando for usar Supabase/Notion
 npm run dev                  # http://localhost:3000
 ```
 
-Na Fase 0 o app sobe sem nenhuma variável preenchida. As integrações (Supabase, Notion) passam a exigir suas variáveis quando as fases correspondentes forem implementadas — e falham com mensagem clara caso faltem, em vez de operar com dados falsos.
+Sem as variáveis do Supabase o app roda em **modo demonstração**: nada é bloqueado, um aviso "Sem autenticação" fica visível e as telas de login/família explicam a configuração pendente — nunca fingimos login. Para ativar autenticação, família e convites, siga o guia [`docs/setup-supabase.md`](./docs/setup-supabase.md).
 
 ## Scripts
 
@@ -44,11 +44,19 @@ Na Fase 0 o app sobe sem nenhuma variável preenchida. As integrações (Supabas
 | `npm run start`        | serve o build de produção                          |
 | `npm run lint`         | ESLint                                             |
 | `npm run typecheck`    | TypeScript sem emitir arquivos                     |
-| `npm run test`         | testes unitários (Vitest)                          |
-| `npm run test:watch`   | testes unitários em modo watch                     |
+| `npm run test`         | testes unitários e de integração (Vitest)          |
+| `npm run test:watch`   | testes em modo watch                               |
 | `npm run e2e`          | testes E2E (Playwright; faz build + start sozinho) |
 | `npm run format`       | formata com Prettier                               |
 | `npm run format:check` | verifica formatação                                |
+
+### Testes de banco (RLS) num Postgres real
+
+Os testes de integração sobem um **Postgres 17 real** (binários via npm,
+`embedded-postgres`), aplicam as migrations e provam o isolamento por família
+e as permissões por papel. Não precisa instalar nada. Única ressalva: o
+Postgres não roda como root — em containers root, execute
+`su <usuario-comum> -c "npm run test"` (no CI do GitHub já é o padrão).
 
 ### E2E em ambientes sem download de browser
 

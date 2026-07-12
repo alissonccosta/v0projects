@@ -35,6 +35,7 @@ const ALL_ROUTES = [
   "/app/orcamento",
   "/app/atividade",
   "/app/configuracoes",
+  "/app/configuracoes/familia",
   "/app/design-system",
 ];
 

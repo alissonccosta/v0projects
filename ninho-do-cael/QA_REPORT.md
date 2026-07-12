@@ -120,7 +120,63 @@ Pendências P0/P1/P2: **nenhuma**.
 
 ---
 
-## Fases 2–9
+## Fase 2 — Banco e autenticação · **IMPLEMENTADA (gate parcial)** · 12/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                              |
+| ----------- | ---------------------- | ---------------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                            |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                         |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                           |
+| Unit + DB   | `npm run test`         | ✅ 12 arquivos, 53 testes (inclui Postgres 17 real via embedded)       |
+| Build       | `npm run build`        | ✅ com `proxy.ts` ativo; rotas de auth dinâmicas                       |
+| E2E         | `npm run e2e`          | ✅ 28 aprovados (testes com Supabase real ficam pulados até haver env) |
+
+### O que os testes de integração provam (Postgres real)
+
+- **Isolamento por household**: outra casa não vê, não insere, não atualiza
+  dados alheios (RLS aplicada de fato).
+- **Papéis (seção 4)**: colaboradora cria/edita; não exclui definitivamente,
+  não vê/cria convites, não altera configurações nem fila de sync; owner sim.
+  Ninguém muda o próprio papel (privilégio de coluna).
+- **RPCs de entrada**: onboarding cria household+perfil+bebê+configurações;
+  segundo onboarding é recusado; convite inexistente/expirado/reutilizado é
+  recusado com mensagem clara.
+- **Integridade**: decisão médica não pode ser "decidida" sem conclusão
+  (seção 10.11); tarefa concluída exige data; conflito aberto é único por
+  entidade+campo.
+- **Seed (seção 38)**: aplica limpo, é idempotente, ≥30 necessidades nas 13
+  categorias, entrega parcial com desconto+frete, item "precisa lavar",
+  tarefa bloqueada, decisão médica pendente, item futuro, conflito aberto,
+  erro de sync — e todos os pedidos respeitam `total = subtotal − desconto + frete`.
+
+### Verificação visual (evidências em `docs/qa/fase-2/`)
+
+`login-demo-*` (390/768/1440): tela de login em modo demonstração explicando a
+configuração pendente, sem controles falsos. `familia-*`: Configurações >
+Família. Banner "Sem autenticação" visível no app em modo demonstração, sem
+overflow em 390px (regressão de overflow no header foi detectada pelos testes
+e corrigida movendo o aviso para um banner de largura total).
+
+### Pendência que impede a aprovação total da fase
+
+| Item                                                                 | Situação                                                                                                                                                                                          |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Login real, sessão persistente e convite de ponta a ponta (Supabase) | **Aguarda ação do Alisson**: criar o projeto e configurar as variáveis (guia `docs/setup-supabase.md`). Os e2e já preparados ativam sozinhos com as variáveis presentes. Não é defeito de código. |
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                    | Plano                                                      |
+| ---- | ----------------------------------------------------------- | ---------------------------------------------------------- |
+| P3   | Testes de banco não rodam como root (limitação do Postgres) | documentado (`su pgtest -c "npm run test"`); CI não é root |
+| P3   | Tipos TS gerados do banco pendentes (`supabase gen types`)  | junto com a validação final da fase (D-025)                |
+
+Pendências P0/P1/P2 de código: **nenhuma**.
+
+---
+
+## Fases 3–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

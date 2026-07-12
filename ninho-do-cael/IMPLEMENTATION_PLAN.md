@@ -58,24 +58,34 @@ Objetivo: tokens, fontes, componentes base, sidebar, navegação mobile, header,
 funcional (E2E desktop e mobile) ✅ · toque ≥44px (testado) ✅ · contraste AA (axe) ✅
 (evidências no `QA_REPORT.md`)
 
-## Fase 2 — Banco e autenticação
+## Fase 2 — Banco e autenticação 🔶 (implementada em 12/07/2026 — gate parcial)
 
 Objetivo: migrations, RLS, seed, auth, household, profiles, baby.
 
-- [ ] Migrations SQL versionadas em `supabase/migrations/` (schema da seção 8:
+- [x] Migrations SQL versionadas em `supabase/migrations/` (schema da seção 8:
       households, profiles, babies, needs, products, need_products, purchases,
       purchase_items, inventory_items, tasks, decisions, activity_logs, sync_runs,
-      sync_queue, sync_conflicts, household_settings)
-- [ ] Enums e domínios da seção 9 como tipos Postgres + tipos TS gerados do banco
-- [ ] RLS em todas as tabelas privadas com isolamento por `household_id`
-- [ ] Papéis `owner` e `collaborator` com permissões da seção 4
-- [ ] Auth magic link (login, sessão persistente, logout, rotas protegidas)
-- [ ] Onboarding: owner confirma família e Cael; colaboradora entra por convite
-- [ ] Seed de desenvolvimento (seção 38) claramente identificado
-- [ ] Testes de integração: CRUD com RLS, isolamento entre households, auth
+      sync_queue, sync_conflicts, household_settings + household_invites e
+      relações need_tasks/need_decisions)
+- [x] Enums e domínios da seção 9 como tipos Postgres (espelhando `src/types/domain.ts`);
+      geração de tipos TS do banco fica para quando houver projeto Supabase (D-025)
+- [x] RLS em todas as tabelas privadas com isolamento por `household_id`
+- [x] Papéis `owner` e `collaborator` com permissões da seção 4 (delete, convites,
+      configurações e sync são do owner; colaboradora cria/edita)
+- [x] Auth magic link: `/login`, `/auth/confirm`, logout, guarda de rotas em
+      `src/proxy.ts` (Next 16), sessão renovada a cada request
+- [x] Onboarding: owner confirma família e Cael (RPC `create_household_with_baby`);
+      colaboradora entra por convite (`/convite/[token]` + RPC `accept_household_invite`)
+- [x] Configurações > Família: bebê, membros, criação/cópia/revogação de convites
+- [x] Seed de desenvolvimento (seção 38) claramente identificado e testado
+- [x] Testes de integração num Postgres 17 real (embedded): isolamento entre
+      households, papéis, RPCs, convites, constraints e seed (21 testes)
+- [x] Modo demonstração honesto sem Supabase (aviso visível; sem login falso)
 
-**Gate:** isolamento comprovado por teste · login/logout · sessão persiste ·
-convite funciona
+**Gate:** isolamento comprovado por teste ✅ · regras de papéis ✅ · RPCs ✅ ·
+seed ✅ · **login/sessão/convite com Supabase real: pendente de credenciais**
+(ação do Alisson — `docs/setup-supabase.md`; testes e2e já preparados ativam
+automaticamente com as variáveis presentes)
 
 ## Fase 3 — Necessidades
 

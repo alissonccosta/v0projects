@@ -1,18 +1,27 @@
 "use client";
 
+import { SignOutIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import type { ShellSession } from "@/components/app-shell/app-shell";
 import { Logo } from "@/components/app-shell/logo";
 import { SyncIndicator } from "@/components/sync/sync-indicator";
+import { Button } from "@/components/ui/button";
+import { logout } from "@/lib/auth/actions";
 import { PRIMARY_NAV } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
+const ROLE_LABELS = {
+  owner: "Administrador do Ninho",
+  collaborator: "Colaboradora familiar",
+} as const;
+
 /**
- * Sidebar desktop (SDD, seções 11.2 e 13.3). Perfil e sair entram na Fase 2,
- * junto com a autenticação — até lá não exibimos controles sem função.
+ * Sidebar desktop (SDD, seções 11.2 e 13.3): navegação, sincronização,
+ * perfil e sair.
  */
-export function Sidebar() {
+export function Sidebar({ session }: { session: ShellSession }) {
   const pathname = usePathname();
 
   return (
@@ -54,11 +63,41 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
-      <div className="border-t border-sand px-5 py-4">
+      <div className="flex flex-col gap-3 border-t border-sand px-5 py-4">
         <SyncIndicator status="not_linked" />
-        <p className="mt-2 text-xs leading-relaxed text-text-secondary">
-          A integração com o Notion é configurada na Fase 7.
-        </p>
+        {session.mode === "member" ? (
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-forest-900">
+                {session.displayName}
+              </p>
+              <p className="truncate text-xs text-text-secondary">
+                {ROLE_LABELS[session.role]}
+              </p>
+            </div>
+            <form action={logout}>
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                className="gap-1.5"
+              >
+                <SignOutIcon size={16} aria-hidden="true" />
+                Sair
+              </Button>
+            </form>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            <span className="w-fit rounded-full border border-warning/30 bg-warning-soft px-2.5 py-0.5 text-xs font-semibold text-warning-strong">
+              Sem autenticação
+            </span>
+            <p className="text-xs leading-relaxed text-text-secondary">
+              Configure o Supabase para ativar login e convites
+              (docs/setup-supabase.md).
+            </p>
+          </div>
+        )}
       </div>
     </aside>
   );

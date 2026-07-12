@@ -6,6 +6,68 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 2 — 12/07/2026
+
+### D-020 · Domínios complementares não fixados pelo SDD
+
+O SDD define os enums da seção 9, mas deixa abertos alguns domínios usados
+pelo schema. Definidos assim (mapeamento fino com o Notion acontece na Fase 7):
+
+- `responsavel_tipo`: `mae`, `pai`, `casal`, `obstetra`, `pediatra`,
+  `maternidade`, `outro` — papéis conceituais (seção 4.3), não usuários;
+- `tipo_necessidade`: `produto`, `consumivel`, `servico`, `documento`, `outro`;
+- `publico_necessidade`: `bebe`, `mae`, `pais`, `casa`;
+- `status_compra` inclui `entregue_parcial` (entrega parcial é requisito da
+  seção 38); `tipo_compra`, `forma_pagamento`, `condicao_item`, `origem_item`
+  conforme a migration de enums.
+
+### D-021 · RLS testada contra Postgres real (embedded-postgres via npm)
+
+A política de rede permite apenas registries de pacotes, e o Docker não tem
+daemon no ambiente — então os testes de integração sobem um Postgres 17 real
+com binários distribuídos pelo npm (`embedded-postgres`), aplicam um shim
+mínimo do Supabase (roles `anon/authenticated/service_role`, `auth.users`,
+`auth.uid()` lendo as claims) e rodam as migrations de verdade. Ressalva: o
+Postgres não roda como root — em containers root, executar os testes com um
+usuário comum (`su pgtest -c "npm run test"`); no CI do GitHub já é o padrão.
+
+### D-022 · Guarda de rotas no `src/proxy.ts` (Next 16)
+
+O Next 16 renomeou `middleware.ts` para `proxy.ts` (confirmado na documentação
+embarcada em `node_modules/next/dist/docs`). A decisão de acesso é uma função
+pura (`lib/auth/route-guard.ts`) testada em unidade; o proxy valida a sessão
+com `supabase.auth.getUser()` a cada request protegida e renova os cookies.
+
+### D-023 · Modo demonstração honesto sem Supabase
+
+Sem `NEXT_PUBLIC_SUPABASE_*`, nada é bloqueado e nenhum formulário de login é
+renderizado — telas explicam a configuração pendente e um banner "Sem
+autenticação" fica visível no app (seções 0.1/0.2/46). Com as variáveis
+presentes, a guarda passa a exigir sessão e os e2e de auth reais ativam
+automaticamente.
+
+### D-024 · Entrada por RPCs `security definer`
+
+Usuário recém-autenticado ainda não tem perfil, então nenhuma policy o
+alcança. As únicas portas de criação são `create_household_with_baby` e
+`accept_household_invite` (validação completa, `search_path` fixo, execute
+apenas para `authenticated`). Convites: token uuid de uso único, validade de
+14 dias, revogável pelo owner.
+
+### D-025 · Tipos TS do banco adiados para quando houver projeto real
+
+`supabase gen types` exige instância acessível. Até lá, as poucas consultas
+existentes tipam o retorno no ponto de uso; a geração entra junto com a
+validação final da fase (comando documentado no README).
+
+### D-026 · Seed exclusivamente local
+
+`supabase/seed.sql` insere usuários fictícios em `auth.users` e por isso só
+roda em banco local (`supabase db reset`). Produção começa vazia pelo
+onboarding. O seed é idempotente e verificado por teste de integração.
+
+---
+
 ## Fase 1 — 12/07/2026
 
 ### D-015 · Componentes base vendorizados manualmente (padrão shadcn/ui sobre Radix)
