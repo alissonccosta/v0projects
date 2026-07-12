@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  /* Tokens iniciais da paleta do SDD (seção 12.2).
+     O design system completo — tipografia, radius, espaçamento e todos os
+     tokens — é implementado na Fase 1. */
+  --canvas: #f5f0e6;
+  --surface: #fffdf8;
+  --sand: #d8cbb8;
+  --sage-300: #b4c1aa;
+  --olive-600: #617055;
+  --moss-700: #465441;
+  --forest-900: #29352c;
+  --text-primary: #2d342e;
+  --text-secondary: #687067;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sand: var(--sand);
+  --color-sage-300: var(--sage-300);
+  --color-olive-600: var(--olive-600);
+  --color-moss-700: var(--moss-700);
+  --color-forest-900: var(--forest-900);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--text-primary);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
