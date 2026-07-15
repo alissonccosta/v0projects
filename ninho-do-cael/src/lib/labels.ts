@@ -3,10 +3,13 @@ import {
   PRIORITIES,
   USAGE_PHASES,
   type Category,
+  type DecisionConfidence,
+  type DecisionType,
   type Priority,
   type ResponsibleParty,
   type NeedAudience,
   type NeedType,
+  type TaskType,
   type UsagePhase,
 } from "@/types/domain";
 
@@ -84,6 +87,26 @@ export const PAYMENT_LABELS = {
   dinheiro: "Dinheiro",
   outro: "Outro",
 } as const;
+
+export const TASK_TYPE_LABELS: Record<TaskType, string> = {
+  tarefa: "Tarefa",
+  servico: "Serviço",
+  documento: "Documento",
+};
+
+export const DECISION_TYPE_LABELS: Record<DecisionType, string> = {
+  familiar: "Familiar",
+  tecnica: "Técnica",
+  medica: "Médica",
+  seguranca: "Segurança",
+  financeira: "Financeira",
+};
+
+export const CONFIDENCE_LABELS: Record<DecisionConfidence, string> = {
+  alta: "Confiança alta",
+  media: "Confiança média",
+  baixa: "Confiança baixa",
+};
 
 export const ITEM_ORIGIN_LABELS = {
   compra: "Compra",

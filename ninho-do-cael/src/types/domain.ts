@@ -203,3 +203,19 @@ export const PRODUCT_STATUSES = [
   "descartado",
 ] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
+
+// Seções 20 e 21: tarefas e decisões
+export const TASK_TYPES = ["tarefa", "servico", "documento"] as const;
+export type TaskType = (typeof TASK_TYPES)[number];
+
+export const DECISION_TYPES = [
+  "familiar",
+  "tecnica",
+  "medica",
+  "seguranca",
+  "financeira",
+] as const;
+export type DecisionType = (typeof DECISION_TYPES)[number];
+
+export const DECISION_CONFIDENCES = ["alta", "media", "baixa"] as const;
+export type DecisionConfidence = (typeof DECISION_CONFIDENCES)[number];

@@ -6,6 +6,59 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 5 — 15/07/2026
+
+### D-034 · Concluir e decidir têm fluxos próprios, fora dos formulários
+
+Os formulários de tarefa e decisão não oferecem os status terminais
+(`concluida`/`decidida`): os schemas os excluem e os serviços validam também o
+estado resultante de PATCH parcial da API. Concluir tarefa exige a confirmação
+do critério (seção 20) num diálogo que mostra o critério registrado; decidir
+exige conclusão escrita (seção 21) e, em decisão médica, ainda a confirmação de
+que a orientação veio de profissional (10.11) — reforçando a constraint
+`decisao_medica_exige_conclusao` já existente no banco. Nada no sistema muda
+esses status como efeito colateral.
+
+### D-035 · Fase de tarefas e decisões derivada dos vínculos
+
+Tarefas e decisões não têm coluna de fase. Na Jornada (seção 22), a fase vem da
+necessidade vinculada mais cedo; sem vínculo, do prazo em relação à data
+prevista do parto (`phaseForDate`); sem ambos, `continuo`. Funções puras e
+testadas em `lib/journey/model.ts`.
+
+### D-036 · Referência da conclusão em coluna própria
+
+A seção 20 permite "nota, custo real e referência" na conclusão. Nota e custo
+já existiam; a referência (link, nota fiscal) ganhou a coluna
+`tasks.completion_reference` (migration `20260715090000`) em vez de poluir a
+nota — o mapeamento para o Notion na Fase 7 fica direto.
+
+### D-037 · "Mostrar itens futuros" via URL nesta fase
+
+O toggle da Jornada usa `?futuros=1`: estado compartilhável, sem escrita no
+banco e sem exigir permissão de owner (a coluna de `household_settings` é
+gravável só pelo owner na RLS). A persistência da preferência entra com a tela
+de configurações correspondente (Fases 6/8).
+
+### D-038 · Gasto por fase com devolução rateada
+
+O gasto de cada fase soma os `total` dos itens de compra cujas necessidades
+pertencem à fase; devoluções (registradas no pedido, D-033) são abatidas
+proporcionalmente ao rateio dos itens (método de Hamilton, o mesmo de D-031),
+então a soma das fases bate com o comprometido da seção 10.7. Itens sem
+necessidade vinculada não somem: aparecem como aviso "sem fase" no rodapé.
+
+### D-039 · Dependências de tarefa resolvidas em memória
+
+A lista carrega todas as tarefas da família (volume pequeno, mesmo racional de
+D-027) e resolve `depends_on_task_id` num `Map`, evitando o self-join ambíguo
+do PostgREST. O serviço bloqueia auto-dependência e ciclos (caminha a cadeia
+antes de gravar) e o card de bloqueada (seção 20) deriva a ação: "Concluir
+«dependência»" com o responsável dela; sem dependência, "Resolver: «motivo»"
+com o responsável da própria tarefa.
+
+---
+
 ## Fase 4 — 12/07/2026
 
 ### D-030 · Regras de compra/entrega como planejadores puros

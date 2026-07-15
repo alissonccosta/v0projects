@@ -277,16 +277,89 @@ roteirizada em teste e roda sozinha quando as variáveis chegarem.
 
 ### Problemas conhecidos
 
-| Sev. | Problema                                                                   | Plano                                      |
-| ---- | -------------------------------------------------------------------------- | ------------------------------------------ |
-| P3   | Detalhe da necessidade ainda não lista produtos/compras/estoque vinculados | Fase 5, junto com tarefas/decisões (D-029) |
-| P3   | Validade/lote de estoque sem edição na UI (dados entram via entrega/seed)  | ajuste fino na validação com Supabase      |
+| Sev. | Problema                                                                       | Plano                                        |
+| ---- | ------------------------------------------------------------------------------ | -------------------------------------------- |
+| P3   | ~~Detalhe da necessidade ainda não lista produtos/compras/estoque vinculados~~ | ✅ resolvido na Fase 5 (card "Relacionados") |
+| P3   | Validade/lote de estoque sem edição na UI (dados entram via entrega/seed)      | ajuste fino na validação com Supabase        |
 
 Pendências P0/P1/P2 de código: **nenhuma**.
 
 ---
 
-## Fases 5–9
+## Fase 5 — Tarefas, decisões e jornada · **IMPLEMENTADA (gate parcial)** · 15/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                                  |
+| ----------- | ---------------------- | -------------------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                                |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                             |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                               |
+| Unit + DB   | `npm run test`         | ✅ 23 arquivos, 144 testes (migrations 1–6 aplicadas no Postgres real)     |
+| Build       | `npm run build`        | ✅ rotas de tarefas/decisões/jornada + 5 endpoints de API novos            |
+| E2E         | `npm run e2e`          | ✅ 34 aprovados em 3 viewports (jornada autenticada pronta, ativa com env) |
+
+### Testes adicionados na fase
+
+- **Visões de tarefas (seção 20)** — `lib/tasks/views`: semana segunda→domingo
+  (atrasadas, dias, sem prazo), calendário mensal com grade completa,
+  agrupamentos por status/responsável na ordem dos domínios, vencida só quando
+  ativa, ordenação com nulos por último, **card de bloqueada** (dependência,
+  bloqueador, ação derivada e responsável pela ação) e "antes do parto" com
+  contagem de dias.
+- **Grupos de decisão (seção 21)** — todo status cai em exatamente um dos cinco
+  grupos; só `medica` é médica (10.11).
+- **Jornada (seção 22)** — janelas e marcos derivados da data prevista (nunca
+  fixos), fase futura, fase por data nas fronteiras (dia do parto → 0–3),
+  fase por vínculo com fallback para prazo e contínuo (D-035), agregação
+  completa (prontidão ponderada 10.4/10.5, tarefas/decisões por status,
+  **gasto com devolução rateada** e itens sem vínculo destacados).
+- **Schemas** — bloqueada exige dependência ou bloqueador; intervalo em ordem;
+  conclusão exige critério confirmado (com custo real e referência); decidir
+  exige conclusão; status terminais fora dos formulários (D-034).
+- **Banco real (integração)** — `tasks_concluida_tem_data` e
+  `decisao_medica_exige_conclusao` rejeitam o inválido e aceitam o válido;
+  vínculos necessidade↔tarefa/decisão não duplicam; migration 6 aplica limpa.
+- **E2E demo (`fase5-demo.spec.ts`)** — tarefas/decisões/jornada com EmptyState
+  honesto, zero controles falsos, sem overflow e sem violações graves de axe
+  nos três viewports (screenshots em `docs/qa/fase-5/`).
+- **E2E autenticado (gated)** estendido com o gate da fase: criar tarefa a
+  partir da necessidade (vínculo pré-marcado) → tarefa bloqueada com
+  dependência → visão Bloqueadas com os quatro campos → **conclusão exige o
+  critério confirmado** (erro sem o checkbox) → dependência concluída sinaliza
+  retomada → decisão médica criada da necessidade com **aviso permanente** →
+  decidir exige conclusão + confirmação profissional (erro sem o checkbox) →
+  grupos "Aguardando profissional"/"Decididas" → **relações
+  necessidade↔tarefa↔decisão visíveis no detalhe** → jornada com gasto da fase
+  (R$ 44,90 após devolução), toggle "Mostrar itens futuros" e **filtro por
+  fase** levando às necessidades corretas.
+
+### Verificação visual
+
+Modo demonstração dos três módulos: screenshots 390/768/1440 em
+`docs/qa/fase-5/` (`tarefas-demo-*`, `decisoes-demo-*`, `jornada-demo-*`),
+capturados pelo e2e com axe e overflow verificados. As telas com dados reais
+(`tarefas-real.png`, `decisoes-real.png`, `jornada-real.png`) são capturadas
+automaticamente pelo teste gated quando as credenciais chegarem.
+
+### Pendência que impede a aprovação total da fase
+
+A mesma das Fases 2–4: validação de ponta a ponta com Supabase real
+(credenciais — `docs/setup-supabase.md`). O roteiro completo do gate
+("relações e filtros") já roda sozinho quando as variáveis existirem.
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                                    | Plano                                        |
+| ---- | --------------------------------------------------------------------------- | -------------------------------------------- |
+| P3   | Calendário mostra apenas tarefas com prazo (sem intervalo projetado no mês) | avaliar na Fase 8 (polish) se o uso pedir    |
+| P3   | Preferência "mostrar itens futuros" não persiste (só URL, D-037)            | tela de configurações correspondente (F6/F8) |
+
+Pendências P0/P1/P2 de código: **nenhuma**.
+
+---
+
+## Fases 6–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

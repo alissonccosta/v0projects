@@ -1,7 +1,11 @@
 import {
   ArrowLeftIcon,
+  ChecksIcon,
   ClockCounterClockwiseIcon,
+  LinkSimpleIcon,
   PencilSimpleIcon,
+  PlusIcon,
+  ScalesIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -26,10 +30,18 @@ import {
 } from "@/lib/labels";
 import { buildNeedViewModel } from "@/lib/needs/view-model";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { listDecisionsForNeed } from "@/server/repositories/decisions-repository";
 import {
   getNeedById,
   listNeedActivity,
 } from "@/server/repositories/needs-repository";
+import { listTasksForNeed } from "@/server/repositories/tasks-repository";
+import type {
+  DecisionStatus,
+  PurchaseStatus,
+  ReadinessStatus,
+  TaskStatus,
+} from "@/types/domain";
 
 import { NeedQuickActions } from "./quick-actions";
 
@@ -68,8 +80,68 @@ export default async function NecessidadeDetalhePage({
   }
   const today = new Date().toISOString().slice(0, 10);
   const need = buildNeedViewModel(row, today);
-  const activity = await listNeedActivity(supabase, id);
   const readinessPercent = Math.round(need.readiness * 100);
+
+  const [
+    activity,
+    linkedTasks,
+    linkedDecisions,
+    linkedProducts,
+    linkedPurchaseItems,
+    linkedInventory,
+  ] = await Promise.all([
+    listNeedActivity(supabase, id),
+    listTasksForNeed(supabase, id),
+    listDecisionsForNeed(supabase, id),
+    supabase
+      .from("need_products")
+      .select("is_preferred, product:products(id, name)")
+      .eq("need_id", id)
+      .then(
+        ({ data }) =>
+          (data ?? []) as unknown as Array<{
+            is_preferred: boolean;
+            product: { id: string; name: string } | null;
+          }>,
+      ),
+    supabase
+      .from("purchase_items")
+      .select("id, purchase:purchases(id, title, status)")
+      .eq("need_id", id)
+      .then(
+        ({ data }) =>
+          (data ?? []) as unknown as Array<{
+            id: string;
+            purchase: { id: string; title: string; status: string } | null;
+          }>,
+      ),
+    supabase
+      .from("inventory_items")
+      .select("id, name, readiness_status, location")
+      .eq("need_id", id)
+      .is("archived_at", null)
+      .then(
+        ({ data }) =>
+          (data ?? []) as unknown as Array<{
+            id: string;
+            name: string;
+            readiness_status: string;
+            location: string | null;
+          }>,
+      ),
+  ]);
+
+  const linkedPurchases = [
+    ...new Map(
+      linkedPurchaseItems
+        .map((item) => item.purchase)
+        .filter(
+          (purchase): purchase is NonNullable<typeof purchase> =>
+            purchase !== null,
+        )
+        .map((purchase) => [purchase.id, purchase]),
+    ).values(),
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -260,6 +332,207 @@ export default async function NecessidadeDetalhePage({
         availableQuantity={need.availableQuantity}
         archived={need.archivedAt !== null}
       />
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LinkSimpleIcon
+              size={20}
+              aria-hidden="true"
+              className="text-moss-700"
+            />
+            Relacionados
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 text-sm">
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/app/tarefas/nova?necessidade=${need.id}`}
+              className={buttonVariants({
+                variant: "outline",
+                size: "sm",
+                className: "gap-1.5",
+              })}
+            >
+              <PlusIcon size={16} aria-hidden="true" />
+              Criar tarefa
+            </Link>
+            <Link
+              href={`/app/decisoes/nova?necessidade=${need.id}`}
+              className={buttonVariants({
+                variant: "outline",
+                size: "sm",
+                className: "gap-1.5",
+              })}
+            >
+              <PlusIcon size={16} aria-hidden="true" />
+              Criar decisão
+            </Link>
+          </div>
+
+          {linkedTasks.length === 0 &&
+          linkedDecisions.length === 0 &&
+          linkedProducts.length === 0 &&
+          linkedPurchases.length === 0 &&
+          linkedInventory.length === 0 ? (
+            <p className="text-text-secondary">
+              Nada vinculado ainda — produtos, compras, estoque, tarefas e
+              decisões ligados a esta necessidade aparecem aqui.
+            </p>
+          ) : (
+            <dl className="flex flex-col gap-4">
+              {linkedTasks.length > 0 ? (
+                <div>
+                  <dt className="inline-flex items-center gap-1.5 text-text-secondary">
+                    <ChecksIcon size={16} aria-hidden="true" />
+                    Tarefas
+                  </dt>
+                  <dd>
+                    <ul className="mt-1 flex flex-col gap-1">
+                      {linkedTasks.map((task) => (
+                        <li
+                          key={task.id}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <Link
+                            href={`/app/tarefas/${task.id}`}
+                            className="inline-flex min-h-11 items-center font-medium text-forest-900 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {task.title}
+                          </Link>
+                          <StatusBadge
+                            domain="tarefa"
+                            value={task.status as TaskStatus}
+                            size="sm"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ) : null}
+
+              {linkedDecisions.length > 0 ? (
+                <div>
+                  <dt className="inline-flex items-center gap-1.5 text-text-secondary">
+                    <ScalesIcon size={16} aria-hidden="true" />
+                    Decisões
+                  </dt>
+                  <dd>
+                    <ul className="mt-1 flex flex-col gap-1">
+                      {linkedDecisions.map((decision) => (
+                        <li
+                          key={decision.id}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <Link
+                            href={`/app/decisoes/${decision.id}`}
+                            className="inline-flex min-h-11 items-center font-medium text-forest-900 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {decision.title}
+                          </Link>
+                          <StatusBadge
+                            domain="decisao"
+                            value={decision.status as DecisionStatus}
+                            size="sm"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ) : null}
+
+              {linkedProducts.length > 0 ? (
+                <div>
+                  <dt className="text-text-secondary">Produtos</dt>
+                  <dd className="mt-1 flex flex-wrap items-center gap-2">
+                    {linkedProducts
+                      .filter((link) => link.product !== null)
+                      .map((link) => (
+                        <span
+                          key={link.product!.id}
+                          className="inline-flex items-center gap-1.5"
+                        >
+                          <Link
+                            href="/app/produtos"
+                            className="inline-flex min-h-11 items-center font-medium text-forest-900 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {link.product!.name}
+                          </Link>
+                          {link.is_preferred ? (
+                            <Badge tone="sage">Preferido</Badge>
+                          ) : null}
+                        </span>
+                      ))}
+                  </dd>
+                </div>
+              ) : null}
+
+              {linkedPurchases.length > 0 ? (
+                <div>
+                  <dt className="text-text-secondary">Compras</dt>
+                  <dd>
+                    <ul className="mt-1 flex flex-col gap-1">
+                      {linkedPurchases.map((purchase) => (
+                        <li
+                          key={purchase.id}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <Link
+                            href={`/app/compras/${purchase.id}`}
+                            className="inline-flex min-h-11 items-center font-medium text-forest-900 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {purchase.title}
+                          </Link>
+                          <StatusBadge
+                            domain="compra"
+                            value={purchase.status as PurchaseStatus}
+                            size="sm"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ) : null}
+
+              {linkedInventory.length > 0 ? (
+                <div>
+                  <dt className="text-text-secondary">Estoque</dt>
+                  <dd>
+                    <ul className="mt-1 flex flex-col gap-1">
+                      {linkedInventory.map((item) => (
+                        <li
+                          key={item.id}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <Link
+                            href="/app/estoque"
+                            className="inline-flex min-h-11 items-center font-medium text-forest-900 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {item.name}
+                          </Link>
+                          <StatusBadge
+                            domain="prontidao"
+                            value={item.readiness_status as ReadinessStatus}
+                            size="sm"
+                          />
+                          {item.location ? (
+                            <span className="text-text-secondary">
+                              {item.location}
+                            </span>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

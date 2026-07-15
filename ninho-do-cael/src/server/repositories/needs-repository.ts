@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import {
+  listEntityActivity,
+  type ActivityRow,
+} from "@/server/repositories/activity-repository";
+
 /**
  * Acesso a dados de necessidades. Camada fina sobre o Supabase — regras de
  * negócio ficam nos serviços e em lib/ (SDD, seção 30). A RLS garante o
@@ -101,32 +106,13 @@ export async function updateNeedRow(
   return data as unknown as NeedRow;
 }
 
-export type ActivityRow = {
-  id: string;
-  action: string;
-  changes: Record<string, unknown> | null;
-  origin: string;
-  created_at: string;
-  actor: { display_name: string } | null;
-};
+export type { ActivityRow } from "@/server/repositories/activity-repository";
 
 export async function listNeedActivity(
   supabase: SupabaseClient,
   needId: string,
 ): Promise<ActivityRow[]> {
-  const { data, error } = await supabase
-    .from("activity_logs")
-    .select(
-      "id, action, changes, origin, created_at, actor:profiles(display_name)",
-    )
-    .eq("entity_type", "need")
-    .eq("entity_id", needId)
-    .order("created_at", { ascending: false })
-    .limit(50);
-  if (error) {
-    throw new Error(`Falha ao carregar o histórico: ${error.message}`);
-  }
-  return (data ?? []) as unknown as ActivityRow[];
+  return listEntityActivity(supabase, "need", needId);
 }
 
 export async function insertActivityLog(

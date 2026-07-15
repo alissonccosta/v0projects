@@ -142,17 +142,40 @@ Objetivo: produtos, compras, itens, entrega, estoque, prontidão e financeiro.
 **cadeia compra → entrega → estoque → prontidão roteirizada no e2e autenticado
 (`needs.spec.ts`), valida automaticamente com as credenciais do Supabase**
 
-## Fase 5 — Tarefas, decisões e jornada
+## Fase 5 — Tarefas, decisões e jornada 🔶 (implementada em 15/07/2026 — gate parcial)
 
-- [ ] Tarefas: CRUD, status (seção 9.9), semana, calendário, lista, bloqueadas
-      (com dependência e bloqueador), conclusão com critério confirmado
-- [ ] Decisões: tipos (Familiar, Técnica, Médica, Segurança, Financeira), status (9.10),
-      separação "exigem ação / aguardando profissional / decididas / revisar / descartadas"
-- [ ] Decisões médicas: marcador profissional, sem conclusão automática, aviso permanente
-- [ ] Jornada: fases (seção 22) com resumo, prontidão, gasto e marcos por fase
-- [ ] Toggle "Mostrar itens futuros" (itens futuros não poluem a urgência atual)
+- [x] Tarefas: CRUD com status da seção 9.9 e **visões semana / calendário / lista /
+      por status / por responsável / bloqueadas / antes do parto** (funções puras
+      testadas em `lib/tasks/views.ts`)
+- [x] Bloqueadas mostram **dependência, bloqueador, ação derivada e responsável pela
+      ação** (D-039); serviço impede auto-dependência e ciclos; dependência concluída
+      sinaliza retomada
+- [x] **Conclusão com critério confirmado** (checkbox obrigatório) + nota, custo real
+      e referência (`completion_reference`, migration 6) — status `concluida` fora do
+      formulário de edição (D-034)
+- [x] Decisões: tipos (Familiar, Técnica, Médica, Segurança, Financeira), status 9.10,
+      separação **"exigem ação / aguardando profissional / decididas / revisar depois /
+      descartadas"** com grupos descritos
+- [x] Decisões médicas: marcador com estetoscópio, **aviso permanente** (lista, detalhe
+      e formulário), sem conclusão automática; **decidir exige conclusão registrada +
+      confirmação de orientação profissional** (10.11, reforçado por constraint testada)
+- [x] Relações necessidade↔tarefa/decisão: vínculo múltiplo nos formulários, seções no
+      detalhe da tarefa/decisão e card **"Relacionados"** no detalhe da necessidade
+      (produtos, compras, estoque, tarefas, decisões) com ações "criar tarefa/decisão
+      daqui" (fecha o D-029)
+- [x] Jornada: seis fases com janela e **marcos derivados da data prevista** (nunca
+      fixos no código), resumo de necessidades/tarefas/decisões/compras, prontidão
+      ponderada por criticidade e **gasto por fase com devolução rateada** (D-038)
+- [x] Toggle "Mostrar itens futuros": fases futuras colapsam em resumo e não poluem a
+      urgência atual (D-037)
+- [x] API: `GET/POST /api/tasks`, `PATCH /api/tasks/:id`, `POST /api/tasks/:id/complete`,
+      `GET/POST /api/decisions`, `PATCH /api/decisions/:id` (seção 29, Zod em tudo)
+- [x] 46 testes novos (visões, grupos, jornada, schemas, constraints no Postgres real) + e2e demo com axe e e2e autenticado estendido com o roteiro completo do gate
 
-**Gate:** relações necessidade↔tarefa↔decisão funcionam · filtros por fase corretos
+**Gate:** relações necessidade↔tarefa↔decisão funcionam ✅ (e2e roteirizado + testes)
+· filtros por fase corretos ✅ (testes de `phaseForLinked`/agregação + e2e "Ver da
+fase") · **validação com Supabase real aguarda credenciais** (mesma pendência das
+Fases 2–4)
 
 ## Fase 6 — Dashboard e orçamento
 

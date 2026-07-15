@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 
@@ -198,5 +201,201 @@ test.describe.serial("necessidades (fluxo real com Supabase)", () => {
       .click();
     await expect(page.getByText("Devolução registrada.")).toBeVisible();
     await expect(page.getByText(/devolvido/i).first()).toBeVisible();
+
+    // ------------------------------------------------------------------
+    // Fase 5 — tarefa vinculada, bloqueio, conclusão com critério,
+    // decisão médica e jornada (gate: relações e filtros por fase)
+    // ------------------------------------------------------------------
+    const hoje = new Date().toISOString().slice(0, 10);
+
+    // Criar tarefa a partir do detalhe da necessidade (vínculo pré-marcado).
+    await page.goto("/app/necessidades");
+    await page.getByLabel("Buscar necessidades").fill("termometro");
+    await page.getByText("Térmometro de banho").click();
+    await page.getByRole("link", { name: "Criar tarefa" }).click();
+    await expect(page).toHaveURL(/\/app\/tarefas\/nova\?necessidade=/);
+    await expect(
+      page.getByRole("checkbox", { name: "Térmometro de banho" }),
+    ).toBeChecked();
+    await page.getByLabel("Título", { exact: true }).fill("Lavar o termômetro");
+    await page.getByLabel("Prazo", { exact: true }).fill(hoje);
+    await page
+      .getByLabel("Critério de conclusão")
+      .fill("Termômetro lavado, seco e guardado");
+    await page.getByRole("button", { name: "Criar tarefa" }).click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Lavar o termômetro" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Térmometro de banho" }),
+    ).toBeVisible();
+
+    // Tarefa bloqueada com dependência e bloqueador (seção 20).
+    await page.goto("/app/tarefas/nova");
+    await page
+      .getByLabel("Título", { exact: true })
+      .fill("Guardar o termômetro");
+    await page.getByLabel("Status", { exact: true }).selectOption("bloqueada");
+    await page
+      .getByLabel("Depende da tarefa")
+      .selectOption({ label: "Lavar o termômetro" });
+    await page.getByLabel("O que bloqueia").fill("Precisa estar lavado antes");
+    await page.getByRole("button", { name: "Criar tarefa" }).click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Guardar o termômetro" }),
+    ).toBeVisible();
+    await expect(page.getByText("Por que está bloqueada")).toBeVisible();
+    await expect(page.getByText("Concluir “Lavar o termômetro”")).toBeVisible();
+
+    // Visão Bloqueadas mostra dependência, bloqueador, ação e responsável.
+    await page.goto("/app/tarefas?view=bloqueadas");
+    await expect(page.getByText("Guardar o termômetro")).toBeVisible();
+    await expect(page.getByText("Dependência", { exact: true })).toBeVisible();
+    await expect(page.getByText("Bloqueador", { exact: true })).toBeVisible();
+    await expect(page.getByText("Ação para destravar")).toBeVisible();
+    await expect(page.getByText("Responsável pela ação")).toBeVisible();
+
+    // Conclusão exige o critério confirmado (seção 20).
+    await page.goto("/app/tarefas");
+    await page.getByText("Lavar o termômetro", { exact: true }).click();
+    await page.getByRole("button", { name: "Concluir", exact: true }).click();
+    const completeDialog = page.getByRole("dialog", {
+      name: "Concluir tarefa",
+    });
+    await expect(
+      completeDialog.getByText("Termômetro lavado, seco e guardado"),
+    ).toBeVisible();
+    await completeDialog
+      .getByRole("button", { name: "Concluir tarefa" })
+      .click();
+    await expect(
+      completeDialog.getByText(/Confirme que o critério/),
+    ).toBeVisible();
+    await completeDialog
+      .getByRole("checkbox", { name: /critério acima foi atendido/ })
+      .check();
+    await completeDialog
+      .getByLabel("Nota (opcional)")
+      .fill("Lavado com sabão neutro");
+    await completeDialog
+      .getByRole("button", { name: "Concluir tarefa" })
+      .click();
+    await expect(
+      page.getByText("Tarefa concluída. Bom trabalho!"),
+    ).toBeVisible();
+    await expect(page.getByText("Concluída", { exact: true })).toBeVisible();
+
+    // A bloqueada agora aponta que a dependência foi concluída.
+    await page.goto("/app/tarefas?view=bloqueadas");
+    await expect(
+      page.getByText("Dependência concluída — retome a tarefa"),
+    ).toBeVisible();
+
+    // Decisão médica a partir da necessidade: aviso permanente + fluxo Decidir.
+    await page.goto("/app/necessidades");
+    await page.getByLabel("Buscar necessidades").fill("termometro");
+    await page.getByText("Térmometro de banho").click();
+    await page.getByRole("link", { name: "Criar decisão" }).click();
+    await expect(page).toHaveURL(/\/app\/decisoes\/nova\?necessidade=/);
+    await page
+      .getByLabel("Título", { exact: true })
+      .fill("Qual termômetro o pediatra recomenda?");
+    await page.getByLabel("Tipo", { exact: true }).selectOption("medica");
+    await expect(
+      page.getByText(
+        /nunca há conclusão automática|vem sempre de profissional/,
+      ),
+    ).toBeVisible();
+    await page
+      .getByLabel("Status", { exact: true })
+      .selectOption("aguardando_profissional");
+    await page.getByRole("button", { name: "Registrar decisão" }).click();
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Qual termômetro o pediatra recomenda?",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText(/vem sempre de profissional/)).toBeVisible();
+
+    // Está no grupo "Aguardando profissional" da lista.
+    await page.goto("/app/decisoes");
+    await expect(page.getByText("Aguardando profissional · 1")).toBeVisible();
+
+    // Decidir: conclusão obrigatória + confirmação profissional (10.11).
+    await page.getByText("Qual termômetro o pediatra recomenda?").click();
+    await page.getByRole("button", { name: "Decidir" }).click();
+    const decideDialog = page.getByRole("dialog", {
+      name: "Registrar a decisão",
+    });
+    await decideDialog
+      .getByLabel("Conclusão")
+      .fill("Pediatra indicou termômetro digital comum.");
+    await decideDialog
+      .getByRole("button", { name: "Registrar decisão" })
+      .click();
+    await expect(
+      decideDialog.getByText(/confirme que a conclusão veio de profissional/i),
+    ).toBeVisible();
+    await decideDialog
+      .getByRole("checkbox", { name: /profissional que acompanha/ })
+      .check();
+    await decideDialog
+      .getByRole("button", { name: "Registrar decisão" })
+      .click();
+    await expect(page.getByText("Decisão registrada.")).toBeVisible();
+    await page.goto("/app/decisoes");
+    await expect(page.getByText("Decididas · 1")).toBeVisible();
+
+    // Relações no detalhe da necessidade (gate: necessidade↔tarefa↔decisão).
+    await page.goto("/app/necessidades");
+    await page.getByLabel("Buscar necessidades").fill("termometro");
+    await page.getByText("Térmometro de banho").click();
+    await expect(
+      page.getByRole("link", { name: "Lavar o termômetro" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: "Qual termômetro o pediatra recomenda?",
+      }),
+    ).toBeVisible();
+
+    // Jornada: gasto da fase, filtro por fase e itens futuros (seção 22).
+    await page.goto("/app/jornada");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Jornada" }),
+    ).toBeVisible();
+    await expect(page.getByText("Antes do parto")).toBeVisible();
+    await expect(page.getByText("R$ 44,90")).toBeVisible();
+    await expect(page.getByText("Fase futura").first()).toBeVisible();
+    await page.getByRole("link", { name: "Mostrar itens futuros" }).click();
+    await expect(page).toHaveURL(/futuros=1/);
+    await expect(
+      page.getByRole("link", { name: "Ocultar itens futuros" }),
+    ).toBeVisible();
+
+    // Filtro por fase leva às necessidades corretas.
+    await page.getByRole("link", { name: "Ver da fase" }).first().click();
+    await expect(page).toHaveURL(/fase=antes_do_parto/);
+    await expect(page.getByText("Térmometro de banho")).toBeVisible();
+
+    // Evidências visuais da fase 5 com dados reais.
+    const fase5Dir = path.join(__dirname, "..", "..", "docs", "qa", "fase-5");
+    fs.mkdirSync(fase5Dir, { recursive: true });
+    await page.goto("/app/tarefas");
+    await page.screenshot({
+      path: path.join(fase5Dir, "tarefas-real.png"),
+      fullPage: true,
+    });
+    await page.goto("/app/decisoes");
+    await page.screenshot({
+      path: path.join(fase5Dir, "decisoes-real.png"),
+      fullPage: true,
+    });
+    await page.goto("/app/jornada");
+    await page.screenshot({
+      path: path.join(fase5Dir, "jornada-real.png"),
+      fullPage: true,
+    });
   });
 });
