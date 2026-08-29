@@ -144,6 +144,34 @@ export function allocateProportionally(
   return result.map(centsToValue);
 }
 
+export type AllocatedPurchase = {
+  status: string;
+  total: number;
+  returnedAmount: number;
+  items: Array<{ allocatedTotal: number }>;
+};
+
+/**
+ * Valor líquido de cada item de uma compra: o rateado menos a fatia da
+ * devolução (Hamilton sobre os rateios). Cancelada não conta dinheiro —
+ * retorna zeros. A soma dos líquidos bate com o comprometido da compra
+ * (10.7), então agregações por fase/categoria/fornecedor fecham a conta.
+ */
+export function netAllocatedItemTotals(purchase: AllocatedPurchase): number[] {
+  if (purchase.status === "cancelada" || purchase.items.length === 0) {
+    return purchase.items.map(() => 0);
+  }
+  const refunds = allocateProportionally(
+    Math.min(purchase.returnedAmount, purchase.total),
+    purchase.items.map((item) => item.allocatedTotal),
+  );
+  return purchase.items.map((item, index) =>
+    centsToValue(
+      Math.max(toCents(item.allocatedTotal) - toCents(refunds[index] ?? 0), 0),
+    ),
+  );
+}
+
 function toCents(value: number): number {
   return Math.round(value * 100);
 }

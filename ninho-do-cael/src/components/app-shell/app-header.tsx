@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/app-shell/logo";
+import { GlobalSearch } from "@/components/search/global-search";
 import { SyncIndicator } from "@/components/sync/sync-indicator";
 import { findModuleByPathname } from "@/lib/navigation";
 
@@ -44,7 +45,10 @@ export function AppHeader({ demoMode = false }: { demoMode?: boolean }) {
             </>
           ) : null}
         </nav>
-        <SyncIndicator status="not_linked" />
+        <div className="flex items-center gap-2">
+          {!demoMode ? <GlobalSearch /> : null}
+          <SyncIndicator status="not_linked" />
+        </div>
       </div>
       {demoMode ? (
         <p className="border-t border-warning/20 bg-warning-soft px-4 py-1.5 text-center text-xs font-medium text-warning-strong sm:px-6">

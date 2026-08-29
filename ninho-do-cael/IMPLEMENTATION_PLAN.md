@@ -177,20 +177,36 @@ Objetivo: produtos, compras, itens, entrega, estoque, prontidão e financeiro.
 fase") · **validação com Supabase real aguarda credenciais** (mesma pendência das
 Fases 2–4)
 
-## Fase 6 — Dashboard e orçamento
+## Fase 6 — Dashboard e orçamento 🔶 (implementada em 15/07/2026 — gate parcial)
 
-- [ ] `/api/dashboard` com agregados calculados no servidor (nunca hardcoded — seção 1.4)
-- [ ] Prontidão geral ponderada por criticidade (seção 10.5) + antes do parto + críticos
-- [ ] Contagem regressiva para 15/11/2026 sem virar previsão médica
-- [ ] Financeiro: pago, pendente estimado, economia, pedidos aguardando entrega
-- [ ] Próximas ações ordenadas (vencido → crítico → prazo → bloqueador → prioridade)
-- [ ] Alertas acionáveis (seção 15.5) e atividade recente
-- [ ] Gráficos Recharts com resumo textual (a11y): prontidão e gastos por categoria,
-      compras por status, cronograma por fase
-- [ ] Orçamento: indicadores e regras da seção 23, sem duplicar kits
-- [ ] Pesquisa global (atalho `/`, ignora acento, prioriza título)
+- [x] `/api/dashboard` com agregados calculados no servidor (nunca hardcoded — seção
+      1.4): consultas paralelas + agregação em memória, mesmo serviço para página e API
+- [x] Prontidão geral ponderada por criticidade (10.5) + antes do parto (conjunto da
+      10.8, D-040) + críticos pendentes com "Ver pendências" filtrado
+- [x] Contagem regressiva derivada da data prevista do banco, com fase e próximo
+      marco — e o lembrete de que "quem manda é o Cael e a equipe médica"
+- [x] Financeiro: pago (líquido de devolução), pendente estimado (total e até o
+      parto), economia e pedidos aguardando entrega
+- [x] Próximas ações ordenadas vencido → crítico → prazo (7 dias) → bloqueador →
+      prioridade → restante, sem duplicar item e com responsável/prazo/dependência
+- [x] Alertas acionáveis (15.5): os oito tipos, cada um só quando existe e com link
+      para a tela que resolve; atividade recente com "Ver tudo"
+- [x] Gráficos Recharts com resumo textual visível (D-043): prontidão por categoria,
+      gastos por categoria, compras por status, cronograma por fase (prontas × pendentes)
+- [x] Orçamento (seção 23): comprometido/pago/a caminho (D-041), pendente estimado,
+      economia, frete e devolvido; quebras por categoria, fase e fornecedor; evolução
+      acumulada; pago × pendente; kits não duplicam (rateio por item)
+- [x] `/app/atividade` real (quem, o quê, origem, quando — títulos resolvidos em
+      lote, sem N+1) e fim de todos os placeholders (D-044)
+- [x] Pesquisa global: atalho `/`, cinco entidades, sem acento, título priorizado,
+      via `/api/search` + diálogo com debounce (D-042); oculta no modo demonstração
+- [x] 22 testes novos (agregadores, orçamento, busca) + e2e demo (axe/overflow) e
+      cadeia autenticada estendida (painel, orçamento, atividade, busca)
 
-**Gate:** tudo vem do banco · zero números hardcoded · performance (seção 32)
+**Gate:** tudo vem do banco ✅ (serviços consultam e calculam; nada fixo) · zero
+números hardcoded ✅ (datas e valores derivados; teste "sem condições, sem alertas") ·
+performance ✅ (consultas paralelas, agregados no servidor, sem N+1) · **validação
+com Supabase real aguarda credenciais** (mesma pendência das Fases 2–5)
 
 ## Fase 7 — Integração Notion
 

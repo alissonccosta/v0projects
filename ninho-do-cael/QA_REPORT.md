@@ -359,7 +359,73 @@ Pendências P0/P1/P2 de código: **nenhuma**.
 
 ---
 
-## Fases 6–9
+## Fase 6 — Dashboard e orçamento · **IMPLEMENTADA (gate parcial)** · 15/07/2026
+
+### Comandos do gate
+
+| Verificação | Comando                | Resultado                                                                        |
+| ----------- | ---------------------- | -------------------------------------------------------------------------------- |
+| Lint        | `npm run lint`         | ✅ sem erros e sem warnings                                                      |
+| Formatação  | `npm run format:check` | ✅ todos os arquivos no padrão                                                   |
+| Tipos       | `npm run typecheck`    | ✅ sem erros                                                                     |
+| Unit + DB   | `npm run test`         | ✅ 25 arquivos, 164 testes                                                       |
+| Build       | `npm run build`        | ✅ painel/orçamento/atividade reais + /api/dashboard, /api/activity, /api/search |
+| E2E         | `npm run e2e`          | ✅ 37 aprovados em 3 viewports                                                   |
+
+### Testes adicionados na fase
+
+- **Painel (seção 15)** — `lib/dashboard/model`: contagem regressiva nas duas
+  margens da data prevista; prontidão ponderada geral e "antes do parto"
+  (conjunto da 10.8); críticos pendentes; financeiro (pago líquido, estimativas
+  nos dois modos, economia, aguardando entrega); **próximas ações na ordem
+  vencido → crítico → prazo → bloqueador → prioridade → restante**, sem
+  duplicar item e com limite; **os oito alertas da 15.5** disparando apenas
+  quando a condição existe ("sem condições, sem alertas — nada inventado");
+  dados dos quatro gráficos (incluindo devolução rateada nos gastos).
+- **Orçamento (seção 23)** — `lib/budget/model`: comprometido × pago × a
+  caminho (D-041), frete e devolvido separados, kits sem duplicação (rateio por
+  item), quebras por categoria/fase/fornecedor (normalização de fornecedor),
+  evolução acumulada ignorando canceladas, pago × pendente.
+- **Busca (seção 24)** — `lib/search/model`: acento ignorado dos dois lados,
+  ranking título-começa → título-contém → subtítulo, limite, agrupamento na
+  ordem das entidades.
+- **Financeiro** — `netAllocatedItemTotals` compartilhado (soma dos líquidos
+  bate com o comprometido da compra).
+- **E2E demo (`fase6-demo.spec.ts`)** — painel, orçamento e atividade com
+  EmptyState honesto, zero controles/números falsos, sem overflow, axe limpo;
+  busca global ausente no modo demonstração (seção 0.2).
+- **E2E autenticado (gated)** estendido: painel com contagem regressiva,
+  R$ 44,90 líquido, alerta "1 tarefa bloqueada", próximas ações e resumo
+  textual dos gráficos; orçamento com comprometido/devolvido/fornecedores;
+  atividade com link para a entidade; **busca via botão e atalho `/`** com
+  acento ignorado e navegação ao detalhe.
+
+### Verificação visual
+
+Modo demonstração: screenshots 390/768/1440 em `docs/qa/fase-6/`
+(`dashboard-demo-*`, `orcamento-demo-*`, `atividade-demo-*`), com axe e
+overflow verificados. As telas com dados reais (`dashboard-real.png`,
+`orcamento-real.png`) são capturadas pelo teste gated quando as credenciais
+chegarem.
+
+### Pendência que impede a aprovação total da fase
+
+A mesma das Fases 2–5: validação de ponta a ponta com Supabase real
+(credenciais — `docs/setup-supabase.md`). Observação: a asserção de contagem
+regressiva do e2e gated assume execução antes de 15/11/2026.
+
+### Problemas conhecidos
+
+| Sev. | Problema                                                                                          | Plano                                       |
+| ---- | ------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| P3   | Central de notificações no app (seção 25) ainda não existe — alertas cobrem o essencial no painel | Fase 8 (polish)                             |
+| P3   | Gráficos não aparecem no modo demonstração (sem dados para desenhar)                              | comportamento honesto; muda com dados reais |
+
+Pendências P0/P1/P2 de código: **nenhuma**.
+
+---
+
+## Fases 7–9
 
 Ainda não iniciadas. Cada fase adicionará aqui sua seção com: comandos do gate e
 resultados, testes adicionados, verificação visual (mobile/tablet/desktop),

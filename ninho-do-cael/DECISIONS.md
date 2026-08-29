@@ -6,6 +6,50 @@ Decisões novas entram no topo da fase correspondente.
 
 ---
 
+## Fase 6 — 15/07/2026
+
+### D-040 · "Antes do parto" no painel usa o conjunto da 10.8
+
+O card de prontidão "antes do parto" (15.3) considera as fases
+`antes_do_parto` e `continuo` — o mesmo conjunto que a 10.8 usa para o
+pendente estimado "até o parto". Itens contínuos precisam estar prontos na
+chegada do Cael; deixá-los fora inflaria o número.
+
+### D-041 · Pago × comprometido no orçamento
+
+A seção 23 lista "pago" e "comprometido" como indicadores distintos, sem
+defini-los. Régua adotada: **comprometido** é o total líquido da 10.7 (tudo
+que saiu ou vai sair do bolso); **pago (entregue)** é a parte cujas compras
+já foram entregues/encerradas; **a caminho** é a diferença (pedidos
+confirmados/enviados). Economia = descontos (10.7/23); frete e devolvido
+aparecem separados. Tudo em `lib/budget/model.ts`, testado.
+
+### D-042 · Busca global em memória, no servidor
+
+`/api/search` carrega títulos das cinco entidades em cinco consultas
+paralelas e usa as mesmas funções puras de normalização sem acento da lista
+de necessidades (mesmo racional de volume da D-027). Ranking: título começa
+com o termo → título contém → campo secundário contém (marca, fornecedor,
+pergunta). O atalho `/` abre o diálogo em qualquer tela; em modo
+demonstração o controle não aparece (seção 0.2).
+
+### D-043 · Gráficos com tokens CSS e resumo textual visível
+
+Recharts recebe as cores como `var(--…)` direto dos design tokens (nada de
+hex duplicado) e todo gráfico vem acompanhado de um resumo textual visível
+(seções 15.6 e 31) — o gráfico ilustra, o texto garante a informação.
+Animações desligadas (`isAnimationActive={false}`): respeita reduced motion
+e evita reflow na primeira pintura.
+
+### D-044 · Fim dos placeholders
+
+Com painel, orçamento e atividade reais, nenhum módulo usa mais
+`ModulePlaceholder`; o componente e seu teste foram removidos (código morto
+viola o espírito da seção 0.1). O feed de atividade resolve títulos das
+entidades em lotes (`.in(id, …)`) — sem N+1 (seção 32).
+
+---
+
 ## Fase 5 — 15/07/2026
 
 ### D-034 · Concluir e decidir têm fluxos próprios, fora dos formulários

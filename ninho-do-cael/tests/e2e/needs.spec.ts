@@ -397,5 +397,78 @@ test.describe.serial("necessidades (fluxo real com Supabase)", () => {
       path: path.join(fase5Dir, "jornada-real.png"),
       fullPage: true,
     });
+
+    // ------------------------------------------------------------------
+    // Fase 6 — painel, orçamento, atividade e busca global
+    // (gate: tudo vem do banco, zero números fixos)
+    // ------------------------------------------------------------------
+
+    // Painel: contagem regressiva, prontidão, financeiro e alertas reais.
+    await page.goto("/app/dashboard");
+    await expect(page.getByText(/dias até a data prevista/)).toBeVisible();
+    await expect(page.getByText("Prontidão geral")).toBeVisible();
+    // Pago líquido da cadeia: R$ 54,90 − R$ 10,00 devolvidos.
+    await expect(page.getByText("R$ 44,90").first()).toBeVisible();
+    // A tarefa "Guardar o termômetro" segue bloqueada → alerta + próxima ação.
+    await expect(page.getByText("1 tarefa bloqueada")).toBeVisible();
+    await expect(page.getByText("Próximas ações")).toBeVisible();
+    await expect(page.getByText("Guardar o termômetro").first()).toBeVisible();
+    // Gráficos com resumo textual.
+    await expect(page.getByText("Gastos por categoria")).toBeVisible();
+    await expect(page.getByText(/Maior gasto: Higiene/)).toBeVisible();
+
+    // Orçamento: indicadores e quebras calculados das compras.
+    await page.goto("/app/orcamento");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Orçamento" }),
+    ).toBeVisible();
+    await expect(page.getByText("Comprometido", { exact: true })).toBeVisible();
+    await expect(page.getByText("R$ 44,90").first()).toBeVisible();
+    await expect(page.getByText("Devolvido", { exact: true })).toBeVisible();
+    await expect(page.getByText("Fornecedores")).toBeVisible();
+
+    // Atividade: quem fez o quê, com link para a entidade.
+    await page.goto("/app/atividade");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Atividade" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Térmometro de banho" }).first(),
+    ).toBeVisible();
+
+    // Busca global (seção 24): botão, atalho "/", acento ignorado, navegação.
+    await page.getByRole("button", { name: "Pesquisar" }).click();
+    const searchDialog = page.getByRole("dialog", { name: "Pesquisar" });
+    await expect(searchDialog).toBeVisible();
+    await searchDialog.getByLabel("Termo de busca").fill("termometro");
+    await expect(
+      searchDialog.getByRole("link", { name: "Térmometro de banho" }),
+    ).toBeVisible();
+    await expect(
+      searchDialog.getByRole("link", { name: "Lavar o termômetro" }),
+    ).toBeVisible();
+    await searchDialog
+      .getByRole("link", { name: "Térmometro de banho" })
+      .click();
+    await expect(page).toHaveURL(/\/app\/necessidades\//);
+    await expect(searchDialog).not.toBeVisible();
+    // Atalho "/" reabre a busca.
+    await page.keyboard.press("/");
+    await expect(page.getByRole("dialog", { name: "Pesquisar" })).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // Evidências visuais da fase 6 com dados reais.
+    const fase6Dir = path.join(__dirname, "..", "..", "docs", "qa", "fase-6");
+    fs.mkdirSync(fase6Dir, { recursive: true });
+    await page.goto("/app/dashboard");
+    await page.screenshot({
+      path: path.join(fase6Dir, "dashboard-real.png"),
+      fullPage: true,
+    });
+    await page.goto("/app/orcamento");
+    await page.screenshot({
+      path: path.join(fase6Dir, "orcamento-real.png"),
+      fullPage: true,
+    });
   });
 });
